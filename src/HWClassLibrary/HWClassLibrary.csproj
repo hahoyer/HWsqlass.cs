@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProjectGuid>{0402FAE1-D5D6-490F-BC68-C26C8873C0B2}</ProjectGuid>
+    <AssemblyName>HWClassLibrary</AssemblyName>
+    <TargetTypeEx>CSharp.Library.UnitTest</TargetTypeEx>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Assembly.cs" />
+    <Compile Include="DataBase\SQLGenerator.cs" />
+    <Compile Include="DataBase\DataBase.cs" />
+    <Compile Include="DataBase\TableColumn.cs" />
+    <Compile Include="Debug\DisableDumpAttribute.cs" />
+    <Compile Include="Debug\Dumpable.cs" />
+    <Compile Include="Debug\DumpClassAttribute.cs" />
+    <Compile Include="Debug\DumpDataClassAttribute.cs" />
+    <Compile Include="Debug\DumpEnabledAttribute.cs" />
+    <Compile Include="Debug\EnableDumpExceptAttribute.cs" />
+    <Compile Include="Debug\DumpAttribute.cs" />
+    <Compile Include="Debug\DumpToStringAttribute.cs" />
+    <Compile Include="Debug\EnableDumpAttribute.cs" />
+    <Compile Include="Debug\EnableDumpWithExceptionPredicateAttribute.cs" />
+    <Compile Include="Debug\Profiler.cs" />
+    <Compile Include="Debug\Tracer.cs" />
+    <Compile Include="Debug\Visualizer.cs" />
+    <Compile Include="EF\Utility\Accessibility.cs" />
+    <Compile Include="EF\Utility\CodeGenerationTools.cs" />
+    <Compile Include="EF\Utility\CodeRegion.cs" />
+    <Compile Include="EF\Utility\DynamicHost.cs" />
+    <Compile Include="EF\Utility\DynamicTextTransformation.cs" />
+    <Compile Include="EF\Utility\MetadataConstants.cs" />
+    <Compile Include="EF\Utility\EntityFrameworkTemplateFileManager.cs" />
+    <Compile Include="EF\Utility\FunctionImportParameter.cs" />
+    <Compile Include="EF\Utility\IDynamicHost.cs" />
+    <Compile Include="EF\Utility\MetadataLoader.cs" />
+    <Compile Include="EF\Utility\MetadataTools.cs" />
+    <Compile Include="EF\Utility\NullHost.cs" />
+    <Compile Include="Helper\BigRational.cs" />
+    <Compile Include="Helper\CSharpCompiler.cs" />
+    <Compile Include="Helper\DateTimeExtender.cs" />
+    <Compile Include="Helper\Dictionary.cs" />
+    <Compile Include="Helper\ListExtender.cs" />
+    <Compile Include="Helper\LongExtender.cs" />
+    <Compile Include="Helper\ReflectionExtender.cs" />
+    <Compile Include="Helper\StringExtender.cs" />
+    <Compile Include="Helper\Number.cs" />
+    <Compile Include="Helper\Set.cs" />
+    <Compile Include="Helper\SimpleCache.cs" />
+    <Compile Include="Helper\StringAligner.cs" />
+    <Compile Include="Helper\TypeNameExtender.cs" />
+    <Compile Include="IO\File.cs" />
+    <Compile Include="JetBrainsAnnotations.cs" />
+    <Compile Include="TreeStructure\Extender.cs" />
+    <Compile Include="TreeStructure\TreeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TreeStructure\TreeForm.Designer.cs">
+      <DependentUpon>TreeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TreeStructure\Helper.cs">
+    </Compile>
+    <Compile Include="UnitTest\CategoryAttribute.cs" />
+    <Compile Include="Relation\Extender.cs" />
+    <Compile Include="UnitTest\DependantAttribute.cs" />
+    <Compile Include="UnitTest\TestExtender.cs" />
+    <Compile Include="UnitTest\TestMethod.cs" />
+    <Compile Include="UnitTest\TestRunner.cs" />
+    <Compile Include="UnitTest\TestType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="JetBrains.ReSharper.Refactorings.CSharp">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\JetBrains\ReSharper\v6.0\Bin\JetBrains.ReSharper.Refactorings.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.DebuggerVisualizers, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\ReferenceAssemblies\v2.0\Microsoft.VisualStudio.DebuggerVisualizers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Data.Entity.Design" />
+    <Reference Include="System.Data.SQLite" />
+    <Reference Include="System.Data.SQLite.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TreeStructure\TreeForm.resx">
+      <DependentUpon>TreeForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="sys.targets" />
+</Project>

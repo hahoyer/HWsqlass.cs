@@ -1,0 +1,7 @@
+
+/intermediate
+/out
+_ReSharper.*
+*.suo
+*.user
+obj/

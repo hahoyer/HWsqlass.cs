@@ -1,0 +1,39 @@
+﻿<#@ template language="C#" debug="true" hostspecific="true"#>
+<#@ output extension=".cs"#>
+<#@ Assembly Name="$(TargetDir)HWClassLibrary.dll" #>
+<#@ import namespace="global::HWClassLibrary.T4" #>
+<#
+	var tools = this.Tools();
+#>
+
+namespace <#= tools.NameSpace()#>
+{
+	sealed class Template{}
+}
+
+<#
+
+	var name = "xx";
+
+    tools.StartNewFile(name + ".cs");
+#>
+namespace <#= tools.NameSpace()#>
+{
+    sealed class <#= name #>{}
+}
+
+<#
+	tools.StartNewFile("xxxxx.cs");
+#>
+namespace xxxxa.xxxx{}
+
+<#
+	tools.ProcessFiles();
+#>
+<#+
+	class S 
+    {
+    }
+#>
+
+

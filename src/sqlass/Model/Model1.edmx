@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="Model1.Store" Alias="Self" Provider="System.Data.SqlServerCe.3.5" ProviderManifestToken="3.5" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+  <EntityContainer Name="Model1StoreContainer">
+    <EntitySet Name="Organisations" EntityType="Model1.Store.Organisations" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="OrganisationTypeSet" EntityType="Model1.Store.OrganisationTypeSet" store:Type="Tables" Schema="dbo" />
+    <AssociationSet Name="OrganisationTypeOrganisation" Association="Model1.Store.OrganisationTypeOrganisation">
+      <End Role="OrganisationType" EntitySet="OrganisationTypeSet" />
+      <End Role="Organisation" EntitySet="Organisations" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Organisations">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" Nullable="false" />
+    <Property Name="TypeId" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="OrganisationTypeSet">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+  </EntityType>
+  <Association Name="OrganisationTypeOrganisation">
+    <End Role="OrganisationType" Type="Model1.Store.OrganisationTypeSet" Multiplicity="1" />
+    <End Role="Organisation" Type="Model1.Store.Organisations" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="OrganisationType">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Organisation">
+        <PropertyRef Name="TypeId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" xmlns:cg="http://schemas.microsoft.com/ado/2006/04/codegeneration" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" Namespace="Model1" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
+        <EntityContainer Name="Model1Container" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Organisations" EntityType="Model1.Organisation" />
+          <EntitySet Name="OrganisationTypeSet" EntityType="Model1.OrganisationType" />
+          <AssociationSet Name="OrganisationTypeOrganisation" Association="Model1.OrganisationTypeOrganisation">
+            <End Role="OrganisationType" EntitySet="OrganisationTypeSet" />
+            <End Role="Organisation" EntitySet="Organisations" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Organisation">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Name" Nullable="false" />
+          <NavigationProperty Name="Type" Relationship="Model1.OrganisationTypeOrganisation" FromRole="Organisation" ToRole="OrganisationType" />
+          <Property Type="Int32" Name="TypeId" Nullable="false" />
+        </EntityType>
+        <EntityType Name="OrganisationType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+        </EntityType>
+        <Association Name="OrganisationTypeOrganisation">
+          <End Type="Model1.OrganisationType" Role="OrganisationType" Multiplicity="1" />
+          <End Type="Model1.Organisation" Role="Organisation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="OrganisationType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Organisation">
+              <PropertyRef Name="TypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="Model1StoreContainer" CdmEntityContainer="Model1Container">
+    <EntitySetMapping Name="Organisations">
+      <EntityTypeMapping TypeName="IsTypeOf(Model1.Organisation)">
+        <MappingFragment StoreEntitySet="Organisations">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="TypeId" ColumnName="TypeId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="OrganisationTypeSet">
+      <EntityTypeMapping TypeName="IsTypeOf(Model1.OrganisationType)">
+        <MappingFragment StoreEntitySet="OrganisationTypeSet">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping></edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <edmx:Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </edmx:Connection>
+    <edmx:Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+      </DesignerInfoPropertySet>
+    </edmx:Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram Name="Model1" >
+        <EntityTypeShape EntityType="Model1.Organisation" Width="2.125" PointX="1" PointY="1.375" Height="1.787985026041667" />
+        <EntityTypeShape EntityType="Model1.OrganisationType" Width="1.5" PointX="6" PointY="1.875" Height="1.211080729166667" />
+        <AssociationConnector Association="Model1.OrganisationTypeOrganisation">
+          <ConnectorPoint PointX="6" PointY="2.4805403645833337" />
+          <ConnectorPoint PointX="3.125" PointY="2.4805403645833337" />
+        </AssociationConnector>
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

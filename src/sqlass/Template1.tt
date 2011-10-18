@@ -3,35 +3,28 @@
 <#@ Assembly Name="$(TargetDir)HWClassLibrary.dll" #>
 <#@ import namespace="global::HWClassLibrary.T4" #>
 <#
-	var context = this.Context();
+	var context = GenerationEnvironment.Context(Host);
     var name = "xx";
-
 #>
-
-namespace <#= context.NameSpace()#>
+namespace <#= context.NameSpace#>
 {
 	sealed class Template{}
 }
-
 <#
-
 	context.File = name + ".cs";
 #>
-namespace <#= context.NameSpace()#>
+namespace <#= context.NameSpace#>
 {
     sealed class <#= name #>{}
 }
-
 <#
 	context.File = "xxxxx.cs";
 #>
 namespace xxxxa.xxxx{}
-
 <#
     context.File = name + ".cs";
 #>
 // End
-
 <#
     context.ProcessFiles();         
 #>

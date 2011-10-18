@@ -1,6 +1,4 @@
-﻿
-namespace sqlass
+﻿namespace sqlass
 {
 	sealed class Template{}
 }
-

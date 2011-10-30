@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HWClassLibrary.DataBase;
 using HWClassLibrary.Debug;
 using HWClassLibrary.UnitTest;
 using sqlass.Tables;
@@ -32,7 +33,7 @@ namespace sqlass
         [Test]
         public void Test()
         {
-            var context = new Context("test");
+            var context = new Context {DataBase = new DataBase("test")};
 
             var address = new Address {Id = 1, Text = "5th Ave, City23"};
             var customer = new Customer {Id = 1, Name = "Cust co ldt.", Address = new Reference<Address>(address)};
@@ -43,11 +44,9 @@ namespace sqlass
         }
     }
 
-    sealed partial class Context : SQLContext
+    sealed partial class Context
     {
-        public Context(string dbPath)
-            : base(dbPath)
-        {
-        }
+        internal DataBase DataBase;
+        public void SaveChanges() { throw new NotImplementedException(); }
     }
 }

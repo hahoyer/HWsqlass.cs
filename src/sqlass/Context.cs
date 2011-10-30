@@ -1,5 +1,5 @@
 // 
-//     Project HWClassLibrary
+//     Project sqlass
 //     Copyright (C) 2011 - 2011 Harald Hoyer
 // 
 //     This program is free software: you can redistribute it and/or modify
@@ -17,25 +17,33 @@
 //     
 //     Comments, bugs and suggestions to hahoyer at yahoo.de
 
-using System.IO;
-using System.Text;
+using System.Reflection;
+using HWClassLibrary.DataBase;
 using HWClassLibrary.Debug;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using JetBrains.Annotations;
-using Microsoft.VisualStudio.TextTemplating;
+using HWClassLibrary.Helper;
 
-namespace HWClassLibrary.T4
+namespace sqlass
 {
-    public static class Extender
+    public abstract class SQLContext : DataBase
     {
-        [UsedImplicitly]
-        public static Context Context(this StringBuilder text, ITextTemplatingEngineHost host) { return new Context(text, host); }
-        internal static bool IsFileContentDifferent(String fileName, string newContent) { return !(File.Exists(fileName) && File.ReadAllText(fileName) == newContent); }
-    }
-}
+        readonly DictionaryEx<Type, object> _tables;
+        protected SQLContext(string dbPath)
+            : base(dbPath) { _tables = new DictionaryEx<Type, object>(ObtainTable); }
 
-namespace HWClassLibrary.sqlass
-{
+        object ObtainTable(Type t)
+        {
+            var tables = GetType()
+                .GetMembers()
+                .Where(m => m.GetAttribute<TableAttribute>(true) != null)
+                .Cast<FieldInfo>()
+                .ToArray();
+            NotImplementedMethod(t);
+            return null;
+        }
+
+        public void SaveChanges() { NotImplementedMethod(); }
+    }
 }

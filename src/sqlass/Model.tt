@@ -1,0 +1,30 @@
+﻿<#@ template language="C#" debug="true" hostspecific="true"#>
+<#@ output extension=".cs"#>
+<#@ Assembly Name="$(TargetDir)HWClassLibrary.dll" #>
+<#@ import namespace="global::HWClassLibrary.sqlass" #>
+<#
+	var context = GenerationEnvironment.Context(Host);
+#>
+<#= context.AddTable<Customer>() #>
+<#= context.AddTable<Address>() #>
+<#
+    context.ProcessFiles();         
+#>
+<#+
+	public class Customer
+    {
+        [Key]
+        public int Id;
+        public string Name;
+        public Reference<Address> Address;
+        [Nullable]
+        public Reference<Address> DeliveryAddress;
+    }
+    
+    public class Address
+    {
+        [Key]
+        public int Id;
+        public string Text;
+    }
+#>

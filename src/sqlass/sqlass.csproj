@@ -16,6 +16,23 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Address.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Context.cs" />
+    <Compile Include="Customer.cs">
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KeyAttribute.cs" />
+    <Compile Include="Model.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="NullableAttribute.cs" />
+    <Compile Include="Reference.cs" />
+    <Compile Include="Table.cs" />
+    <Compile Include="TableAttribute.cs" />
     <Compile Include="xx.cs">
       <DependentUpon>Template1.tt</DependentUpon>
     </Compile>
@@ -27,6 +44,10 @@
       <LastGenOutput>Model1.Designer.cs</LastGenOutput>
     </EntityDeploy>
     <None Include="App.Config" />
+    <None Include="Model.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Model.cs</LastGenOutput>
+    </None>
     <None Include="Model\Model1.edmx.sqlce" />
     <None Include="sys.targets" />
     <None Include="Template1.tt">

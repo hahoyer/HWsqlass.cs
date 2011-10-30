@@ -1,5 +1,5 @@
 ﻿// 
-//     sqlass
+//     Project sqlass
 //     Copyright (C) 2011 - 2011 Harald Hoyer
 // 
 //     This program is free software: you can redistribute it and/or modify
@@ -19,32 +19,35 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Metadata.Edm;
 using System.Linq;
 using HWClassLibrary.Debug;
-using HWClassLibrary.EF.Utility;
 using HWClassLibrary.UnitTest;
+using sqlass.Tables;
 
 namespace sqlass
 {
     [TestFixture]
-    class Class1
+    public class Class1
     {
         [Test]
-        void Test()
+        public void Test()
         {
-            var code = new CodeGenerationTools(this);
-            var loader = new MetadataLoader(this);
-            var region = new CodeRegion(this, 1);
-            var ef = new MetadataTools(this);
+            var context = new Context("test");
 
-            var inputFile = @"Model1.edmx";
-            MetadataWorkspace metadataWorkspace = null;
-            bool allMetadataLoaded = loader.TryLoadAllMetadata(inputFile, out metadataWorkspace);
-            var ItemCollection = (EdmItemCollection)metadataWorkspace.GetItemCollection(DataSpace.CSpace);
-            string namespaceName = code.VsNamespaceSuggestion();
+            var address = new Address {Id = 1, Text = "5th Ave, City23"};
+            var customer = new Customer {Id = 1, Name = "Cust co ldt.", Address = new Reference<Address>(address)};
+            context.Address.Add(address);
+            context.Customer.Add(customer);
+            context.SaveChanges();
+            var customerFound = context.Customer.Where(c => c.Id == 1).Single();
+        }
+    }
 
-            var fileManager = EntityFrameworkTemplateFileManager.Create(this);
+    sealed partial class Context : SQLContext
+    {
+        public Context(string dbPath)
+            : base(dbPath)
+        {
         }
     }
 }

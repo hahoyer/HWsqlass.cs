@@ -24,16 +24,19 @@ using System.Linq;
 using System.Reflection;
 using HWClassLibrary.Debug;
 using HWClassLibrary.UnitTest;
+using sqlass;
 
 namespace main
 {
     static class MainContainer
     {
+
         public static void Main()
         {
             if(Debugger.IsAttached)
-                TestRunner.IsModeErrorFocus = true;
+                //TestRunner.IsModeErrorFocus = true;
             Assembly.GetExecutingAssembly().RunTests();
+            var dummy = typeof(Class1);
         }
     }
 }

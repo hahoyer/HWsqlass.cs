@@ -17,23 +17,17 @@
 //     
 //     Comments, bugs and suggestions to hahoyer at yahoo.de
 
-using System.Text;
-using HWClassLibrary.Debug;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-using JetBrains.Annotations;
-using Microsoft.VisualStudio.TextTemplating;
-
-namespace HWClassLibrary.T4
-{
-    public static class Extender
-    {
-        [UsedImplicitly]
-        public static Context Context(this StringBuilder text, ITextTemplatingEngineHost host) { return new Context(text, host); }
-    }
-}
+using HWClassLibrary.Debug;
 
 namespace HWClassLibrary.sqlass
 {
+    public static class Extender
+    {
+        public static string SQLFormat(this int data) { return data.ToString(); }
+        public static string SQLFormat(this string data) { return "'" + data.Replace("'", "''") + "'"; }
+        public static string SQLFormat(this ISQLKeyProvider<int> data) { return data.SQLKey.SQLFormat(); }
+    }
 }

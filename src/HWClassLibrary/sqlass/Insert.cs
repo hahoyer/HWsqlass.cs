@@ -17,23 +17,33 @@
 //     
 //     Comments, bugs and suggestions to hahoyer at yahoo.de
 
-using System.Text;
+using System.Data.Common;
 using HWClassLibrary.Debug;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using JetBrains.Annotations;
-using Microsoft.VisualStudio.TextTemplating;
-
-namespace HWClassLibrary.T4
-{
-    public static class Extender
-    {
-        [UsedImplicitly]
-        public static Context Context(this StringBuilder text, ITextTemplatingEngineHost host) { return new Context(text, host); }
-    }
-}
 
 namespace HWClassLibrary.sqlass
 {
+    sealed class Insert<T> : Dumpable, IPendingChange
+        where T : ISQLSupportProvider
+    {
+        readonly T _data;
+        readonly string _tableName;
+
+        internal Insert(T data, string tableName)
+        {
+            _data = data;
+            _tableName = tableName;
+        }
+
+        void IPendingChange.Apply(DbConnection connection)
+        {
+            using(var command = connection.CreateCommand())
+            {
+                command.CommandText = _data.SQLSupport.Insert;
+                command.ExecuteNonQuery();
+            }
+        }
+    }
 }

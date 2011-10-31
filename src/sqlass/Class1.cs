@@ -19,8 +19,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Diagnostics;
 using System.Linq;
-using HWClassLibrary.DataBase;
+using System.Data.SQLite;
 using HWClassLibrary.Debug;
 using HWClassLibrary.UnitTest;
 using sqlass.Tables;
@@ -33,20 +35,23 @@ namespace sqlass
         [Test]
         public void Test()
         {
-            var context = new Context {DataBase = new DataBase("test")};
+            try
+            {
+                var context = new Context { Connection = (DbConnection)new SQLiteConnection("Data Source=" + "test" + ";Version=3;") };
 
-            var address = new Address {Id = 1, Text = "5th Ave, City23"};
-            var customer = new Customer {Id = 1, Name = "Cust co ldt.", Address = new Reference<Address>(address)};
-            context.Address.Add(address);
-            context.Customer.Add(customer);
-            context.SaveChanges();
-            var customerFound = context.Customer.Where(c => c.Id == 1).Single();
+                var address = new Address {Id = 1, Text = "5th Ave, City23"};
+                var customer = new Customer {Id = 1, Name = "Cust co ldt.", Address = address};
+                context.Container.Address.Add(address);
+                context.Container.Customer.Add(customer);
+                context.SaveChanges();
+                var customerFound = context.Container.Customer.Where(c => c.Id == 1).Single();
+            }
+            catch(Exception)
+            {
+                Debugger.Break();
+                throw;
+            }
         }
     }
 
-    sealed partial class Context
-    {
-        internal DataBase DataBase;
-        public void SaveChanges() { throw new NotImplementedException(); }
-    }
 }

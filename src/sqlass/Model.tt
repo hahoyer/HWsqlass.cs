@@ -1,7 +1,7 @@
 ﻿<#@ template language="C#" debug="true" hostspecific="true"#>
 <#@ output extension=".cs"#>
 <#@ Assembly Name="$(TargetDir)HWClassLibrary.dll" #>
-<#@ import namespace="global::HWClassLibrary.sqlass" #>
+<#@ import namespace="global::HWClassLibrary.sqlass.T4" #>
 <#
 	var context = GenerationEnvironment.Context(Host);
 #>

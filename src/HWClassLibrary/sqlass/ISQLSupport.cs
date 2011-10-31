@@ -1,5 +1,5 @@
 // 
-//     Project sqlass
+//     Project HWClassLibrary
 //     Copyright (C) 2011 - 2011 Harald Hoyer
 // 
 //     This program is free software: you can redistribute it and/or modify
@@ -17,33 +17,15 @@
 //     
 //     Comments, bugs and suggestions to hahoyer at yahoo.de
 
-using System.Reflection;
-using HWClassLibrary.DataBase;
 using HWClassLibrary.Debug;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using HWClassLibrary.Helper;
 
-namespace sqlass
+namespace HWClassLibrary.sqlass
 {
-    public abstract class SQLContext : DataBase
+    public interface ISQLSupport
     {
-        readonly DictionaryEx<Type, object> _tables;
-        protected SQLContext(string dbPath)
-            : base(dbPath) { _tables = new DictionaryEx<Type, object>(ObtainTable); }
-
-        object ObtainTable(Type t)
-        {
-            var tables = GetType()
-                .GetMembers()
-                .Where(m => m.GetAttribute<TableAttribute>(true) != null)
-                .Cast<FieldInfo>()
-                .ToArray();
-            NotImplementedMethod(t);
-            return null;
-        }
-
-        public void SaveChanges() { NotImplementedMethod(); }
+        string Insert { get; }
     }
 }

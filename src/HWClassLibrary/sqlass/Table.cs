@@ -1,5 +1,5 @@
 // 
-//     Project sqlass
+//     Project HWClassLibrary
 //     Copyright (C) 2011 - 2011 Harald Hoyer
 // 
 //     This program is free software: you can redistribute it and/or modify
@@ -23,17 +23,15 @@ using HWClassLibrary.Debug;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using HWClassLibrary.Helper;
 
-namespace sqlass
+namespace HWClassLibrary.sqlass
 {
-    public class Table : Dumpable
-    {}
-
-    public sealed class Table<T> : Table, IQueryable<T>
+    public sealed class Table<T> : Dumpable, IQueryable<T>
+        where T : ISQLSupportProvider
     {
         readonly Context _context;
         readonly string _sqlTableName;
+
         public Table(Context context, string sqlTableName)
         {
             _context = context;
@@ -48,11 +46,6 @@ namespace sqlass
             return default(IEnumerator<T>);
         }
 
-        string ObtainInsertSQL()
-        {
-            NotImplementedMethod();
-            return null;
-        }
         Expression IQueryable.Expression
         {
             get
@@ -78,9 +71,6 @@ namespace sqlass
             }
         }
 
-        public void Add(T newElement)
-        {
-            NotImplementedMethod(newElement);
-        }
+        public void Add(T newElement) { _context.AddPendingChange(new Insert<T>(newElement, _sqlTableName)); }
     }
 }

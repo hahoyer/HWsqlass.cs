@@ -77,7 +77,6 @@
     <Compile Include="sqlass\ISQLSupport.cs" />
     <Compile Include="sqlass\ISQLSupportProvider.cs" />
     <Compile Include="sqlass\T4\Context.cs" />
-    <Compile Include="sqlass\T4\Extender.cs" />
     <Compile Include="sqlass\T4\KeyAttribute.cs" />
     <Compile Include="sqlass\T4\NullableAttribute.cs" />
     <Compile Include="sqlass\T4\SQLContext.cs" />
@@ -97,10 +96,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SQLTable.tt</DependentUpon>
     </Compile>
-    <Compile Include="sqlass\T4\SQLTable.tt">
+    <None Include="sqlass\T4\SQLTable.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>SQLTable.tt.cs</LastGenOutput>
-    </Compile>
+    </None>
     <Compile Include="sqlass\Table.cs" />
     <Compile Include="T4\Extender.cs" />
     <Compile Include="T4\Context.cs" />

@@ -34,7 +34,7 @@ namespace main
         public static void Main()
         {
             if(Debugger.IsAttached)
-                //TestRunner.IsModeErrorFocus = true;
+                TestRunner.IsModeErrorFocus = true;
             Assembly.GetExecutingAssembly().RunTests();
             var dummy = typeof(Class1);
         }

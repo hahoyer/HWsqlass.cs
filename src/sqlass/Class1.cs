@@ -37,7 +37,8 @@ namespace sqlass
         {
             try
             {
-                var context = new Context { Connection = (DbConnection)new SQLiteConnection("Data Source=" + "test" + ";Version=3;") };
+                var context = new Context { Connection = (DbConnection)new SQLiteConnection("Data Source=" + "test.sqlite" + ";Version=3;") };
+                context.UpdateDatabase();
 
                 var address = new Address {Id = 1, Text = "5th Ave, City23"};
                 var customer = new Customer {Id = 1, Name = "Cust co ldt.", Address = address};

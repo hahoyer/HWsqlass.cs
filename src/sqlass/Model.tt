@@ -2,15 +2,9 @@
 <#@ output extension=".cs"#>
 <#@ Assembly Name="$(TargetDir)HWClassLibrary.dll" #>
 <#@ import namespace="global::HWClassLibrary.sqlass.T4" #>
-<#
-	var context = GenerationEnvironment.Context(Host);
-#>
-<#= context.AddTable<Customer>() #>
-<#= context.AddTable<Address>() #>
-<#
-    context.ProcessFiles();         
-#>
+<# Context.Generate(GenerationEnvironment, Host, this); #>
 <#+
+    [TableName("main.Customer")]
 	public class Customer
     {
         [Key]

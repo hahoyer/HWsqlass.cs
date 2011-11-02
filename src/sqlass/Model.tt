@@ -4,7 +4,6 @@
 <#@ import namespace="global::HWClassLibrary.sqlass.T4" #>
 <# Context.Generate(GenerationEnvironment, Host, this); #>
 <#+
-    [TableName("main.Customer")]
 	public class Customer
     {
         [Key]

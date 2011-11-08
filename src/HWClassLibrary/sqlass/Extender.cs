@@ -28,6 +28,6 @@ namespace HWClassLibrary.sqlass
     {
         public static string SQLFormat(this int data) { return data.ToString(); }
         public static string SQLFormat(this string data) { return "'" + data.Replace("'", "''") + "'"; }
-        public static string SQLFormat(this ISQLKeyProvider<int> data) { return data.SQLKey.SQLFormat(); }
+        public static string SQLFormat(this ISQLKeyProvider<int> data) { return data == null ? "null" : data.SQLKey.SQLFormat(); }
     }
 }

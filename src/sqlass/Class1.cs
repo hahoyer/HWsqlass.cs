@@ -19,7 +19,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
+using System.Data.SqlServerCe;
 using System.Diagnostics;
 using System.Linq;
 using HWClassLibrary.Debug;
@@ -31,12 +31,19 @@ namespace sqlass
     [TestFixture]
     public class Class1
     {
+        public static string ConnectionString;
         [Test]
         public void Test()
         {
             try
             {
-                var context = new Context {Connection = new SQLiteConnection("Data Source=" + "test.sqlite" + ";Version=3;")};
+                var context =
+                    new Context
+                    {
+                        //Connection = new SQLiteConnection("Data Source=" + "test.sqlite" + ";Version=3;");
+                        Connection = new SqlCeConnection("Data Source=c:\\MSSQL.sdf"),
+                        IsSqlCeConnectionBug = true
+                    };
                 context.UpdateDatabase();
 
                 var address = new Address {Id = 1, Text = "5th Ave, City23"};

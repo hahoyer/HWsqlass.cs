@@ -2,6 +2,7 @@
 <#@ output extension=".cs"#>
 <#@ Assembly Name="$(TargetDir)HWClassLibrary.dll" #>
 <#@ import namespace="global::HWClassLibrary.sqlass.T4" #>
+<#@ import namespace="global::HWClassLibrary.sqlass.MetaData" #>
 <# Context.Generate(GenerationEnvironment, Host, this); #>
 <#+
 	public class Customer

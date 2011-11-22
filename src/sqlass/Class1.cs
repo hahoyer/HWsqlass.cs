@@ -41,7 +41,7 @@ namespace sqlass
                     new Context
                     {
                         //Connection = new SQLiteConnection("Data Source=" + "test.sqlite" + ";Version=3;");
-                        Connection = new SqlCeConnection("Data Source=c:\\MSSQL.sdf"),
+                        Connection = new SqlCeConnection("Data Source=MSSQL.sdf"),
                         IsSqlCeConnectionBug = true
                     };
                 context.UpdateDatabase();
@@ -50,8 +50,13 @@ namespace sqlass
                 var customer = new Customer {Id = 1, Name = "Cust co ldt.", Address = address};
                 context.Container.Address.Add(address);
                 context.Container.Customer.Add(customer);
-                context.SaveChanges();
-                var customerFound = context.Container.Customer.Where(c => c.Id == 1).Single();
+                //context.SaveChanges();
+                var customers = context
+                    .Container
+                    .Customer
+                    .Where(c => c.Id == 1)
+                    .Where(c => c.Id == 1);
+                var customerFound = customers.Single();
             }
             catch(Exception)
             {

@@ -56,6 +56,7 @@ namespace sqlass
                     .Customer
                     .Where(c => c.Id == 1)
                     .Where(c => c.Id == 1);
+                var customersFound = customers.ToArray();
                 var customerFound = customers.Single();
             }
             catch(Exception)

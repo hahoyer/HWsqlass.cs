@@ -30,6 +30,12 @@ namespace HWClassLibrary.sqlass
     {
         [UsedImplicitly]
         public abstract T VisitCallWhere(Expression arg0, Expression arg1);
+        
+        protected override T Constant(object value)
+        {
+            NotImplementedMethod(value);
+            return default(T);
+        }
     }
 
     interface IExpressionVisitorConstant<out T>

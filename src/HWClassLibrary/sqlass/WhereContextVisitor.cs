@@ -1,6 +1,6 @@
 // 
 //     Project HWClassLibrary
-//     Copyright (C) 2011 - 2012 Harald Hoyer
+//     Copyright (C) 2011 - 2011 Harald Hoyer
 // 
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU General Public License as published by
@@ -17,29 +17,20 @@
 //     
 //     Comments, bugs and suggestions to hahoyer at yahoo.de
 
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
+using System.Collections.Generic;
+using System;
+using System.Linq.Expressions;
 using HWClassLibrary.Debug;
 
-namespace HWClassLibrary.TreeStructure
+namespace HWClassLibrary.sqlass
 {
-    public sealed partial class TreeForm : Form
+    sealed class WhereContextVisitor : LambdaExpressionVisitor<Tuple<string, string>>
     {
-        object _target;
-
-        public TreeForm() { InitializeComponent(); }
-
-        public object Target
+        protected override Tuple<string, string> VisitLambda(ParameterExpression[] parameters, Expression body)
         {
-            get { return _target; }
-            set
-            {
-                _target = value;
-                treeView1.Connect(_target);
-                Text = value.GetAdditionalInfo();
-            }
+            Tracer.Assert(parameters.Length == 1);
+            return new Tuple<string, string>(parameters[0].Name, new StringConditionVisitor().Visit(body));
         }
     }
 }

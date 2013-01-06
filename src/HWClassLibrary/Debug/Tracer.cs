@@ -1,4 +1,5 @@
-// 
+#region Copyright (C) 2012
+
 //     Project HWClassLibrary
 //     Copyright (C) 2011 - 2012 Harald Hoyer
 // 
@@ -16,6 +17,8 @@
 //     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //     
 //     Comments, bugs and suggestions to hahoyer at yahoo.de
+
+#endregion
 
 using System;
 using System.CodeDom;
@@ -47,13 +50,13 @@ namespace HWClassLibrary.Debug
         ///     creates the file(line,col) string to be used with "Edit.GotoNextLocation" command of IDE
         /// </summary>
         /// <param name="sf"> the stack frame where the location is stored </param>
-        /// <param name="flagText"> asis </param>
-        /// <returns> the "FileName(LineNr,ColNr): flagText: " string </returns>
-        public static string FilePosn(this StackFrame sf, string flagText)
+        /// <param name="tag"> </param>
+        /// <returns> the "FileName(LineNr,ColNr): tag: " string </returns>
+        public static string FilePosn(this StackFrame sf, FilePositionTag tag)
         {
             if(sf.GetFileLineNumber() == 0)
-                return "<nofile> " + flagText;
-            return FilePosn(sf.GetFileName(), sf.GetFileLineNumber() - 1, sf.GetFileColumnNumber(), flagText);
+                return "<nofile> " + tag;
+            return FilePosn(sf.GetFileName(), sf.GetFileLineNumber() - 1, sf.GetFileColumnNumber(), tag);
         }
 
         /// <summary>
@@ -62,9 +65,33 @@ namespace HWClassLibrary.Debug
         /// <param name="fileName"> asis </param>
         /// <param name="lineNr"> asis </param>
         /// <param name="colNr"> asis </param>
-        /// <param name="flagText"> asis </param>
-        /// <returns> the "fileName(lineNr,colNr): flagText: " string </returns>
-        public static string FilePosn(string fileName, int lineNr, int colNr, string flagText) { return fileName + "(" + (lineNr + 1) + "," + colNr + "): " + flagText + ": "; }
+        /// <param name="tag"> asis </param>
+        /// <returns> the "fileName(lineNr,colNr): tag: " string </returns>
+        public static string FilePosn(string fileName, int lineNr, int colNr, FilePositionTag tag)
+        {
+            var tagText = tag.ToString();
+            return FilePosn(fileName, lineNr, colNr, tagText);
+        }
+
+        /// <summary>
+        ///     creates the file(line,col) string to be used with "Edit.GotoNextLocation" command of IDE
+        /// </summary>
+        /// <param name="fileName"> asis </param>
+        /// <param name="lineNr"> asis </param>
+        /// <param name="colNr"> asis </param>
+        /// <param name="tagText"> asis </param>
+        /// <returns> the "fileName(lineNr,colNr): tag: " string </returns>
+        public static string FilePosn(string fileName, int lineNr, int colNr, string tagText)
+        {
+            return fileName
+                   + "("
+                   + (lineNr + 1)
+                   + ","
+                   + colNr
+                   + "): "
+                   + tagText
+                   + ": ";
+        }
 
         /// <summary>
         ///     creates a string to inspect a method
@@ -96,12 +123,13 @@ namespace HWClassLibrary.Debug
         ///     creates a string to inspect the method call contained in current call stack
         /// </summary>
         /// <param name="depth"> the index of stack frame </param>
+        /// <param name="tag"> </param>
         /// <param name="showParam"> controls if parameter list is appended </param>
         /// <returns> string to inspect the method call </returns>
-        public static string MethodHeader(int depth, bool showParam)
+        public static string MethodHeader(int depth, FilePositionTag tag = FilePositionTag.Debug, bool showParam = false)
         {
             var sf = new StackTrace(true).GetFrame(depth + 1);
-            return FilePosn(sf, DumpMethod(sf.GetMethod(), showParam));
+            return FilePosn(sf, tag) + DumpMethod(sf.GetMethod(), showParam);
         }
 
         public static string CallingMethodName(int depth)
@@ -110,26 +138,18 @@ namespace HWClassLibrary.Debug
             return DumpMethod(sf.GetMethod(), false);
         }
 
-        /// <summary>
-        ///     creates a string to inspect the method call contained in current call stack (without parameter list)
-        /// </summary>
-        /// <param name="depth"> the index of stack frame </param>
-        /// <returns> string to inspect the method call </returns>
         [UsedImplicitly]
-        public static string MethodHeader(int depth) { return MethodHeader(depth + 1, false); }
+        public static string StackTrace(FilePositionTag tag) { return StackTrace(1, tag); }
 
         [UsedImplicitly]
-        public static string StackTrace() { return StackTrace(1); }
-
-        [UsedImplicitly]
-        public static string StackTrace(int depth)
+        public static string StackTrace(int depth, FilePositionTag tag)
         {
             var stackTrace = new StackTrace(true);
             var result = "";
             for(var i = depth + 1; i < stackTrace.FrameCount; i++)
             {
                 var stackFrame = stackTrace.GetFrame(i);
-                var filePosn = FilePosn(stackFrame, DumpMethod(stackFrame.GetMethod(), false));
+                var filePosn = FilePosn(stackFrame, tag) + DumpMethod(stackFrame.GetMethod(), false);
                 result += "\n" + filePosn;
             }
             return result;
@@ -208,20 +228,23 @@ namespace HWClassLibrary.Debug
         /// </summary>
         /// <param name="s"> the text </param>
         /// <param name="showParam"> controls if parameter list is appended </param>
-        public static void FlaggedLine(string s, bool showParam) { Line(MethodHeader(1, showParam) + s); }
+        /// <param name="flagText"> </param>
+        public static void FlaggedLine(string s, bool showParam, FilePositionTag flagText = FilePositionTag.Debug) { Line(MethodHeader(1, flagText, showParam) + s); }
 
         /// <summary>
         ///     write a line to debug output, flagged with FileName(LineNr,ColNr): Method (without parameter list)
         /// </summary>
         /// <param name="s"> the text </param>
-        public static void FlaggedLine(string s) { Line(MethodHeader(1, false) + s); }
+        /// <param name="flagText"> </param>
+        public static void FlaggedLine(string s, FilePositionTag flagText = FilePositionTag.Debug) { Line(MethodHeader(1, flagText) + s); }
 
         /// <summary>
         ///     write a line to debug output, flagged with FileName(LineNr,ColNr): Method (without parameter list)
         /// </summary>
         /// <param name="stackFrameDepth"> The stack frame depth. </param>
         /// <param name="s"> the text </param>
-        public static void FlaggedLine(int stackFrameDepth, string s) { Line(MethodHeader(stackFrameDepth + 1, false) + s); }
+        /// <param name="flagText"> </param>
+        public static void FlaggedLine(int stackFrameDepth, string s, FilePositionTag flagText = FilePositionTag.Debug) { Line(MethodHeader(stackFrameDepth + 1, flagText) + s); }
 
         /// <summary>
         ///     generic dump function by use of reflection
@@ -530,7 +553,8 @@ namespace HWClassLibrary.Debug
         internal static string DumpMethodWithData(string text, int depth, object thisObject, object[] parameter)
         {
             var sf = new StackTrace(true).GetFrame(depth + 1);
-            return FilePosn(sf, DumpMethod(sf.GetMethod(), true))
+            return FilePosn(sf, FilePositionTag.Debug)
+                   + (DumpMethod(sf.GetMethod(), true))
                    + text
                    + Indent(DumpMethodWithData(sf.GetMethod(), thisObject, parameter));
         }
@@ -545,7 +569,8 @@ namespace HWClassLibrary.Debug
         public static string DumpData(string text, int depth, object[] data)
         {
             var sf = new StackTrace(true).GetFrame(depth + 1);
-            return FilePosn(sf, DumpMethod(sf.GetMethod(), true))
+            return FilePosn(sf, FilePositionTag.Debug)
+                   + DumpMethod(sf.GetMethod(), true)
                    + text
                    + Indent(DumpMethodWithData(null, data));
         }
@@ -596,7 +621,7 @@ namespace HWClassLibrary.Debug
         [DebuggerHidden]
         public static void ConditionalBreak(int stackFrameDepth, string cond, Func<string> data)
         {
-            var result = "Conditional break: " + cond + "\nData: " + data();
+            var result = "Conditional break: " + cond + "\nData: " + (data == null ? "" : data());
             FlaggedLine(stackFrameDepth + 1, result);
             TraceBreak();
         }
@@ -615,7 +640,7 @@ namespace HWClassLibrary.Debug
         }
 
         [DebuggerHidden]
-        public static void ConditionalBreak(bool cond, Func<string> data)
+        public static void ConditionalBreak(bool cond, Func<string> data = null)
         {
             if(cond)
                 ConditionalBreak(1, true, data);
@@ -727,7 +752,7 @@ namespace HWClassLibrary.Debug
         /// Created 09.09.07 12:03 by hh on HAHOYER-DELL
         public static void ConsoleOutput(string text)
         {
-            FlaggedLine(text);
+            FlaggedLine(text, FilePositionTag.Output);
             Console.WriteLine(text);
         }
 
@@ -766,6 +791,15 @@ namespace HWClassLibrary.Debug
 
         [DebuggerHidden]
         public static void LaunchDebugger() { Debugger.Launch(); }
+    }
+
+    public enum FilePositionTag
+    {
+        Debug,
+        Output,
+        Query,
+        Test,
+        Profiler
     }
 
     interface IDumpExceptAttribute

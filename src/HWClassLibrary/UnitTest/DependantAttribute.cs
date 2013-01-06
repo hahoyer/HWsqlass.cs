@@ -1,6 +1,7 @@
-// 
+#region Copyright (C) 2012
+
 //     Project HWClassLibrary
-//     Copyright (C) 2011 - 2011 Harald Hoyer
+//     Copyright (C) 2011 - 2012 Harald Hoyer
 // 
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU General Public License as published by
@@ -17,6 +18,8 @@
 //     
 //     Comments, bugs and suggestions to hahoyer at yahoo.de
 
+#endregion
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,11 +29,10 @@ namespace HWClassLibrary.UnitTest
 {
     public abstract class DependantAttribute : Attribute
     {
-        internal TestType AsTestType(IEnumerable<TestType> testTypes)
-        {
-            var found = testTypes.Where(x => x.Type == GetType()).ToArray();
-            Tracer.Assert(found.Length == 1);
-            return found[0];
-        }
+        internal TestType AsTestType(IEnumerable<TestType> testTypes) { return testTypes.Single(x => x.Type == GetType()); }
     }
+
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class LowPriority : Attribute
+    {}
 }

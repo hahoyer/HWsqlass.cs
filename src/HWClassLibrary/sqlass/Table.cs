@@ -77,11 +77,14 @@ namespace HWClassLibrary.sqlass
 
         string IExpressionVisitorConstant<string>.Qualifier { get { return _context.MetaData.SelectString; } }
 
-        public T Find(TKey? key)
+        public T this[TKey? key]
         {
-            if(key == null)
-                return default(T);
-            return _cache.Find(key.Value);
+            get
+            {
+                if(key == null)
+                    return default(T);
+                return _cache[key.Value];
+            }
         }
     }
 

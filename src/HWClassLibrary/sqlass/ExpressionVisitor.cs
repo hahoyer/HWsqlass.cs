@@ -53,16 +53,14 @@ namespace HWClassLibrary.sqlass
             var methodInfo = GetType().GetMethod("VisitCall" + method.Name);
             if(methodInfo == null)
             {
-                Tracer.FlaggedLine(
-                    "\n[UsedImplicitly]\ninternal T VisitCall"
-                    + method.Name
-                    + "("
-                    + arguments.Length.Array(i => "Expression arg" + i).Format(", ")
-                    + ")\n{\nNotImplementedFunction("
-                    + arguments.Length.Array(i => "arg" + i).Format(", ")
-                    + ");\nreturn default(T);\n}\n\n"
-                    + arguments.Length.Array(i => "arg" + i + " = " + Tracer.Dump(arguments[i])).Format("\n")
-                    );
+                Tracer.FlaggedLine("\n[UsedImplicitly]\ninternal T VisitCall"
+                                   + method.Name
+                                   + "("
+                                   + arguments.Length.Array(i => "Expression arg" + i).Format(", ")
+                                   + ")\n{\nNotImplementedFunction("
+                                   + arguments.Length.Array(i => "arg" + i).Format(", ")
+                                   + ");\nreturn default(T);\n}\n\n"
+                                   + arguments.Length.Array(i => "arg" + i + " = " + Tracer.Dump(arguments[i])).Format("\n"));
                 Tracer.TraceBreak();
                 throw new MissingMethodException(method.Name);
             }

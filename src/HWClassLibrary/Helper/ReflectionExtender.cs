@@ -1,4 +1,5 @@
-﻿// 
+﻿#region Copyright (C) 2012
+
 //     Project HWClassLibrary
 //     Copyright (C) 2011 - 2012 Harald Hoyer
 // 
@@ -17,8 +18,11 @@
 //     
 //     Comments, bugs and suggestions to hahoyer at yahoo.de
 
+#endregion
+
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using HWClassLibrary.Debug;
@@ -56,6 +60,7 @@ namespace HWClassLibrary.Helper
                 case 1:
                     return list[0];
             }
+
             throw new MultipleAttributesException(typeof(TAttribute), @this, inherit, list.ToArray());
         }
 
@@ -78,6 +83,7 @@ namespace HWClassLibrary.Helper
             }
             throw new MultipleAttributesException(typeof(TAttribute), @this, inherit, list.ToArray());
         }
+
 
         public sealed class MultipleAttributesException : Exception
         {
@@ -121,11 +127,18 @@ namespace HWClassLibrary.Helper
             return result;
         }
 
-        public static IEnumerable<Type> GetReferencedTypes(this Assembly rootAssembly)
+        public static IEnumerable<Type> GetReferencedTypes(this Assembly rootAssembly) { return rootAssembly.GetAssemblies().SelectMany(GetTypes); }
+
+        static Type[] GetTypes(Assembly assembly)
         {
-            return rootAssembly
-                .GetAssemblies()
-                .SelectMany(assembly => assembly.GetTypes());
+            try
+            {
+                return assembly.GetTypes();
+            }
+            catch(ReflectionTypeLoadException exception)
+            {
+                throw new Exception(assembly.FullName + "\n" + exception.LoaderExceptions.Format("\n"));
+            }
         }
 
 
@@ -148,7 +161,17 @@ namespace HWClassLibrary.Helper
             return new Guid(x.ToString());
         }
 
-        public static T Convert<T>(this object x) { return (x is DBNull || x == null) ? default(T) : (T) x; }
+        public static T Convert<T>(this object x) { return x is DBNull || x == null ? default(T) : (T) x; }
+
+        static readonly bool[] _boolean = new[] { false, true };
+
+        public static bool ToBoolean(this object x, string[] values)
+        {
+            for(int i = 0; i < values.Length; i++)
+                if(values[i].Equals((string) x, StringComparison.OrdinalIgnoreCase))
+                    return _boolean[i];
+            throw new InvalidDataException();
+        }
 
         public static DateTime ToDateTime(this object x) { return Convert<DateTime>(x); }
         public static Decimal ToDecimal(this object x) { return Convert<decimal>(x); }
@@ -177,5 +200,24 @@ namespace HWClassLibrary.Helper
             return type != null
                    && type.GetInterfaces().Contains(interfaceType);
         }
+
+        static IEnumerable<Type> ThisAndBias(this Type type)
+        {
+            var t = type;
+            while(t != null)
+            {
+                yield return t;
+                t = t.BaseType;
+            }
+        }
+
+        internal static IEnumerable<FieldInfo> GetFieldInfos(this Type type)
+        {
+            return type
+                .ThisAndBias()
+                .SelectMany(t => t.GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly));
+        }
+
+        public static T Parse<T>(this string title) { return (T) Enum.Parse(typeof(T), title); }
     }
 }

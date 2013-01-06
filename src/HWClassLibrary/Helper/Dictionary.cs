@@ -1,6 +1,7 @@
-// 
+#region Copyright (C) 2012
+
 //     Project HWClassLibrary
-//     Copyright (C) 2011 - 2011 Harald Hoyer
+//     Copyright (C) 2011 - 2012 Harald Hoyer
 // 
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU General Public License as published by
@@ -16,6 +17,8 @@
 //     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //     
 //     Comments, bugs and suggestions to hahoyer at yahoo.de
+
+#endregion
 
 using System;
 using System.Collections.Generic;
@@ -62,24 +65,12 @@ namespace HWClassLibrary.Helper
         [DisableDump]
         public string NodeDump { get { return GetType().PrettyName(); } }
 
-        /// <summary>
-        ///     Gets the or add.
-        /// </summary>
-        /// <param name="key"> The key. </param>
-        /// <returns> </returns>
-        /// created 13.01.2007 14:32
-        public TValue Find(TKey key)
+        public void Ensure(TKey key)
         {
-            TValue result;
-            if(TryGetValue(key, out result))
-            {
-                Tracer.Assert(!Equals(result, DefaultValue));
-                return result;
-            }
+            if(ContainsKey(key))
+                return;
             base[key] = DefaultValue;
-            result = _createValue(key);
-            base[key] = result;
-            return result;
+            base[key] = _createValue(key);
         }
 
         public readonly TValue DefaultValue;
@@ -87,16 +78,14 @@ namespace HWClassLibrary.Helper
         /// <summary>
         ///     Gets the value with the specified key
         /// </summary>
-        /// <value></value>
+        /// <value> </value>
         /// created 13.01.2007 15:43
         public new TValue this[TKey key]
         {
             get
             {
-                TValue result;
-                if(TryGetValue(key, out result))
-                    return result;
-                return default(TValue);
+                Ensure(key);
+                return base[key];
             }
             set { Add(key, value); }
         }

@@ -50,6 +50,7 @@
     <Compile Include="Helper\DateTimeExtender.cs" />
     <Compile Include="Helper\Dictionary.cs" />
     <Compile Include="Helper\DTEExtender.cs" />
+    <Compile Include="Helper\EnumEx.cs" />
     <Compile Include="Helper\ListExtender.cs" />
     <Compile Include="Helper\LongExtender.cs" />
     <Compile Include="Helper\ReflectionExtender.cs" />
@@ -106,6 +107,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SQLContext.tt</DependentUpon>
     </Compile>
+    <None Include="LICENSE" />
+    <None Include="README" />
     <None Include="sqlass\MetaData\Ado.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Ado.cs</LastGenOutput>
@@ -150,6 +153,7 @@
     <Compile Include="UnitTest\TestMethod.cs" />
     <Compile Include="UnitTest\TestRunner.cs" />
     <Compile Include="UnitTest\TestType.cs" />
+    <None Include="sys.targets" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

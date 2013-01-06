@@ -102,7 +102,7 @@ namespace HWClassLibrary.Debug
         /// <param name="breakExecution"> </param>
         /// <returns> </returns>
         [DebuggerHidden]
-        protected static T ReturnMethodDump<T>(T rv, bool breakExecution = false)
+        protected static T ReturnMethodDump<T>(T rv, bool breakExecution = true)
         {
             if(IsMethodDumpTraceActive)
             {
@@ -118,7 +118,7 @@ namespace HWClassLibrary.Debug
         ///     Method dump,
         /// </summary>
         [DebuggerHidden]
-        protected static void ReturnVoidMethodDump(bool breakExecution = false)
+        protected static void ReturnVoidMethodDump(bool breakExecution = true)
         {
             if(IsMethodDumpTraceActive)
             {
@@ -231,6 +231,7 @@ namespace HWClassLibrary.Debug
         public bool IsInDump { get { return _isInDump; } }
 
         bool _isInDump;
+        public static bool? IsMethodDumpTraceInhibited;
 
         /// <summary>
         ///     Default dump of data
@@ -279,6 +280,8 @@ namespace HWClassLibrary.Debug
         {
             get
             {
+                if (IsMethodDumpTraceInhibited != null)
+                    return !IsMethodDumpTraceInhibited.Value;
                 if(!Debugger.IsAttached)
                     return false;
                 //CheckDumpLevel(2);

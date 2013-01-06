@@ -19,6 +19,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Data.SqlClient;
 using System.Data.SqlServerCe;
 using System.Diagnostics;
 using System.Linq;
@@ -37,11 +39,17 @@ namespace sqlass
         {
             try
             {
+                var connectionString = new DbConnectionStringBuilder();
+                connectionString["Data Source"] = "ANNE\\OJB_NET";
+                connectionString["Initial Catalog"] = "unittest";
+                connectionString["Integrated Security"] = "SSPI";
+                connectionString["MultipleActiveResultSets"] = true;
+                var connection = new SqlConnection(connectionString.ConnectionString);
+
                 var context =
                     new Context
                     {
-                        //Connection = new SQLiteConnection("Data Source=" + "test.sqlite" + ";Version=3;");
-                        Connection = new SqlCeConnection("Data Source=MSSQL.sdf"),
+                        Connection = connection,
                         IsSqlCeConnectionBug = true
                     };
                 context.UpdateDatabase();

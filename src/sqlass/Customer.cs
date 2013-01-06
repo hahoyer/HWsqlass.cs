@@ -96,8 +96,8 @@ namespace sqlass.SQLSupport
             { 
                 Id = (record["Id"].Convert< int >()), 
                 Name = (record["Name"].Convert< string >()), 
-                Address = ((Context)context).Container.Address.Find(record["Address"].Convert< int >()), 
-                DeliveryAddress = ((Context)context).Container.Address.Find(record["DeliveryAddress"].Convert< int? >()),   
+                Address = ((Context)context).Container.Address[record["Address"].Convert< int >()], 
+                DeliveryAddress = ((Context)context).Container.Address[record["DeliveryAddress"].Convert< int? >()],   
             }
         );
     }

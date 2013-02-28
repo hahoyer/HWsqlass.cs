@@ -36,6 +36,9 @@ namespace Clock2
             this._time = new System.Windows.Forms.Label();
             this._timer = new System.Windows.Forms.Timer(this.components);
             this._menuAnchor = new System.Windows.Forms.Panel();
+            this._mainMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this._close = new System.Windows.Forms.ToolStripMenuItem();
+            this._mainMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // _date
@@ -71,6 +74,21 @@ namespace Clock2
             this._menuAnchor.Name = "_menuAnchor";
             this._menuAnchor.Size = new System.Drawing.Size(8, 8);
             this._menuAnchor.TabIndex = 3;
+            this._menuAnchor.MouseClick += new System.Windows.Forms.MouseEventHandler(this.MenuAnchorMouseClick);
+            // 
+            // _mainMenu
+            // 
+            this._mainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._close});
+            this._mainMenu.Name = "_mainMenu";
+            this._mainMenu.Size = new System.Drawing.Size(153, 48);
+            // 
+            // _close
+            // 
+            this._close.Name = "_close";
+            this._close.Size = new System.Drawing.Size(152, 22);
+            this._close.Text = "Close";
+            this._close.Click += new System.EventHandler(this.CloseClick);
             // 
             // Clock
             // 
@@ -93,6 +111,7 @@ namespace Clock2
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.HandleMouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.HandleMouseMove);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.HandleMouseUp);
+            this._mainMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -104,6 +123,8 @@ namespace Clock2
         private System.Windows.Forms.Label _time;
         private System.Windows.Forms.Timer _timer;
         private Panel _menuAnchor;
+        private ContextMenuStrip _mainMenu;
+        private ToolStripMenuItem _close;
     }
 }
 

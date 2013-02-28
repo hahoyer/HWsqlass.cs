@@ -61,8 +61,12 @@ namespace Clock2
         void HandleMouseMove(object sender, MouseEventArgs e)
         {
             if(_clickedPoint != null)
-                Location = PointToScreen(new Point(e.X, e.Y)) - _clickedPoint.Value;
+                Location = PointToScreen(e.Location) - _clickedPoint.Value;
         }
         protected override string ConfigFileName { get { return "Clock"; } }
+
+        void MenuAnchorMouseClick(object sender, MouseEventArgs e) { _mainMenu.Show(PointToScreen(e.Location + new Size(_menuAnchor.Location))); }
+
+        void CloseClick(object sender, EventArgs e) { Close(); }
     }
 }

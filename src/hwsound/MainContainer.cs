@@ -23,12 +23,44 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel.Description;
+using DotNetOpenAuth.Messaging;
+using DotNetOpenAuth.OAuth2;
 using HWClassLibrary.Debug;
+using Google.Apis.Authentication;
+using Google.Apis.Authentication.OAuth2;
+using Google.Apis.Calendar.v3;
+using Google.Apis.Calendar.v3.Data;
 
 namespace main
 {
     sealed class MainContainer
     {
-        public static void Main() { SqlBatch.Run(); }
+        public const string ClientID = "612134678421.apps.googleusercontent.com";
+        public const string ClientSecret = "2uxI5ZQWVESPzjbTF9reewGH";
+        public static readonly string ApiKey = "AIzaSyB4obKa_zD8zcDJDq-iJEGH6c4Syb8w-jQ";
+
+        public static void Main()
+        {
+
+            CalendarTool.Run();
+        }
+
+        OAuth2Authenticator<WebServerClient> CreateAuthenticator()
+        {
+            // Register the authenticator.
+            var provider = new WebServerClient(GoogleAuthenticationServer.Description);
+            provider.ClientIdentifier = ClientID;
+            provider.ClientSecret = ClientSecret;
+            var authenticator =
+                new OAuth2Authenticator<WebServerClient>(provider, GetAuthorization) {NoCaching = true};
+            return authenticator;
+        }
+        IAuthorizationState GetAuthorization(WebServerClient client)
+        {
+            return null;
+        }
+
     }
+
 }

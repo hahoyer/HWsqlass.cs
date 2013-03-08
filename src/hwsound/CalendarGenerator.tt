@@ -1,0 +1,30 @@
+﻿<#@ template language="C#"  #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="HWClassLibrary.Helper" #>
+
+BEGIN:VCALENDAR
+    VERSION:2.0
+    PRODID:hahoyer.CalendarGenerator
+    <#  foreach(var @event in _data.Events) {#>
+        BEGIN:VEVENT
+	        DTSTART:<#= @event.StartTime.Format() #>
+	        DTEND:<#= @event.EndTime.Format() #>
+	        DTSTAMP:<#= @event.TimeCreated.Format() #>
+	        UID:<#= @event.UID #>
+	        CREATED:<#= @event.TimeCreated.Format() #>
+	        DESCRIPTION:<#= @event.Description #>
+	        LAST-MODIFIED:<#= @event.TimeCreated.Format() #>
+	        LOCATION:<#= @event.Location #>
+	        STATUS:CONFIRMED
+	        SUMMARY:<#= @event.Title #>
+        END:VEVENT
+    <# } #>
+END:VCALENDAR
+
+<#
+// ReSharper disable FieldCanBeMadeReadOnly.Local
+#>
+                                                            

@@ -5,3 +5,5 @@ _ReSharper.*
 *.suo
 *.user
 obj/
+
+/src/Clock2/bin/Debug/*

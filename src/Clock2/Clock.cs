@@ -48,8 +48,11 @@ namespace Clock2
         void TimerTick(object sender, EventArgs e)
         {
             var dateTime = DateTime.Now;
-            _date.Text = dateTime.ToString("ddd dd.MM");
-            _time.Text = dateTime.ToString("HH:mm:ss");
+            var date = dateTime.ToString("ddd dd.MM");
+            _date.Text = date;
+            var time = dateTime.ToString("HH:mm:ss");
+            _time.Text = time;
+            Text = date + " " + time;
             TopMost = true;
         }
 

@@ -49,7 +49,7 @@ namespace main
             _readerCache = new SimpleCache<DbDataReader>(() => ObtainDataReader(connection, SqlText));
             _sqlTextCache = new SimpleCache<string>(GetSqlText);
         }
-        string GetSqlText() { return Profiler.Measure(()=>_sqls.Select(t => t.Text).Format("\n")); }
+        string GetSqlText() { return Profiler.Measure(()=>_sqls.Select(t => t.Text).Stringify("\n")); }
         string SqlText { get { return _sqlTextCache.Value; } }
 
         DbDataReader ObtainDataReader(SqlConnection connection, string text)

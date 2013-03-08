@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainContainer.cs" />
+    <Compile Include="TestRun.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

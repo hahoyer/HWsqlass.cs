@@ -1,7 +1,7 @@
 ﻿#region Copyright (C) 2013
 
-//     Project main
-//     Copyright (C) 2011 - 2013 Harald Hoyer
+//     Project hwsound
+//     Copyright (C) 2013 - 2013 Harald Hoyer
 // 
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU General Public License as published by
@@ -20,26 +20,34 @@
 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
+using System.Collections.Generic;
+using System;
 using HWClassLibrary.Debug;
-using HWClassLibrary.UnitTest;
-using sqlass;
+using HWClassLibrary.Helper;
 
 namespace main
 {
-    static class MainContainer
+    public sealed class Calendar
     {
-        public static void Main()
-        {
-            if(Debugger.IsAttached)
-                TestRunner.IsModeErrorFocus = true;
-            Assembly.GetExecutingAssembly().RunTests();
-            var dummy = typeof(Class1);
-        }
+        public Event[] Events;
     }
 
+    public sealed class Event
+    {
+        static long _nextUid;
+        static readonly string _uidBase = DateTime.Now.Ticks.ToString() ;
+        string _uid;
+
+        static string GetUID() { return _nextUid++ + _uidBase; }
+
+        public DateTime StartTime;
+        public DateTime EndTime;
+        public DateTime TimeCreated;
+        public string Location = string.Empty;
+        public string Title = string.Empty;
+        public string Description = string.Empty;
+        public string UIDHead { get { return _uid??(_uid=GetUID()); } set { _uid = value; } }
+        public string UID { get { return UIDHead + "@hahoyer.de"; } }
+    }
 }

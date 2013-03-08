@@ -52,7 +52,7 @@ namespace main
                     trunc
                     + 1.While(i => i <= 4)
                        .Select(i => insert.ReplaceArgs(i, "text" + i))
-                       .Format("\n")
+                       .Stringify("\n")
                 );
         }
 

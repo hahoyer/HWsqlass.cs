@@ -52,28 +52,28 @@ namespace main
             ICE 516 1 Sitzplatz, Wg. 39, Pl. 106, 1 Fenster,
             Panorama / Lounge, Nichtraucher, Ruhebereich */
 
-            var travel = new Travel("Leipzig März 2013 Hin")
+            var travel = new Travel("Leipzig Juni 2013 Hin")
             {
                 Steps = new[]
                 {
-                    Start(1755, 6, "Koln", product: "ICE613 P39/106"),
-                    End(1850, 5),
-                    Start(1902, 4, "FFM F", product: "ICE1657 P38/12"),
-                    End(2255,10,"Leipzig"),
+                    Start(1155, 6, "Koln", product: "ICE517 P29/31"),
+                    End(1250, 5),
+                    Start(1302, 4, "FFM F", product: "ICE1651 P28/36"),
+                    End(1645,10,"Leipzig"),
                 },
-                Date = new DateTime(2013, 3, 8)
+                Date = new DateTime(2013, 6, 4)
             };
 
-            var travelBack = new Travel("Leipzig März 2013 Zurück")
+            var travelBack = new Travel("Leipzig Juni 2013 Zurück")
             {
                 Steps = new[]
                 {
-                    Start(1311, 10, "Leipzig", product: "ICE1558 P28/16"),
-                    End(1655,7),
-                    Start(1709,6, "FFM F", product: "ICE516 P39/106"),
-                    End(1805, 4, "Köln"),
+                    Start(1511, 10, "Leipzig", product: "ICE1556 P38/72"),
+                    End(1855,7),
+                    Start(1909,6, "FFM F", product: "ICE514 P39/31"),
+                    End(2005, 5, "Köln"),
                 },
-                Date = new DateTime(2013, 3, 12)
+                Date = new DateTime(2013, 6, 6)
             };
 
             travel.ReplendishAndCheck();

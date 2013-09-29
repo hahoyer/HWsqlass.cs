@@ -26,7 +26,6 @@ using System.Linq;
 using System.ServiceModel.Description;
 using DotNetOpenAuth.Messaging;
 using DotNetOpenAuth.OAuth2;
-using HWClassLibrary.Debug;
 using Google.Apis.Authentication;
 using Google.Apis.Authentication.OAuth2;
 using Google.Apis.Calendar.v3;
@@ -42,8 +41,6 @@ namespace main
 
         public static void Main()
         {
-
-            CalendarTool.Run();
         }
 
         OAuth2Authenticator<WebServerClient> CreateAuthenticator()

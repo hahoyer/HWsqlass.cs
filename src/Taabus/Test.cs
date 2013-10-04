@@ -36,7 +36,7 @@ namespace Taabus
         {
             var server = new Server("ANNE\\OJB_NET");
             var dataBases = server.DataBases;
-            var containers = dataBases.SelectMany(d => d.Containers).ToArray();
+            Tracer.AssertionFailed("");
         }
 
         [Test]

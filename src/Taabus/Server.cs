@@ -28,20 +28,20 @@ using hw.Helper;
 
 namespace Taabus
 {
-    public sealed class Server : NamedObject
+    sealed class Server : NamedObject
     {
         const string SelectDatabases = "select name from master.sys.databases";
 
         readonly ValueCache<DataBase[]> _dataBasesCache;
 
-        public Server(string name)
+        internal Server(string name)
             : base(name) { _dataBasesCache = new ValueCache<DataBase[]>(GetDataBases); }
 
-        public DataBase[] DataBases { get { return _dataBasesCache.Value; } }
+        internal DataBase[] DataBases { get { return _dataBasesCache.Value; } }
 
         DataBase[] GetDataBases() { return Select(SelectDatabases, record => DataBase.Create(record, this)); }
 
-        public T[] Select<T>(string statement, Func<DbDataRecord, T> func) { return ToDataReader(statement).SelectFromReader(func); }
-        public DbDataReader ToDataReader(string statement) { return Name.ToConnection().ToDataReader(statement); }
+        internal T[] Select<T>(string statement, Func<DbDataRecord, T> func) { return ToDataReader(statement).SelectFromReader(func); }
+        internal DbDataReader ToDataReader(string statement) { return Name.ToConnection().ToDataReader(statement); }
     }
 }

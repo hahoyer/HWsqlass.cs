@@ -25,7 +25,7 @@ namespace Taabus
             public CacheClass(DataBase dataBase)
             {
                 <#    foreach(var name in _objectNames){ #>
-                 <#=name #> = new ValueCache<<#=name #>Class[]>(()=> dataBase.GetMetaData<<#=name #>Class>(r=>new <#=name #>Class(r)));
+                 <#=name #> = new ValueCache<<#=name #>Class[]>(()=> dataBase.GetMetaData<<#=name #>Class>(<#=name.Quote()#>, r=>new <#=name #>Class(r)));
                 <#    } #>
             }
 

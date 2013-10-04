@@ -30,25 +30,21 @@ namespace Taabus
 {
     public sealed class DataBase : NamedObject
     {
-        const string selectMetaDataStatement = "select * from [{0}].[INFORMATION_SCHEMA].[{1}]";
+        const string MetaDataStatement = "select * from [{0}].[INFORMATION_SCHEMA].[{1}]";
 
-        const string SelectChildren = "select name = TABLE_NAME from [{0}].[INFORMATION_SCHEMA].[Tables] union select name= TABLE_NAME from [{0}].[INFORMATION_SCHEMA].[Views] ";
         internal static DataBase Create(DbDataRecord record, Server server) { return new DataBase(server, (string) record["name"]); }
 
-        readonly ValueCache<Container[]> _containersCache;
-        public readonly Server Server;
+        internal readonly Server Server;
+        internal readonly MetaData MetaData;
 
         DataBase(Server server, string name)
             : base(name)
         {
             Server = server;
-            _containersCache = new ValueCache<Container[]>(GetContainers);
+            MetaData = new MetaData(this);
         }
 
-        public Container[] Containers { get { return _containersCache.Value; } }
-
-        Container[] GetContainers() { return Server.Select(SelectChildren.ReplaceArgs(Name), record => Container.Create(record, this)); }
-        public T[] GetMetaData<T>(Func<DbDataRecord, T> func) { return Server.Select(SelectMetaDataStatement(typeof(T).Name), func); }
-        public string SelectMetaDataStatement(string name) { return selectMetaDataStatement.ReplaceArgs(Name, name); }
+        internal T[] GetMetaData<T>(string name, Func<DbDataRecord, T> func) { return Server.Select(SelectMetaDataStatement(name), func); }
+        internal string SelectMetaDataStatement(string name) { return MetaDataStatement.ReplaceArgs(Name, name); }
     }
 }

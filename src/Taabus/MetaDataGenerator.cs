@@ -88,7 +88,14 @@ namespace Taabus
             
             #line default
             #line hidden
-            this.Write("Class>(r=>new ");
+            this.Write("Class>(");
+            
+            #line 28 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(name.Quote()));
+            
+            #line default
+            #line hidden
+            this.Write(", r=>new ");
             
             #line 28 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(name));

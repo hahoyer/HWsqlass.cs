@@ -18,7 +18,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Container.cs" />
     <Compile Include="DataBase.cs" />
     <Compile Include="DBExtension.cs" />
     <Compile Include="hw\Debug\DisableDumpAttribute.cs" />

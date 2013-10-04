@@ -25,8 +25,8 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Collections.Generic;
 using System;
-using HWClassLibrary.Debug;
-using HWClassLibrary.Helper;
+using hw.Debug;
+using hw.Helper;
 
 namespace main
 {
@@ -39,17 +39,17 @@ namespace main
     sealed class ReaderBatch
     {
         readonly Sql[] _sqls;
-        readonly SimpleCache<DbDataReader> _readerCache;
+        readonly ValueCache<DbDataReader> _readerCache;
         int _recordsAffected;
-        readonly SimpleCache<string> _sqlTextCache;
+        readonly ValueCache<string> _sqlTextCache;
 
         public ReaderBatch(SqlConnection connection, Sql[] sqls)
         {
             _sqls = sqls;
-            _readerCache = new SimpleCache<DbDataReader>(() => ObtainDataReader(connection, SqlText));
-            _sqlTextCache = new SimpleCache<string>(GetSqlText);
+            _readerCache = new ValueCache<DbDataReader>(() => ObtainDataReader(connection, SqlText));
+            _sqlTextCache = new ValueCache<string>(GetSqlText);
         }
-        string GetSqlText() { return Profiler.Measure(()=>_sqls.Select(t => t.Text).Stringify("\n")); }
+        string GetSqlText() { return Profiler.Measure(() => _sqls.Select(t => t.Text).Stringify("\n")); }
         string SqlText { get { return _sqlTextCache.Value; } }
 
         DbDataReader ObtainDataReader(SqlConnection connection, string text)
@@ -64,15 +64,15 @@ namespace main
         {
             get
             {
-                Profiler.Measure(()=>_readerCache.Ensure());
+                Profiler.Measure(() => _readerCache.IsValid = true);
                 var index = 0;
                 do
                 {
-                    index = Profiler.Measure(()=>ReadNonQuery(index));
+                    index = Profiler.Measure(() => ReadNonQuery(index));
                     if(Reader.FieldCount != 0)
                         yield return ReadQuery(index++);
                 } while(Reader.NextResult());
-                index = Profiler.Measure(()=>ReadNonQuery(index));
+                index = Profiler.Measure(() => ReadNonQuery(index));
                 Tracer.Assert(_sqls.Length == index);
             }
         }
@@ -85,7 +85,7 @@ namespace main
             var query = _sqls[index] as Query;
             Tracer.Assert(query != null);
             Tracer.Assert(!HasAffectedRecords);
-            var columns = reader.Columns();
+            var columns = reader.GetColumns();
             var resultSet = reader.SelectFromReader(Converter);
             Tracer.Assert(query.ColumnCount == null || query.ColumnCount.Value == columns.Length);
             Tracer.Assert(query.RowCount == null || query.RowCount.Value == resultSet.Length);
@@ -139,9 +139,10 @@ namespace main
                 return recordsAffected > -1 && _recordsAffected != recordsAffected;
             }
         }
+
         public int Length { get { return _sqls.Length; } }
 
-        internal void Reset() { _readerCache.Reset(); }
+        internal void Reset() { _readerCache.IsValid = false; }
     }
 
     abstract class Sql

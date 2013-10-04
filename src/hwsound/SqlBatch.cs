@@ -25,8 +25,8 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Collections.Generic;
 using System;
-using HWClassLibrary.Debug;
-using HWClassLibrary.Helper;
+using hw.Debug;
+using hw.Helper;
 
 namespace main
 {

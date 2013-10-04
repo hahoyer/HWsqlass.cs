@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <ProjectGuid>{ABA166CF-6932-456A-A82A-D8769F01F9D4}</ProjectGuid>
+    <AssemblyName>Taabus</AssemblyName>
+    <RestorePackages>true</RestorePackages>
+    <TargetTypeEx>CSharp.WinExe</TargetTypeEx>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Container.cs" />
+    <Compile Include="DataBase.cs" />
+    <Compile Include="DBExtension.cs" />
+    <Compile Include="hw\Debug\DisableDumpAttribute.cs" />
+    <Compile Include="hw\Debug\Dumpable.cs" />
+    <Compile Include="hw\Debug\DumpableObject.cs" />
+    <Compile Include="hw\Debug\DumpAttribute.cs" />
+    <Compile Include="hw\Debug\DumpClassAttribute.cs" />
+    <Compile Include="hw\Debug\DumpDataClassAttribute.cs" />
+    <Compile Include="hw\Debug\DumpEnabledAttribute.cs" />
+    <Compile Include="hw\Debug\DumpToStringAttribute.cs" />
+    <Compile Include="hw\Debug\EnableDumpAttribute.cs" />
+    <Compile Include="hw\Debug\EnableDumpExceptAttribute.cs" />
+    <Compile Include="hw\Debug\EnableDumpWithExceptionPredicateAttribute.cs" />
+    <Compile Include="hw\Debug\Profiler.cs" />
+    <Compile Include="hw\Debug\Tracer.cs" />
+    <Compile Include="hw\Helper\AdoExtension.cs" />
+    <Compile Include="hw\Helper\Box.cs" />
+    <Compile Include="hw\Helper\DateTimeExtender.cs" />
+    <Compile Include="hw\Helper\EnumEx.cs" />
+    <Compile Include="hw\Helper\File.cs" />
+    <Compile Include="hw\Helper\FunctionCache.cs" />
+    <Compile Include="hw\Helper\IReaderInitialize.cs" />
+    <Compile Include="hw\Helper\ListExtender.cs" />
+    <Compile Include="hw\Helper\LongExtender.cs" />
+    <Compile Include="hw\Helper\ReflectionExtender.cs" />
+    <Compile Include="hw\Helper\RelationExtender.cs" />
+    <Compile Include="hw\Helper\StringAligner.cs" />
+    <Compile Include="hw\Helper\StringExtender.cs" />
+    <Compile Include="hw\Helper\TypeNameExtender.cs" />
+    <Compile Include="hw\Helper\ValueCache.cs" />
+    <Compile Include="hw\JetBrainsAnnotations.cs" />
+    <Compile Include="hw\UnitTest\CategoryAttribute.cs" />
+    <Compile Include="hw\UnitTest\DependantAttribute.cs" />
+    <Compile Include="hw\UnitTest\TestExtender.cs" />
+    <Compile Include="hw\UnitTest\TestMethod.cs" />
+    <Compile Include="hw\UnitTest\TestRunner.cs" />
+    <Compile Include="hw\UnitTest\TestType.cs" />
+    <Compile Include="MainContainer.cs" />
+    <Compile Include="MetaData.Generated.cs" />
+    <Compile Include="MetaDataGenerator.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MetaDataGenerator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="NamedObject.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Server.cs" />
+    <Compile Include="Test.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MetaDataGenerator.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>MetaDataGenerator.cs</LastGenOutput>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="sys.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+</Project>

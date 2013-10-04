@@ -25,9 +25,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using HWClassLibrary.Debug;
-using HWClassLibrary.UnitTest;
-using sqlass;
+using hw.UnitTest;
 
 namespace main
 {
@@ -36,9 +34,8 @@ namespace main
         public static void Main()
         {
             if(Debugger.IsAttached)
-                TestRunner.IsModeErrorFocus = true;
+                TestRunner.IsModeErrorFocus = false;
             Assembly.GetExecutingAssembly().RunTests();
-            var dummy = typeof(Class1);
         }
     }
 

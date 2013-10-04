@@ -1,6 +1,7 @@
-﻿// 
+﻿#region Copyright (C) 2013
+
 //     Project sqlass
-//     Copyright (C) 2011 - 2011 Harald Hoyer
+//     Copyright (C) 2011 - 2013 Harald Hoyer
 // 
 //     This program is free software: you can redistribute it and/or modify
 //     it under the terms of the GNU General Public License as published by
@@ -17,15 +18,15 @@
 //     
 //     Comments, bugs and suggestions to hahoyer at yahoo.de
 
+#endregion
+
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
-using System.Data.SqlServerCe;
 using System.Diagnostics;
 using System.Linq;
-using HWClassLibrary.Debug;
-using HWClassLibrary.UnitTest;
+using hw.UnitTest;
 using sqlass.Tables;
 
 namespace sqlass
@@ -46,12 +47,7 @@ namespace sqlass
                 connectionString["MultipleActiveResultSets"] = true;
                 var connection = new SqlConnection(connectionString.ConnectionString);
 
-                var context =
-                    new Context
-                    {
-                        Connection = connection,
-                        IsSqlCeConnectionBug = true
-                    };
+                var context = new Context {Connection = connection, IsSqlCeConnectionBug = true};
                 context.UpdateDatabase();
 
                 var address = new Address {Id = 1, Text = "5th Ave, City23"};
@@ -59,11 +55,7 @@ namespace sqlass
                 context.Container.Address.Add(address);
                 context.Container.Customer.Add(customer);
                 //context.SaveChanges();
-                var customers = context
-                    .Container
-                    .Customer
-                    .Where(c => c.Id == 1)
-                    .Where(c => c.Id == 1);
+                var customers = context.Container.Customer.Where(c => c.Id == 1).Where(c => c.Id == 1);
                 var customersFound = customers.ToArray();
                 var customerFound = customers.Single();
             }

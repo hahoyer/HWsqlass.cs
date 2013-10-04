@@ -1,0 +1,61 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="hw.Helper" #>
+
+
+using System;
+using System.Collections.Generic;
+using System.Data.Common;
+using System.Linq;
+using hw.Helper;
+
+namespace Taabus
+{
+    public class MetaData
+    {
+        public class CacheClass
+        {
+            <#    foreach(var name in _objectNames){ #>
+            public readonly ValueCache<<#=name #>Class[]> <#=name #>;
+            <#    } #>
+
+            public CacheClass(DataBase dataBase)
+            {
+                <#    foreach(var name in _objectNames){ #>
+                 <#=name #> = new ValueCache<<#=name #>Class[]>(()=> dataBase.GetMetaData<<#=name #>Class>(r=>new <#=name #>Class(r)));
+                <#    } #>
+            }
+
+        }
+        
+        public readonly CacheClass Cache;
+
+        <#    foreach(var name in _objectNames){ #>
+        public <#=name #>Class[] <#=name #> {get{ return Cache.<#=name #>.Value;}}
+        <#    } #>
+
+        public MetaData(DataBase dataBase){Cache = new CacheClass(dataBase);}
+
+        <#    foreach(var name in _objectNames){ 
+                var reader = _dataBase.Server.ToDataReader(_dataBase.SelectMetaDataStatement(name) + " where 0=1");
+        #>
+        public sealed class <#=name #>Class
+        { 
+            internal <#=name #>Class(DbDataRecord record){
+                <#for(var index = 0; index < reader.FieldCount; index++){ #>
+                <#=reader.GetName(index)#> = (<#=reader.GetFieldType(index).PrettyName() #>)record[<#=reader.GetName(index).Quote()#>];
+                <#}#>
+            }
+
+            <#for(var index = 0; index < reader.FieldCount; index++){ #>
+            public readonly <#=reader.GetFieldType(index).PrettyName() #> <#=reader.GetName(index)#>;
+            <#}#>
+        }
+        <#    } #>
+
+    }
+}
+<# // ReSharper disable FieldCanBeMadeReadOnly.Local #>

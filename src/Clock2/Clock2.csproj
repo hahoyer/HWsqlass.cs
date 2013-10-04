@@ -11,6 +11,8 @@
     <AssemblyName>Clock2</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -54,6 +56,34 @@
     <Compile Include="Form.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="hw\Debug\DisableDumpAttribute.cs" />
+    <Compile Include="hw\Debug\Dumpable.cs" />
+    <Compile Include="hw\Debug\DumpableObject.cs" />
+    <Compile Include="hw\Debug\DumpAttribute.cs" />
+    <Compile Include="hw\Debug\DumpClassAttribute.cs" />
+    <Compile Include="hw\Debug\DumpDataClassAttribute.cs" />
+    <Compile Include="hw\Debug\DumpEnabledAttribute.cs" />
+    <Compile Include="hw\Debug\DumpToStringAttribute.cs" />
+    <Compile Include="hw\Debug\EnableDumpAttribute.cs" />
+    <Compile Include="hw\Debug\EnableDumpExceptAttribute.cs" />
+    <Compile Include="hw\Debug\EnableDumpWithExceptionPredicateAttribute.cs" />
+    <Compile Include="hw\Debug\Profiler.cs" />
+    <Compile Include="hw\Debug\Tracer.cs" />
+    <Compile Include="hw\Helper\Box.cs" />
+    <Compile Include="hw\Helper\DateTimeExtender.cs" />
+    <Compile Include="hw\Helper\EnumEx.cs" />
+    <Compile Include="hw\Helper\File.cs" />
+    <Compile Include="hw\Helper\FunctionCache.cs" />
+    <Compile Include="hw\Helper\ListExtender.cs" />
+    <Compile Include="hw\Helper\LongExtender.cs" />
+    <Compile Include="hw\Helper\ReflectionExtender.cs" />
+    <Compile Include="hw\Helper\RelationExtender.cs" />
+    <Compile Include="hw\Helper\StringAligner.cs" />
+    <Compile Include="hw\Helper\StringExtender.cs" />
+    <Compile Include="hw\Helper\TypeNameExtender.cs" />
+    <Compile Include="hw\Helper\ValueCache.cs" />
+    <Compile Include="hw\JetBrainsAnnotations.cs" />
+    <Compile Include="hw\UnitTest\CategoryAttribute.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Clock.resx">
@@ -62,8 +92,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -108,10 +108,10 @@ namespace Taabus
         {
             internal CHECK_CONSTRAINTSClass(DbDataRecord record)
             {
-                CONSTRAINT_CATALOG = (string)record["CONSTRAINT_CATALOG"];
-                CONSTRAINT_SCHEMA = (string)record["CONSTRAINT_SCHEMA"];
-                CONSTRAINT_NAME = (string)record["CONSTRAINT_NAME"];
-                CHECK_CLAUSE = (string)record["CHECK_CLAUSE"];
+                CONSTRAINT_CATALOG = record["CONSTRAINT_CATALOG"].Convert<string>();
+                CONSTRAINT_SCHEMA = record["CONSTRAINT_SCHEMA"].Convert<string>();
+                CONSTRAINT_NAME = record["CONSTRAINT_NAME"].Convert<string>();
+                CHECK_CLAUSE = record["CHECK_CLAUSE"].Convert<string>();
             }
 
             public readonly string CONSTRAINT_CATALOG;
@@ -123,15 +123,15 @@ namespace Taabus
         {
             internal REFERENTIAL_CONSTRAINTSClass(DbDataRecord record)
             {
-                CONSTRAINT_CATALOG = (string)record["CONSTRAINT_CATALOG"];
-                CONSTRAINT_SCHEMA = (string)record["CONSTRAINT_SCHEMA"];
-                CONSTRAINT_NAME = (string)record["CONSTRAINT_NAME"];
-                UNIQUE_CONSTRAINT_CATALOG = (string)record["UNIQUE_CONSTRAINT_CATALOG"];
-                UNIQUE_CONSTRAINT_SCHEMA = (string)record["UNIQUE_CONSTRAINT_SCHEMA"];
-                UNIQUE_CONSTRAINT_NAME = (string)record["UNIQUE_CONSTRAINT_NAME"];
-                MATCH_OPTION = (string)record["MATCH_OPTION"];
-                UPDATE_RULE = (string)record["UPDATE_RULE"];
-                DELETE_RULE = (string)record["DELETE_RULE"];
+                CONSTRAINT_CATALOG = record["CONSTRAINT_CATALOG"].Convert<string>();
+                CONSTRAINT_SCHEMA = record["CONSTRAINT_SCHEMA"].Convert<string>();
+                CONSTRAINT_NAME = record["CONSTRAINT_NAME"].Convert<string>();
+                UNIQUE_CONSTRAINT_CATALOG = record["UNIQUE_CONSTRAINT_CATALOG"].Convert<string>();
+                UNIQUE_CONSTRAINT_SCHEMA = record["UNIQUE_CONSTRAINT_SCHEMA"].Convert<string>();
+                UNIQUE_CONSTRAINT_NAME = record["UNIQUE_CONSTRAINT_NAME"].Convert<string>();
+                MATCH_OPTION = record["MATCH_OPTION"].Convert<string>();
+                UPDATE_RULE = record["UPDATE_RULE"].Convert<string>();
+                DELETE_RULE = record["DELETE_RULE"].Convert<string>();
             }
 
             public readonly string CONSTRAINT_CATALOG;
@@ -148,13 +148,13 @@ namespace Taabus
         {
             internal COLUMN_DOMAIN_USAGEClass(DbDataRecord record)
             {
-                DOMAIN_CATALOG = (string)record["DOMAIN_CATALOG"];
-                DOMAIN_SCHEMA = (string)record["DOMAIN_SCHEMA"];
-                DOMAIN_NAME = (string)record["DOMAIN_NAME"];
-                TABLE_CATALOG = (string)record["TABLE_CATALOG"];
-                TABLE_SCHEMA = (string)record["TABLE_SCHEMA"];
-                TABLE_NAME = (string)record["TABLE_NAME"];
-                COLUMN_NAME = (string)record["COLUMN_NAME"];
+                DOMAIN_CATALOG = record["DOMAIN_CATALOG"].Convert<string>();
+                DOMAIN_SCHEMA = record["DOMAIN_SCHEMA"].Convert<string>();
+                DOMAIN_NAME = record["DOMAIN_NAME"].Convert<string>();
+                TABLE_CATALOG = record["TABLE_CATALOG"].Convert<string>();
+                TABLE_SCHEMA = record["TABLE_SCHEMA"].Convert<string>();
+                TABLE_NAME = record["TABLE_NAME"].Convert<string>();
+                COLUMN_NAME = record["COLUMN_NAME"].Convert<string>();
             }
 
             public readonly string DOMAIN_CATALOG;
@@ -169,57 +169,57 @@ namespace Taabus
         {
             internal ROUTINESClass(DbDataRecord record)
             {
-                SPECIFIC_CATALOG = (string)record["SPECIFIC_CATALOG"];
-                SPECIFIC_SCHEMA = (string)record["SPECIFIC_SCHEMA"];
-                SPECIFIC_NAME = (string)record["SPECIFIC_NAME"];
-                ROUTINE_CATALOG = (string)record["ROUTINE_CATALOG"];
-                ROUTINE_SCHEMA = (string)record["ROUTINE_SCHEMA"];
-                ROUTINE_NAME = (string)record["ROUTINE_NAME"];
-                ROUTINE_TYPE = (string)record["ROUTINE_TYPE"];
-                MODULE_CATALOG = (string)record["MODULE_CATALOG"];
-                MODULE_SCHEMA = (string)record["MODULE_SCHEMA"];
-                MODULE_NAME = (string)record["MODULE_NAME"];
-                UDT_CATALOG = (string)record["UDT_CATALOG"];
-                UDT_SCHEMA = (string)record["UDT_SCHEMA"];
-                UDT_NAME = (string)record["UDT_NAME"];
-                DATA_TYPE = (string)record["DATA_TYPE"];
-                CHARACTER_MAXIMUM_LENGTH = (int)record["CHARACTER_MAXIMUM_LENGTH"];
-                CHARACTER_OCTET_LENGTH = (int)record["CHARACTER_OCTET_LENGTH"];
-                COLLATION_CATALOG = (string)record["COLLATION_CATALOG"];
-                COLLATION_SCHEMA = (string)record["COLLATION_SCHEMA"];
-                COLLATION_NAME = (string)record["COLLATION_NAME"];
-                CHARACTER_SET_CATALOG = (string)record["CHARACTER_SET_CATALOG"];
-                CHARACTER_SET_SCHEMA = (string)record["CHARACTER_SET_SCHEMA"];
-                CHARACTER_SET_NAME = (string)record["CHARACTER_SET_NAME"];
-                NUMERIC_PRECISION = (Byte)record["NUMERIC_PRECISION"];
-                NUMERIC_PRECISION_RADIX = (Int16)record["NUMERIC_PRECISION_RADIX"];
-                NUMERIC_SCALE = (int)record["NUMERIC_SCALE"];
-                DATETIME_PRECISION = (Int16)record["DATETIME_PRECISION"];
-                INTERVAL_TYPE = (string)record["INTERVAL_TYPE"];
-                INTERVAL_PRECISION = (Int16)record["INTERVAL_PRECISION"];
-                TYPE_UDT_CATALOG = (string)record["TYPE_UDT_CATALOG"];
-                TYPE_UDT_SCHEMA = (string)record["TYPE_UDT_SCHEMA"];
-                TYPE_UDT_NAME = (string)record["TYPE_UDT_NAME"];
-                SCOPE_CATALOG = (string)record["SCOPE_CATALOG"];
-                SCOPE_SCHEMA = (string)record["SCOPE_SCHEMA"];
-                SCOPE_NAME = (string)record["SCOPE_NAME"];
-                MAXIMUM_CARDINALITY = (Int64)record["MAXIMUM_CARDINALITY"];
-                DTD_IDENTIFIER = (string)record["DTD_IDENTIFIER"];
-                ROUTINE_BODY = (string)record["ROUTINE_BODY"];
-                ROUTINE_DEFINITION = (string)record["ROUTINE_DEFINITION"];
-                EXTERNAL_NAME = (string)record["EXTERNAL_NAME"];
-                EXTERNAL_LANGUAGE = (string)record["EXTERNAL_LANGUAGE"];
-                PARAMETER_STYLE = (string)record["PARAMETER_STYLE"];
-                IS_DETERMINISTIC = (string)record["IS_DETERMINISTIC"];
-                SQL_DATA_ACCESS = (string)record["SQL_DATA_ACCESS"];
-                IS_NULL_CALL = (string)record["IS_NULL_CALL"];
-                SQL_PATH = (string)record["SQL_PATH"];
-                SCHEMA_LEVEL_ROUTINE = (string)record["SCHEMA_LEVEL_ROUTINE"];
-                MAX_DYNAMIC_RESULT_SETS = (Int16)record["MAX_DYNAMIC_RESULT_SETS"];
-                IS_USER_DEFINED_CAST = (string)record["IS_USER_DEFINED_CAST"];
-                IS_IMPLICITLY_INVOCABLE = (string)record["IS_IMPLICITLY_INVOCABLE"];
-                CREATED = (DateTime)record["CREATED"];
-                LAST_ALTERED = (DateTime)record["LAST_ALTERED"];
+                SPECIFIC_CATALOG = record["SPECIFIC_CATALOG"].Convert<string>();
+                SPECIFIC_SCHEMA = record["SPECIFIC_SCHEMA"].Convert<string>();
+                SPECIFIC_NAME = record["SPECIFIC_NAME"].Convert<string>();
+                ROUTINE_CATALOG = record["ROUTINE_CATALOG"].Convert<string>();
+                ROUTINE_SCHEMA = record["ROUTINE_SCHEMA"].Convert<string>();
+                ROUTINE_NAME = record["ROUTINE_NAME"].Convert<string>();
+                ROUTINE_TYPE = record["ROUTINE_TYPE"].Convert<string>();
+                MODULE_CATALOG = record["MODULE_CATALOG"].Convert<string>();
+                MODULE_SCHEMA = record["MODULE_SCHEMA"].Convert<string>();
+                MODULE_NAME = record["MODULE_NAME"].Convert<string>();
+                UDT_CATALOG = record["UDT_CATALOG"].Convert<string>();
+                UDT_SCHEMA = record["UDT_SCHEMA"].Convert<string>();
+                UDT_NAME = record["UDT_NAME"].Convert<string>();
+                DATA_TYPE = record["DATA_TYPE"].Convert<string>();
+                CHARACTER_MAXIMUM_LENGTH = record["CHARACTER_MAXIMUM_LENGTH"].Convert<int?>();
+                CHARACTER_OCTET_LENGTH = record["CHARACTER_OCTET_LENGTH"].Convert<int?>();
+                COLLATION_CATALOG = record["COLLATION_CATALOG"].Convert<string>();
+                COLLATION_SCHEMA = record["COLLATION_SCHEMA"].Convert<string>();
+                COLLATION_NAME = record["COLLATION_NAME"].Convert<string>();
+                CHARACTER_SET_CATALOG = record["CHARACTER_SET_CATALOG"].Convert<string>();
+                CHARACTER_SET_SCHEMA = record["CHARACTER_SET_SCHEMA"].Convert<string>();
+                CHARACTER_SET_NAME = record["CHARACTER_SET_NAME"].Convert<string>();
+                NUMERIC_PRECISION = record["NUMERIC_PRECISION"].Convert<Byte?>();
+                NUMERIC_PRECISION_RADIX = record["NUMERIC_PRECISION_RADIX"].Convert<Int16?>();
+                NUMERIC_SCALE = record["NUMERIC_SCALE"].Convert<int?>();
+                DATETIME_PRECISION = record["DATETIME_PRECISION"].Convert<Int16?>();
+                INTERVAL_TYPE = record["INTERVAL_TYPE"].Convert<string>();
+                INTERVAL_PRECISION = record["INTERVAL_PRECISION"].Convert<Int16?>();
+                TYPE_UDT_CATALOG = record["TYPE_UDT_CATALOG"].Convert<string>();
+                TYPE_UDT_SCHEMA = record["TYPE_UDT_SCHEMA"].Convert<string>();
+                TYPE_UDT_NAME = record["TYPE_UDT_NAME"].Convert<string>();
+                SCOPE_CATALOG = record["SCOPE_CATALOG"].Convert<string>();
+                SCOPE_SCHEMA = record["SCOPE_SCHEMA"].Convert<string>();
+                SCOPE_NAME = record["SCOPE_NAME"].Convert<string>();
+                MAXIMUM_CARDINALITY = record["MAXIMUM_CARDINALITY"].Convert<Int64?>();
+                DTD_IDENTIFIER = record["DTD_IDENTIFIER"].Convert<string>();
+                ROUTINE_BODY = record["ROUTINE_BODY"].Convert<string>();
+                ROUTINE_DEFINITION = record["ROUTINE_DEFINITION"].Convert<string>();
+                EXTERNAL_NAME = record["EXTERNAL_NAME"].Convert<string>();
+                EXTERNAL_LANGUAGE = record["EXTERNAL_LANGUAGE"].Convert<string>();
+                PARAMETER_STYLE = record["PARAMETER_STYLE"].Convert<string>();
+                IS_DETERMINISTIC = record["IS_DETERMINISTIC"].Convert<string>();
+                SQL_DATA_ACCESS = record["SQL_DATA_ACCESS"].Convert<string>();
+                IS_NULL_CALL = record["IS_NULL_CALL"].Convert<string>();
+                SQL_PATH = record["SQL_PATH"].Convert<string>();
+                SCHEMA_LEVEL_ROUTINE = record["SCHEMA_LEVEL_ROUTINE"].Convert<string>();
+                MAX_DYNAMIC_RESULT_SETS = record["MAX_DYNAMIC_RESULT_SETS"].Convert<Int16?>();
+                IS_USER_DEFINED_CAST = record["IS_USER_DEFINED_CAST"].Convert<string>();
+                IS_IMPLICITLY_INVOCABLE = record["IS_IMPLICITLY_INVOCABLE"].Convert<string>();
+                CREATED = record["CREATED"].Convert<DateTime?>();
+                LAST_ALTERED = record["LAST_ALTERED"].Convert<DateTime?>();
             }
 
             public readonly string SPECIFIC_CATALOG;
@@ -236,27 +236,27 @@ namespace Taabus
             public readonly string UDT_SCHEMA;
             public readonly string UDT_NAME;
             public readonly string DATA_TYPE;
-            public readonly int CHARACTER_MAXIMUM_LENGTH;
-            public readonly int CHARACTER_OCTET_LENGTH;
+            public readonly int? CHARACTER_MAXIMUM_LENGTH;
+            public readonly int? CHARACTER_OCTET_LENGTH;
             public readonly string COLLATION_CATALOG;
             public readonly string COLLATION_SCHEMA;
             public readonly string COLLATION_NAME;
             public readonly string CHARACTER_SET_CATALOG;
             public readonly string CHARACTER_SET_SCHEMA;
             public readonly string CHARACTER_SET_NAME;
-            public readonly Byte NUMERIC_PRECISION;
-            public readonly Int16 NUMERIC_PRECISION_RADIX;
-            public readonly int NUMERIC_SCALE;
-            public readonly Int16 DATETIME_PRECISION;
+            public readonly Byte? NUMERIC_PRECISION;
+            public readonly Int16? NUMERIC_PRECISION_RADIX;
+            public readonly int? NUMERIC_SCALE;
+            public readonly Int16? DATETIME_PRECISION;
             public readonly string INTERVAL_TYPE;
-            public readonly Int16 INTERVAL_PRECISION;
+            public readonly Int16? INTERVAL_PRECISION;
             public readonly string TYPE_UDT_CATALOG;
             public readonly string TYPE_UDT_SCHEMA;
             public readonly string TYPE_UDT_NAME;
             public readonly string SCOPE_CATALOG;
             public readonly string SCOPE_SCHEMA;
             public readonly string SCOPE_NAME;
-            public readonly Int64 MAXIMUM_CARDINALITY;
+            public readonly Int64? MAXIMUM_CARDINALITY;
             public readonly string DTD_IDENTIFIER;
             public readonly string ROUTINE_BODY;
             public readonly string ROUTINE_DEFINITION;
@@ -268,24 +268,24 @@ namespace Taabus
             public readonly string IS_NULL_CALL;
             public readonly string SQL_PATH;
             public readonly string SCHEMA_LEVEL_ROUTINE;
-            public readonly Int16 MAX_DYNAMIC_RESULT_SETS;
+            public readonly Int16? MAX_DYNAMIC_RESULT_SETS;
             public readonly string IS_USER_DEFINED_CAST;
             public readonly string IS_IMPLICITLY_INVOCABLE;
-            public readonly DateTime CREATED;
-            public readonly DateTime LAST_ALTERED;
+            public readonly DateTime? CREATED;
+            public readonly DateTime? LAST_ALTERED;
         }
         public sealed class COLUMN_PRIVILEGESClass
         {
             internal COLUMN_PRIVILEGESClass(DbDataRecord record)
             {
-                GRANTOR = (string)record["GRANTOR"];
-                GRANTEE = (string)record["GRANTEE"];
-                TABLE_CATALOG = (string)record["TABLE_CATALOG"];
-                TABLE_SCHEMA = (string)record["TABLE_SCHEMA"];
-                TABLE_NAME = (string)record["TABLE_NAME"];
-                COLUMN_NAME = (string)record["COLUMN_NAME"];
-                PRIVILEGE_TYPE = (string)record["PRIVILEGE_TYPE"];
-                IS_GRANTABLE = (string)record["IS_GRANTABLE"];
+                GRANTOR = record["GRANTOR"].Convert<string>();
+                GRANTEE = record["GRANTEE"].Convert<string>();
+                TABLE_CATALOG = record["TABLE_CATALOG"].Convert<string>();
+                TABLE_SCHEMA = record["TABLE_SCHEMA"].Convert<string>();
+                TABLE_NAME = record["TABLE_NAME"].Convert<string>();
+                COLUMN_NAME = record["COLUMN_NAME"].Convert<string>();
+                PRIVILEGE_TYPE = record["PRIVILEGE_TYPE"].Convert<string>();
+                IS_GRANTABLE = record["IS_GRANTABLE"].Convert<string>();
             }
 
             public readonly string GRANTOR;
@@ -301,45 +301,45 @@ namespace Taabus
         {
             internal ROUTINE_COLUMNSClass(DbDataRecord record)
             {
-                TABLE_CATALOG = (string)record["TABLE_CATALOG"];
-                TABLE_SCHEMA = (string)record["TABLE_SCHEMA"];
-                TABLE_NAME = (string)record["TABLE_NAME"];
-                COLUMN_NAME = (string)record["COLUMN_NAME"];
-                ORDINAL_POSITION = (int)record["ORDINAL_POSITION"];
-                COLUMN_DEFAULT = (string)record["COLUMN_DEFAULT"];
-                IS_NULLABLE = (string)record["IS_NULLABLE"];
-                DATA_TYPE = (string)record["DATA_TYPE"];
-                CHARACTER_MAXIMUM_LENGTH = (int)record["CHARACTER_MAXIMUM_LENGTH"];
-                CHARACTER_OCTET_LENGTH = (int)record["CHARACTER_OCTET_LENGTH"];
-                NUMERIC_PRECISION = (Byte)record["NUMERIC_PRECISION"];
-                NUMERIC_PRECISION_RADIX = (Int16)record["NUMERIC_PRECISION_RADIX"];
-                NUMERIC_SCALE = (int)record["NUMERIC_SCALE"];
-                DATETIME_PRECISION = (Int16)record["DATETIME_PRECISION"];
-                CHARACTER_SET_CATALOG = (string)record["CHARACTER_SET_CATALOG"];
-                CHARACTER_SET_SCHEMA = (string)record["CHARACTER_SET_SCHEMA"];
-                CHARACTER_SET_NAME = (string)record["CHARACTER_SET_NAME"];
-                COLLATION_CATALOG = (string)record["COLLATION_CATALOG"];
-                COLLATION_SCHEMA = (string)record["COLLATION_SCHEMA"];
-                COLLATION_NAME = (string)record["COLLATION_NAME"];
-                DOMAIN_CATALOG = (string)record["DOMAIN_CATALOG"];
-                DOMAIN_SCHEMA = (string)record["DOMAIN_SCHEMA"];
-                DOMAIN_NAME = (string)record["DOMAIN_NAME"];
+                TABLE_CATALOG = record["TABLE_CATALOG"].Convert<string>();
+                TABLE_SCHEMA = record["TABLE_SCHEMA"].Convert<string>();
+                TABLE_NAME = record["TABLE_NAME"].Convert<string>();
+                COLUMN_NAME = record["COLUMN_NAME"].Convert<string>();
+                ORDINAL_POSITION = record["ORDINAL_POSITION"].Convert<int?>();
+                COLUMN_DEFAULT = record["COLUMN_DEFAULT"].Convert<string>();
+                IS_NULLABLE = record["IS_NULLABLE"].Convert<string>();
+                DATA_TYPE = record["DATA_TYPE"].Convert<string>();
+                CHARACTER_MAXIMUM_LENGTH = record["CHARACTER_MAXIMUM_LENGTH"].Convert<int?>();
+                CHARACTER_OCTET_LENGTH = record["CHARACTER_OCTET_LENGTH"].Convert<int?>();
+                NUMERIC_PRECISION = record["NUMERIC_PRECISION"].Convert<Byte?>();
+                NUMERIC_PRECISION_RADIX = record["NUMERIC_PRECISION_RADIX"].Convert<Int16?>();
+                NUMERIC_SCALE = record["NUMERIC_SCALE"].Convert<int?>();
+                DATETIME_PRECISION = record["DATETIME_PRECISION"].Convert<Int16?>();
+                CHARACTER_SET_CATALOG = record["CHARACTER_SET_CATALOG"].Convert<string>();
+                CHARACTER_SET_SCHEMA = record["CHARACTER_SET_SCHEMA"].Convert<string>();
+                CHARACTER_SET_NAME = record["CHARACTER_SET_NAME"].Convert<string>();
+                COLLATION_CATALOG = record["COLLATION_CATALOG"].Convert<string>();
+                COLLATION_SCHEMA = record["COLLATION_SCHEMA"].Convert<string>();
+                COLLATION_NAME = record["COLLATION_NAME"].Convert<string>();
+                DOMAIN_CATALOG = record["DOMAIN_CATALOG"].Convert<string>();
+                DOMAIN_SCHEMA = record["DOMAIN_SCHEMA"].Convert<string>();
+                DOMAIN_NAME = record["DOMAIN_NAME"].Convert<string>();
             }
 
             public readonly string TABLE_CATALOG;
             public readonly string TABLE_SCHEMA;
             public readonly string TABLE_NAME;
             public readonly string COLUMN_NAME;
-            public readonly int ORDINAL_POSITION;
+            public readonly int? ORDINAL_POSITION;
             public readonly string COLUMN_DEFAULT;
             public readonly string IS_NULLABLE;
             public readonly string DATA_TYPE;
-            public readonly int CHARACTER_MAXIMUM_LENGTH;
-            public readonly int CHARACTER_OCTET_LENGTH;
-            public readonly Byte NUMERIC_PRECISION;
-            public readonly Int16 NUMERIC_PRECISION_RADIX;
-            public readonly int NUMERIC_SCALE;
-            public readonly Int16 DATETIME_PRECISION;
+            public readonly int? CHARACTER_MAXIMUM_LENGTH;
+            public readonly int? CHARACTER_OCTET_LENGTH;
+            public readonly Byte? NUMERIC_PRECISION;
+            public readonly Int16? NUMERIC_PRECISION_RADIX;
+            public readonly int? NUMERIC_SCALE;
+            public readonly Int16? DATETIME_PRECISION;
             public readonly string CHARACTER_SET_CATALOG;
             public readonly string CHARACTER_SET_SCHEMA;
             public readonly string CHARACTER_SET_NAME;
@@ -354,45 +354,45 @@ namespace Taabus
         {
             internal COLUMNSClass(DbDataRecord record)
             {
-                TABLE_CATALOG = (string)record["TABLE_CATALOG"];
-                TABLE_SCHEMA = (string)record["TABLE_SCHEMA"];
-                TABLE_NAME = (string)record["TABLE_NAME"];
-                COLUMN_NAME = (string)record["COLUMN_NAME"];
-                ORDINAL_POSITION = (int)record["ORDINAL_POSITION"];
-                COLUMN_DEFAULT = (string)record["COLUMN_DEFAULT"];
-                IS_NULLABLE = (string)record["IS_NULLABLE"];
-                DATA_TYPE = (string)record["DATA_TYPE"];
-                CHARACTER_MAXIMUM_LENGTH = (int)record["CHARACTER_MAXIMUM_LENGTH"];
-                CHARACTER_OCTET_LENGTH = (int)record["CHARACTER_OCTET_LENGTH"];
-                NUMERIC_PRECISION = (Byte)record["NUMERIC_PRECISION"];
-                NUMERIC_PRECISION_RADIX = (Int16)record["NUMERIC_PRECISION_RADIX"];
-                NUMERIC_SCALE = (int)record["NUMERIC_SCALE"];
-                DATETIME_PRECISION = (Int16)record["DATETIME_PRECISION"];
-                CHARACTER_SET_CATALOG = (string)record["CHARACTER_SET_CATALOG"];
-                CHARACTER_SET_SCHEMA = (string)record["CHARACTER_SET_SCHEMA"];
-                CHARACTER_SET_NAME = (string)record["CHARACTER_SET_NAME"];
-                COLLATION_CATALOG = (string)record["COLLATION_CATALOG"];
-                COLLATION_SCHEMA = (string)record["COLLATION_SCHEMA"];
-                COLLATION_NAME = (string)record["COLLATION_NAME"];
-                DOMAIN_CATALOG = (string)record["DOMAIN_CATALOG"];
-                DOMAIN_SCHEMA = (string)record["DOMAIN_SCHEMA"];
-                DOMAIN_NAME = (string)record["DOMAIN_NAME"];
+                TABLE_CATALOG = record["TABLE_CATALOG"].Convert<string>();
+                TABLE_SCHEMA = record["TABLE_SCHEMA"].Convert<string>();
+                TABLE_NAME = record["TABLE_NAME"].Convert<string>();
+                COLUMN_NAME = record["COLUMN_NAME"].Convert<string>();
+                ORDINAL_POSITION = record["ORDINAL_POSITION"].Convert<int?>();
+                COLUMN_DEFAULT = record["COLUMN_DEFAULT"].Convert<string>();
+                IS_NULLABLE = record["IS_NULLABLE"].Convert<string>();
+                DATA_TYPE = record["DATA_TYPE"].Convert<string>();
+                CHARACTER_MAXIMUM_LENGTH = record["CHARACTER_MAXIMUM_LENGTH"].Convert<int?>();
+                CHARACTER_OCTET_LENGTH = record["CHARACTER_OCTET_LENGTH"].Convert<int?>();
+                NUMERIC_PRECISION = record["NUMERIC_PRECISION"].Convert<Byte?>();
+                NUMERIC_PRECISION_RADIX = record["NUMERIC_PRECISION_RADIX"].Convert<Int16?>();
+                NUMERIC_SCALE = record["NUMERIC_SCALE"].Convert<int?>();
+                DATETIME_PRECISION = record["DATETIME_PRECISION"].Convert<Int16?>();
+                CHARACTER_SET_CATALOG = record["CHARACTER_SET_CATALOG"].Convert<string>();
+                CHARACTER_SET_SCHEMA = record["CHARACTER_SET_SCHEMA"].Convert<string>();
+                CHARACTER_SET_NAME = record["CHARACTER_SET_NAME"].Convert<string>();
+                COLLATION_CATALOG = record["COLLATION_CATALOG"].Convert<string>();
+                COLLATION_SCHEMA = record["COLLATION_SCHEMA"].Convert<string>();
+                COLLATION_NAME = record["COLLATION_NAME"].Convert<string>();
+                DOMAIN_CATALOG = record["DOMAIN_CATALOG"].Convert<string>();
+                DOMAIN_SCHEMA = record["DOMAIN_SCHEMA"].Convert<string>();
+                DOMAIN_NAME = record["DOMAIN_NAME"].Convert<string>();
             }
 
             public readonly string TABLE_CATALOG;
             public readonly string TABLE_SCHEMA;
             public readonly string TABLE_NAME;
             public readonly string COLUMN_NAME;
-            public readonly int ORDINAL_POSITION;
+            public readonly int? ORDINAL_POSITION;
             public readonly string COLUMN_DEFAULT;
             public readonly string IS_NULLABLE;
             public readonly string DATA_TYPE;
-            public readonly int CHARACTER_MAXIMUM_LENGTH;
-            public readonly int CHARACTER_OCTET_LENGTH;
-            public readonly Byte NUMERIC_PRECISION;
-            public readonly Int16 NUMERIC_PRECISION_RADIX;
-            public readonly int NUMERIC_SCALE;
-            public readonly Int16 DATETIME_PRECISION;
+            public readonly int? CHARACTER_MAXIMUM_LENGTH;
+            public readonly int? CHARACTER_OCTET_LENGTH;
+            public readonly Byte? NUMERIC_PRECISION;
+            public readonly Int16? NUMERIC_PRECISION_RADIX;
+            public readonly int? NUMERIC_SCALE;
+            public readonly Int16? DATETIME_PRECISION;
             public readonly string CHARACTER_SET_CATALOG;
             public readonly string CHARACTER_SET_SCHEMA;
             public readonly string CHARACTER_SET_NAME;
@@ -407,12 +407,12 @@ namespace Taabus
         {
             internal SCHEMATAClass(DbDataRecord record)
             {
-                CATALOG_NAME = (string)record["CATALOG_NAME"];
-                SCHEMA_NAME = (string)record["SCHEMA_NAME"];
-                SCHEMA_OWNER = (string)record["SCHEMA_OWNER"];
-                DEFAULT_CHARACTER_SET_CATALOG = (string)record["DEFAULT_CHARACTER_SET_CATALOG"];
-                DEFAULT_CHARACTER_SET_SCHEMA = (string)record["DEFAULT_CHARACTER_SET_SCHEMA"];
-                DEFAULT_CHARACTER_SET_NAME = (string)record["DEFAULT_CHARACTER_SET_NAME"];
+                CATALOG_NAME = record["CATALOG_NAME"].Convert<string>();
+                SCHEMA_NAME = record["SCHEMA_NAME"].Convert<string>();
+                SCHEMA_OWNER = record["SCHEMA_OWNER"].Convert<string>();
+                DEFAULT_CHARACTER_SET_CATALOG = record["DEFAULT_CHARACTER_SET_CATALOG"].Convert<string>();
+                DEFAULT_CHARACTER_SET_SCHEMA = record["DEFAULT_CHARACTER_SET_SCHEMA"].Convert<string>();
+                DEFAULT_CHARACTER_SET_NAME = record["DEFAULT_CHARACTER_SET_NAME"].Convert<string>();
             }
 
             public readonly string CATALOG_NAME;
@@ -426,13 +426,13 @@ namespace Taabus
         {
             internal CONSTRAINT_COLUMN_USAGEClass(DbDataRecord record)
             {
-                TABLE_CATALOG = (string)record["TABLE_CATALOG"];
-                TABLE_SCHEMA = (string)record["TABLE_SCHEMA"];
-                TABLE_NAME = (string)record["TABLE_NAME"];
-                COLUMN_NAME = (string)record["COLUMN_NAME"];
-                CONSTRAINT_CATALOG = (string)record["CONSTRAINT_CATALOG"];
-                CONSTRAINT_SCHEMA = (string)record["CONSTRAINT_SCHEMA"];
-                CONSTRAINT_NAME = (string)record["CONSTRAINT_NAME"];
+                TABLE_CATALOG = record["TABLE_CATALOG"].Convert<string>();
+                TABLE_SCHEMA = record["TABLE_SCHEMA"].Convert<string>();
+                TABLE_NAME = record["TABLE_NAME"].Convert<string>();
+                COLUMN_NAME = record["COLUMN_NAME"].Convert<string>();
+                CONSTRAINT_CATALOG = record["CONSTRAINT_CATALOG"].Convert<string>();
+                CONSTRAINT_SCHEMA = record["CONSTRAINT_SCHEMA"].Convert<string>();
+                CONSTRAINT_NAME = record["CONSTRAINT_NAME"].Convert<string>();
             }
 
             public readonly string TABLE_CATALOG;
@@ -447,15 +447,15 @@ namespace Taabus
         {
             internal TABLE_CONSTRAINTSClass(DbDataRecord record)
             {
-                CONSTRAINT_CATALOG = (string)record["CONSTRAINT_CATALOG"];
-                CONSTRAINT_SCHEMA = (string)record["CONSTRAINT_SCHEMA"];
-                CONSTRAINT_NAME = (string)record["CONSTRAINT_NAME"];
-                TABLE_CATALOG = (string)record["TABLE_CATALOG"];
-                TABLE_SCHEMA = (string)record["TABLE_SCHEMA"];
-                TABLE_NAME = (string)record["TABLE_NAME"];
-                CONSTRAINT_TYPE = (string)record["CONSTRAINT_TYPE"];
-                IS_DEFERRABLE = (string)record["IS_DEFERRABLE"];
-                INITIALLY_DEFERRED = (string)record["INITIALLY_DEFERRED"];
+                CONSTRAINT_CATALOG = record["CONSTRAINT_CATALOG"].Convert<string>();
+                CONSTRAINT_SCHEMA = record["CONSTRAINT_SCHEMA"].Convert<string>();
+                CONSTRAINT_NAME = record["CONSTRAINT_NAME"].Convert<string>();
+                TABLE_CATALOG = record["TABLE_CATALOG"].Convert<string>();
+                TABLE_SCHEMA = record["TABLE_SCHEMA"].Convert<string>();
+                TABLE_NAME = record["TABLE_NAME"].Convert<string>();
+                CONSTRAINT_TYPE = record["CONSTRAINT_TYPE"].Convert<string>();
+                IS_DEFERRABLE = record["IS_DEFERRABLE"].Convert<string>();
+                INITIALLY_DEFERRED = record["INITIALLY_DEFERRED"].Convert<string>();
             }
 
             public readonly string CONSTRAINT_CATALOG;
@@ -472,12 +472,12 @@ namespace Taabus
         {
             internal CONSTRAINT_TABLE_USAGEClass(DbDataRecord record)
             {
-                TABLE_CATALOG = (string)record["TABLE_CATALOG"];
-                TABLE_SCHEMA = (string)record["TABLE_SCHEMA"];
-                TABLE_NAME = (string)record["TABLE_NAME"];
-                CONSTRAINT_CATALOG = (string)record["CONSTRAINT_CATALOG"];
-                CONSTRAINT_SCHEMA = (string)record["CONSTRAINT_SCHEMA"];
-                CONSTRAINT_NAME = (string)record["CONSTRAINT_NAME"];
+                TABLE_CATALOG = record["TABLE_CATALOG"].Convert<string>();
+                TABLE_SCHEMA = record["TABLE_SCHEMA"].Convert<string>();
+                TABLE_NAME = record["TABLE_NAME"].Convert<string>();
+                CONSTRAINT_CATALOG = record["CONSTRAINT_CATALOG"].Convert<string>();
+                CONSTRAINT_SCHEMA = record["CONSTRAINT_SCHEMA"].Convert<string>();
+                CONSTRAINT_NAME = record["CONSTRAINT_NAME"].Convert<string>();
             }
 
             public readonly string TABLE_CATALOG;
@@ -491,13 +491,13 @@ namespace Taabus
         {
             internal TABLE_PRIVILEGESClass(DbDataRecord record)
             {
-                GRANTOR = (string)record["GRANTOR"];
-                GRANTEE = (string)record["GRANTEE"];
-                TABLE_CATALOG = (string)record["TABLE_CATALOG"];
-                TABLE_SCHEMA = (string)record["TABLE_SCHEMA"];
-                TABLE_NAME = (string)record["TABLE_NAME"];
-                PRIVILEGE_TYPE = (string)record["PRIVILEGE_TYPE"];
-                IS_GRANTABLE = (string)record["IS_GRANTABLE"];
+                GRANTOR = record["GRANTOR"].Convert<string>();
+                GRANTEE = record["GRANTEE"].Convert<string>();
+                TABLE_CATALOG = record["TABLE_CATALOG"].Convert<string>();
+                TABLE_SCHEMA = record["TABLE_SCHEMA"].Convert<string>();
+                TABLE_NAME = record["TABLE_NAME"].Convert<string>();
+                PRIVILEGE_TYPE = record["PRIVILEGE_TYPE"].Convert<string>();
+                IS_GRANTABLE = record["IS_GRANTABLE"].Convert<string>();
             }
 
             public readonly string GRANTOR;
@@ -512,14 +512,14 @@ namespace Taabus
         {
             internal DOMAIN_CONSTRAINTSClass(DbDataRecord record)
             {
-                CONSTRAINT_CATALOG = (string)record["CONSTRAINT_CATALOG"];
-                CONSTRAINT_SCHEMA = (string)record["CONSTRAINT_SCHEMA"];
-                CONSTRAINT_NAME = (string)record["CONSTRAINT_NAME"];
-                DOMAIN_CATALOG = (string)record["DOMAIN_CATALOG"];
-                DOMAIN_SCHEMA = (string)record["DOMAIN_SCHEMA"];
-                DOMAIN_NAME = (string)record["DOMAIN_NAME"];
-                IS_DEFERRABLE = (string)record["IS_DEFERRABLE"];
-                INITIALLY_DEFERRED = (string)record["INITIALLY_DEFERRED"];
+                CONSTRAINT_CATALOG = record["CONSTRAINT_CATALOG"].Convert<string>();
+                CONSTRAINT_SCHEMA = record["CONSTRAINT_SCHEMA"].Convert<string>();
+                CONSTRAINT_NAME = record["CONSTRAINT_NAME"].Convert<string>();
+                DOMAIN_CATALOG = record["DOMAIN_CATALOG"].Convert<string>();
+                DOMAIN_SCHEMA = record["DOMAIN_SCHEMA"].Convert<string>();
+                DOMAIN_NAME = record["DOMAIN_NAME"].Convert<string>();
+                IS_DEFERRABLE = record["IS_DEFERRABLE"].Convert<string>();
+                INITIALLY_DEFERRED = record["INITIALLY_DEFERRED"].Convert<string>();
             }
 
             public readonly string CONSTRAINT_CATALOG;
@@ -535,10 +535,10 @@ namespace Taabus
         {
             internal TABLESClass(DbDataRecord record)
             {
-                TABLE_CATALOG = (string)record["TABLE_CATALOG"];
-                TABLE_SCHEMA = (string)record["TABLE_SCHEMA"];
-                TABLE_NAME = (string)record["TABLE_NAME"];
-                TABLE_TYPE = (string)record["TABLE_TYPE"];
+                TABLE_CATALOG = record["TABLE_CATALOG"].Convert<string>();
+                TABLE_SCHEMA = record["TABLE_SCHEMA"].Convert<string>();
+                TABLE_NAME = record["TABLE_NAME"].Convert<string>();
+                TABLE_TYPE = record["TABLE_TYPE"].Convert<string>();
             }
 
             public readonly string TABLE_CATALOG;
@@ -550,54 +550,54 @@ namespace Taabus
         {
             internal DOMAINSClass(DbDataRecord record)
             {
-                DOMAIN_CATALOG = (string)record["DOMAIN_CATALOG"];
-                DOMAIN_SCHEMA = (string)record["DOMAIN_SCHEMA"];
-                DOMAIN_NAME = (string)record["DOMAIN_NAME"];
-                DATA_TYPE = (string)record["DATA_TYPE"];
-                CHARACTER_MAXIMUM_LENGTH = (int)record["CHARACTER_MAXIMUM_LENGTH"];
-                CHARACTER_OCTET_LENGTH = (int)record["CHARACTER_OCTET_LENGTH"];
-                COLLATION_CATALOG = (string)record["COLLATION_CATALOG"];
-                COLLATION_SCHEMA = (string)record["COLLATION_SCHEMA"];
-                COLLATION_NAME = (string)record["COLLATION_NAME"];
-                CHARACTER_SET_CATALOG = (string)record["CHARACTER_SET_CATALOG"];
-                CHARACTER_SET_SCHEMA = (string)record["CHARACTER_SET_SCHEMA"];
-                CHARACTER_SET_NAME = (string)record["CHARACTER_SET_NAME"];
-                NUMERIC_PRECISION = (Byte)record["NUMERIC_PRECISION"];
-                NUMERIC_PRECISION_RADIX = (Int16)record["NUMERIC_PRECISION_RADIX"];
-                NUMERIC_SCALE = (int)record["NUMERIC_SCALE"];
-                DATETIME_PRECISION = (Int16)record["DATETIME_PRECISION"];
-                DOMAIN_DEFAULT = (string)record["DOMAIN_DEFAULT"];
+                DOMAIN_CATALOG = record["DOMAIN_CATALOG"].Convert<string>();
+                DOMAIN_SCHEMA = record["DOMAIN_SCHEMA"].Convert<string>();
+                DOMAIN_NAME = record["DOMAIN_NAME"].Convert<string>();
+                DATA_TYPE = record["DATA_TYPE"].Convert<string>();
+                CHARACTER_MAXIMUM_LENGTH = record["CHARACTER_MAXIMUM_LENGTH"].Convert<int?>();
+                CHARACTER_OCTET_LENGTH = record["CHARACTER_OCTET_LENGTH"].Convert<int?>();
+                COLLATION_CATALOG = record["COLLATION_CATALOG"].Convert<string>();
+                COLLATION_SCHEMA = record["COLLATION_SCHEMA"].Convert<string>();
+                COLLATION_NAME = record["COLLATION_NAME"].Convert<string>();
+                CHARACTER_SET_CATALOG = record["CHARACTER_SET_CATALOG"].Convert<string>();
+                CHARACTER_SET_SCHEMA = record["CHARACTER_SET_SCHEMA"].Convert<string>();
+                CHARACTER_SET_NAME = record["CHARACTER_SET_NAME"].Convert<string>();
+                NUMERIC_PRECISION = record["NUMERIC_PRECISION"].Convert<Byte?>();
+                NUMERIC_PRECISION_RADIX = record["NUMERIC_PRECISION_RADIX"].Convert<Int16?>();
+                NUMERIC_SCALE = record["NUMERIC_SCALE"].Convert<int?>();
+                DATETIME_PRECISION = record["DATETIME_PRECISION"].Convert<Int16?>();
+                DOMAIN_DEFAULT = record["DOMAIN_DEFAULT"].Convert<string>();
             }
 
             public readonly string DOMAIN_CATALOG;
             public readonly string DOMAIN_SCHEMA;
             public readonly string DOMAIN_NAME;
             public readonly string DATA_TYPE;
-            public readonly int CHARACTER_MAXIMUM_LENGTH;
-            public readonly int CHARACTER_OCTET_LENGTH;
+            public readonly int? CHARACTER_MAXIMUM_LENGTH;
+            public readonly int? CHARACTER_OCTET_LENGTH;
             public readonly string COLLATION_CATALOG;
             public readonly string COLLATION_SCHEMA;
             public readonly string COLLATION_NAME;
             public readonly string CHARACTER_SET_CATALOG;
             public readonly string CHARACTER_SET_SCHEMA;
             public readonly string CHARACTER_SET_NAME;
-            public readonly Byte NUMERIC_PRECISION;
-            public readonly Int16 NUMERIC_PRECISION_RADIX;
-            public readonly int NUMERIC_SCALE;
-            public readonly Int16 DATETIME_PRECISION;
+            public readonly Byte? NUMERIC_PRECISION;
+            public readonly Int16? NUMERIC_PRECISION_RADIX;
+            public readonly int? NUMERIC_SCALE;
+            public readonly Int16? DATETIME_PRECISION;
             public readonly string DOMAIN_DEFAULT;
         }
         public sealed class VIEW_COLUMN_USAGEClass
         {
             internal VIEW_COLUMN_USAGEClass(DbDataRecord record)
             {
-                VIEW_CATALOG = (string)record["VIEW_CATALOG"];
-                VIEW_SCHEMA = (string)record["VIEW_SCHEMA"];
-                VIEW_NAME = (string)record["VIEW_NAME"];
-                TABLE_CATALOG = (string)record["TABLE_CATALOG"];
-                TABLE_SCHEMA = (string)record["TABLE_SCHEMA"];
-                TABLE_NAME = (string)record["TABLE_NAME"];
-                COLUMN_NAME = (string)record["COLUMN_NAME"];
+                VIEW_CATALOG = record["VIEW_CATALOG"].Convert<string>();
+                VIEW_SCHEMA = record["VIEW_SCHEMA"].Convert<string>();
+                VIEW_NAME = record["VIEW_NAME"].Convert<string>();
+                TABLE_CATALOG = record["TABLE_CATALOG"].Convert<string>();
+                TABLE_SCHEMA = record["TABLE_SCHEMA"].Convert<string>();
+                TABLE_NAME = record["TABLE_NAME"].Convert<string>();
+                COLUMN_NAME = record["COLUMN_NAME"].Convert<string>();
             }
 
             public readonly string VIEW_CATALOG;
@@ -612,14 +612,14 @@ namespace Taabus
         {
             internal KEY_COLUMN_USAGEClass(DbDataRecord record)
             {
-                CONSTRAINT_CATALOG = (string)record["CONSTRAINT_CATALOG"];
-                CONSTRAINT_SCHEMA = (string)record["CONSTRAINT_SCHEMA"];
-                CONSTRAINT_NAME = (string)record["CONSTRAINT_NAME"];
-                TABLE_CATALOG = (string)record["TABLE_CATALOG"];
-                TABLE_SCHEMA = (string)record["TABLE_SCHEMA"];
-                TABLE_NAME = (string)record["TABLE_NAME"];
-                COLUMN_NAME = (string)record["COLUMN_NAME"];
-                ORDINAL_POSITION = (int)record["ORDINAL_POSITION"];
+                CONSTRAINT_CATALOG = record["CONSTRAINT_CATALOG"].Convert<string>();
+                CONSTRAINT_SCHEMA = record["CONSTRAINT_SCHEMA"].Convert<string>();
+                CONSTRAINT_NAME = record["CONSTRAINT_NAME"].Convert<string>();
+                TABLE_CATALOG = record["TABLE_CATALOG"].Convert<string>();
+                TABLE_SCHEMA = record["TABLE_SCHEMA"].Convert<string>();
+                TABLE_NAME = record["TABLE_NAME"].Convert<string>();
+                COLUMN_NAME = record["COLUMN_NAME"].Convert<string>();
+                ORDINAL_POSITION = record["ORDINAL_POSITION"].Convert<int?>();
             }
 
             public readonly string CONSTRAINT_CATALOG;
@@ -629,18 +629,18 @@ namespace Taabus
             public readonly string TABLE_SCHEMA;
             public readonly string TABLE_NAME;
             public readonly string COLUMN_NAME;
-            public readonly int ORDINAL_POSITION;
+            public readonly int? ORDINAL_POSITION;
         }
         public sealed class VIEW_TABLE_USAGEClass
         {
             internal VIEW_TABLE_USAGEClass(DbDataRecord record)
             {
-                VIEW_CATALOG = (string)record["VIEW_CATALOG"];
-                VIEW_SCHEMA = (string)record["VIEW_SCHEMA"];
-                VIEW_NAME = (string)record["VIEW_NAME"];
-                TABLE_CATALOG = (string)record["TABLE_CATALOG"];
-                TABLE_SCHEMA = (string)record["TABLE_SCHEMA"];
-                TABLE_NAME = (string)record["TABLE_NAME"];
+                VIEW_CATALOG = record["VIEW_CATALOG"].Convert<string>();
+                VIEW_SCHEMA = record["VIEW_SCHEMA"].Convert<string>();
+                VIEW_NAME = record["VIEW_NAME"].Convert<string>();
+                TABLE_CATALOG = record["TABLE_CATALOG"].Convert<string>();
+                TABLE_SCHEMA = record["TABLE_SCHEMA"].Convert<string>();
+                TABLE_NAME = record["TABLE_NAME"].Convert<string>();
             }
 
             public readonly string VIEW_CATALOG;
@@ -654,60 +654,60 @@ namespace Taabus
         {
             internal PARAMETERSClass(DbDataRecord record)
             {
-                SPECIFIC_CATALOG = (string)record["SPECIFIC_CATALOG"];
-                SPECIFIC_SCHEMA = (string)record["SPECIFIC_SCHEMA"];
-                SPECIFIC_NAME = (string)record["SPECIFIC_NAME"];
-                ORDINAL_POSITION = (int)record["ORDINAL_POSITION"];
-                PARAMETER_MODE = (string)record["PARAMETER_MODE"];
-                IS_RESULT = (string)record["IS_RESULT"];
-                AS_LOCATOR = (string)record["AS_LOCATOR"];
-                PARAMETER_NAME = (string)record["PARAMETER_NAME"];
-                DATA_TYPE = (string)record["DATA_TYPE"];
-                CHARACTER_MAXIMUM_LENGTH = (int)record["CHARACTER_MAXIMUM_LENGTH"];
-                CHARACTER_OCTET_LENGTH = (int)record["CHARACTER_OCTET_LENGTH"];
-                COLLATION_CATALOG = (string)record["COLLATION_CATALOG"];
-                COLLATION_SCHEMA = (string)record["COLLATION_SCHEMA"];
-                COLLATION_NAME = (string)record["COLLATION_NAME"];
-                CHARACTER_SET_CATALOG = (string)record["CHARACTER_SET_CATALOG"];
-                CHARACTER_SET_SCHEMA = (string)record["CHARACTER_SET_SCHEMA"];
-                CHARACTER_SET_NAME = (string)record["CHARACTER_SET_NAME"];
-                NUMERIC_PRECISION = (Byte)record["NUMERIC_PRECISION"];
-                NUMERIC_PRECISION_RADIX = (Int16)record["NUMERIC_PRECISION_RADIX"];
-                NUMERIC_SCALE = (int)record["NUMERIC_SCALE"];
-                DATETIME_PRECISION = (Int16)record["DATETIME_PRECISION"];
-                INTERVAL_TYPE = (string)record["INTERVAL_TYPE"];
-                INTERVAL_PRECISION = (Int16)record["INTERVAL_PRECISION"];
-                USER_DEFINED_TYPE_CATALOG = (string)record["USER_DEFINED_TYPE_CATALOG"];
-                USER_DEFINED_TYPE_SCHEMA = (string)record["USER_DEFINED_TYPE_SCHEMA"];
-                USER_DEFINED_TYPE_NAME = (string)record["USER_DEFINED_TYPE_NAME"];
-                SCOPE_CATALOG = (string)record["SCOPE_CATALOG"];
-                SCOPE_SCHEMA = (string)record["SCOPE_SCHEMA"];
-                SCOPE_NAME = (string)record["SCOPE_NAME"];
+                SPECIFIC_CATALOG = record["SPECIFIC_CATALOG"].Convert<string>();
+                SPECIFIC_SCHEMA = record["SPECIFIC_SCHEMA"].Convert<string>();
+                SPECIFIC_NAME = record["SPECIFIC_NAME"].Convert<string>();
+                ORDINAL_POSITION = record["ORDINAL_POSITION"].Convert<int?>();
+                PARAMETER_MODE = record["PARAMETER_MODE"].Convert<string>();
+                IS_RESULT = record["IS_RESULT"].Convert<string>();
+                AS_LOCATOR = record["AS_LOCATOR"].Convert<string>();
+                PARAMETER_NAME = record["PARAMETER_NAME"].Convert<string>();
+                DATA_TYPE = record["DATA_TYPE"].Convert<string>();
+                CHARACTER_MAXIMUM_LENGTH = record["CHARACTER_MAXIMUM_LENGTH"].Convert<int?>();
+                CHARACTER_OCTET_LENGTH = record["CHARACTER_OCTET_LENGTH"].Convert<int?>();
+                COLLATION_CATALOG = record["COLLATION_CATALOG"].Convert<string>();
+                COLLATION_SCHEMA = record["COLLATION_SCHEMA"].Convert<string>();
+                COLLATION_NAME = record["COLLATION_NAME"].Convert<string>();
+                CHARACTER_SET_CATALOG = record["CHARACTER_SET_CATALOG"].Convert<string>();
+                CHARACTER_SET_SCHEMA = record["CHARACTER_SET_SCHEMA"].Convert<string>();
+                CHARACTER_SET_NAME = record["CHARACTER_SET_NAME"].Convert<string>();
+                NUMERIC_PRECISION = record["NUMERIC_PRECISION"].Convert<Byte?>();
+                NUMERIC_PRECISION_RADIX = record["NUMERIC_PRECISION_RADIX"].Convert<Int16?>();
+                NUMERIC_SCALE = record["NUMERIC_SCALE"].Convert<int?>();
+                DATETIME_PRECISION = record["DATETIME_PRECISION"].Convert<Int16?>();
+                INTERVAL_TYPE = record["INTERVAL_TYPE"].Convert<string>();
+                INTERVAL_PRECISION = record["INTERVAL_PRECISION"].Convert<Int16?>();
+                USER_DEFINED_TYPE_CATALOG = record["USER_DEFINED_TYPE_CATALOG"].Convert<string>();
+                USER_DEFINED_TYPE_SCHEMA = record["USER_DEFINED_TYPE_SCHEMA"].Convert<string>();
+                USER_DEFINED_TYPE_NAME = record["USER_DEFINED_TYPE_NAME"].Convert<string>();
+                SCOPE_CATALOG = record["SCOPE_CATALOG"].Convert<string>();
+                SCOPE_SCHEMA = record["SCOPE_SCHEMA"].Convert<string>();
+                SCOPE_NAME = record["SCOPE_NAME"].Convert<string>();
             }
 
             public readonly string SPECIFIC_CATALOG;
             public readonly string SPECIFIC_SCHEMA;
             public readonly string SPECIFIC_NAME;
-            public readonly int ORDINAL_POSITION;
+            public readonly int? ORDINAL_POSITION;
             public readonly string PARAMETER_MODE;
             public readonly string IS_RESULT;
             public readonly string AS_LOCATOR;
             public readonly string PARAMETER_NAME;
             public readonly string DATA_TYPE;
-            public readonly int CHARACTER_MAXIMUM_LENGTH;
-            public readonly int CHARACTER_OCTET_LENGTH;
+            public readonly int? CHARACTER_MAXIMUM_LENGTH;
+            public readonly int? CHARACTER_OCTET_LENGTH;
             public readonly string COLLATION_CATALOG;
             public readonly string COLLATION_SCHEMA;
             public readonly string COLLATION_NAME;
             public readonly string CHARACTER_SET_CATALOG;
             public readonly string CHARACTER_SET_SCHEMA;
             public readonly string CHARACTER_SET_NAME;
-            public readonly Byte NUMERIC_PRECISION;
-            public readonly Int16 NUMERIC_PRECISION_RADIX;
-            public readonly int NUMERIC_SCALE;
-            public readonly Int16 DATETIME_PRECISION;
+            public readonly Byte? NUMERIC_PRECISION;
+            public readonly Int16? NUMERIC_PRECISION_RADIX;
+            public readonly int? NUMERIC_SCALE;
+            public readonly Int16? DATETIME_PRECISION;
             public readonly string INTERVAL_TYPE;
-            public readonly Int16 INTERVAL_PRECISION;
+            public readonly Int16? INTERVAL_PRECISION;
             public readonly string USER_DEFINED_TYPE_CATALOG;
             public readonly string USER_DEFINED_TYPE_SCHEMA;
             public readonly string USER_DEFINED_TYPE_NAME;
@@ -719,12 +719,12 @@ namespace Taabus
         {
             internal VIEWSClass(DbDataRecord record)
             {
-                TABLE_CATALOG = (string)record["TABLE_CATALOG"];
-                TABLE_SCHEMA = (string)record["TABLE_SCHEMA"];
-                TABLE_NAME = (string)record["TABLE_NAME"];
-                VIEW_DEFINITION = (string)record["VIEW_DEFINITION"];
-                CHECK_OPTION = (string)record["CHECK_OPTION"];
-                IS_UPDATABLE = (string)record["IS_UPDATABLE"];
+                TABLE_CATALOG = record["TABLE_CATALOG"].Convert<string>();
+                TABLE_SCHEMA = record["TABLE_SCHEMA"].Convert<string>();
+                TABLE_NAME = record["TABLE_NAME"].Convert<string>();
+                VIEW_DEFINITION = record["VIEW_DEFINITION"].Convert<string>();
+                CHECK_OPTION = record["CHECK_OPTION"].Convert<string>();
+                IS_UPDATABLE = record["IS_UPDATABLE"].Convert<string>();
             }
 
             public readonly string TABLE_CATALOG;
@@ -737,3 +737,4 @@ namespace Taabus
 
     }
 }
+

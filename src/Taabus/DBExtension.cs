@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
+using hw.Helper;
 
 namespace Taabus
 {
@@ -41,6 +42,13 @@ namespace Taabus
             var connection = new SqlConnection(connectionString.ConnectionString);
             connection.Open();
             return connection;
+        }
+
+        public static string NullableName(this Type type)
+        {
+            if(type.IsClass)
+                return type.PrettyName();
+            return type.PrettyName() + "?";
         }
     }
 }

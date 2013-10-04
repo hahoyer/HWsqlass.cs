@@ -46,12 +46,12 @@ namespace Taabus
         { 
             internal <#=name #>Class(DbDataRecord record){
                 <#for(var index = 0; index < reader.FieldCount; index++){ #>
-                <#=reader.GetName(index)#> = (<#=reader.GetFieldType(index).PrettyName() #>)record[<#=reader.GetName(index).Quote()#>];
+                <#=reader.GetName(index)#> = record[<#=reader.GetName(index).Quote()#>].Convert<<#=reader.GetFieldType(index).NullableName()#>>();
                 <#}#>
             }
 
             <#for(var index = 0; index < reader.FieldCount; index++){ #>
-            public readonly <#=reader.GetFieldType(index).PrettyName() #> <#=reader.GetName(index)#>;
+            public readonly <#=reader.GetFieldType(index).NullableName() #> <#=reader.GetName(index)#>;
             <#}#>
         }
         <#    } #>

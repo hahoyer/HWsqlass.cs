@@ -183,21 +183,21 @@ for(var index = 0; index < reader.FieldCount; index++){
             
             #line default
             #line hidden
-            this.Write(" = (");
-            
-            #line 49 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(reader.GetFieldType(index).PrettyName()));
-            
-            #line default
-            #line hidden
-            this.Write(")record[");
+            this.Write(" = record[");
             
             #line 49 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(reader.GetName(index).Quote()));
             
             #line default
             #line hidden
-            this.Write("];\r\n                ");
+            this.Write("].Convert<");
+            
+            #line 49 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(reader.GetFieldType(index).NullableName()));
+            
+            #line default
+            #line hidden
+            this.Write(">();\r\n                ");
             
             #line 50 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
 }
@@ -214,7 +214,7 @@ for(var index = 0; index < reader.FieldCount; index++){
             this.Write("            public readonly ");
             
             #line 54 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(reader.GetFieldType(index).PrettyName()));
+            this.Write(this.ToStringHelper.ToStringWithCulture(reader.GetFieldType(index).NullableName()));
             
             #line default
             #line hidden

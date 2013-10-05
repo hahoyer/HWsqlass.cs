@@ -53,30 +53,35 @@ namespace Taabus
             public readonly ValueCache<PARAMETERSClass[]> PARAMETERS;
             public readonly ValueCache<VIEWSClass[]> VIEWS;
 
-            public CacheClass(DataBase dataBase)
+            public CacheClass(IDataProvider provider)
             {
-                CHECK_CONSTRAINTS = new ValueCache<CHECK_CONSTRAINTSClass[]>(() => dataBase.GetMetaData<CHECK_CONSTRAINTSClass>("CHECK_CONSTRAINTS", r => new CHECK_CONSTRAINTSClass(r)));
-                REFERENTIAL_CONSTRAINTS = new ValueCache<REFERENTIAL_CONSTRAINTSClass[]>(() => dataBase.GetMetaData<REFERENTIAL_CONSTRAINTSClass>("REFERENTIAL_CONSTRAINTS", r => new REFERENTIAL_CONSTRAINTSClass(r)));
-                COLUMN_DOMAIN_USAGE = new ValueCache<COLUMN_DOMAIN_USAGEClass[]>(() => dataBase.GetMetaData<COLUMN_DOMAIN_USAGEClass>("COLUMN_DOMAIN_USAGE", r => new COLUMN_DOMAIN_USAGEClass(r)));
-                ROUTINES = new ValueCache<ROUTINESClass[]>(() => dataBase.GetMetaData<ROUTINESClass>("ROUTINES", r => new ROUTINESClass(r)));
-                COLUMN_PRIVILEGES = new ValueCache<COLUMN_PRIVILEGESClass[]>(() => dataBase.GetMetaData<COLUMN_PRIVILEGESClass>("COLUMN_PRIVILEGES", r => new COLUMN_PRIVILEGESClass(r)));
-                ROUTINE_COLUMNS = new ValueCache<ROUTINE_COLUMNSClass[]>(() => dataBase.GetMetaData<ROUTINE_COLUMNSClass>("ROUTINE_COLUMNS", r => new ROUTINE_COLUMNSClass(r)));
-                COLUMNS = new ValueCache<COLUMNSClass[]>(() => dataBase.GetMetaData<COLUMNSClass>("COLUMNS", r => new COLUMNSClass(r)));
-                SCHEMATA = new ValueCache<SCHEMATAClass[]>(() => dataBase.GetMetaData<SCHEMATAClass>("SCHEMATA", r => new SCHEMATAClass(r)));
-                CONSTRAINT_COLUMN_USAGE = new ValueCache<CONSTRAINT_COLUMN_USAGEClass[]>(() => dataBase.GetMetaData<CONSTRAINT_COLUMN_USAGEClass>("CONSTRAINT_COLUMN_USAGE", r => new CONSTRAINT_COLUMN_USAGEClass(r)));
-                TABLE_CONSTRAINTS = new ValueCache<TABLE_CONSTRAINTSClass[]>(() => dataBase.GetMetaData<TABLE_CONSTRAINTSClass>("TABLE_CONSTRAINTS", r => new TABLE_CONSTRAINTSClass(r)));
-                CONSTRAINT_TABLE_USAGE = new ValueCache<CONSTRAINT_TABLE_USAGEClass[]>(() => dataBase.GetMetaData<CONSTRAINT_TABLE_USAGEClass>("CONSTRAINT_TABLE_USAGE", r => new CONSTRAINT_TABLE_USAGEClass(r)));
-                TABLE_PRIVILEGES = new ValueCache<TABLE_PRIVILEGESClass[]>(() => dataBase.GetMetaData<TABLE_PRIVILEGESClass>("TABLE_PRIVILEGES", r => new TABLE_PRIVILEGESClass(r)));
-                DOMAIN_CONSTRAINTS = new ValueCache<DOMAIN_CONSTRAINTSClass[]>(() => dataBase.GetMetaData<DOMAIN_CONSTRAINTSClass>("DOMAIN_CONSTRAINTS", r => new DOMAIN_CONSTRAINTSClass(r)));
-                TABLES = new ValueCache<TABLESClass[]>(() => dataBase.GetMetaData<TABLESClass>("TABLES", r => new TABLESClass(r)));
-                DOMAINS = new ValueCache<DOMAINSClass[]>(() => dataBase.GetMetaData<DOMAINSClass>("DOMAINS", r => new DOMAINSClass(r)));
-                VIEW_COLUMN_USAGE = new ValueCache<VIEW_COLUMN_USAGEClass[]>(() => dataBase.GetMetaData<VIEW_COLUMN_USAGEClass>("VIEW_COLUMN_USAGE", r => new VIEW_COLUMN_USAGEClass(r)));
-                KEY_COLUMN_USAGE = new ValueCache<KEY_COLUMN_USAGEClass[]>(() => dataBase.GetMetaData<KEY_COLUMN_USAGEClass>("KEY_COLUMN_USAGE", r => new KEY_COLUMN_USAGEClass(r)));
-                VIEW_TABLE_USAGE = new ValueCache<VIEW_TABLE_USAGEClass[]>(() => dataBase.GetMetaData<VIEW_TABLE_USAGEClass>("VIEW_TABLE_USAGE", r => new VIEW_TABLE_USAGEClass(r)));
-                PARAMETERS = new ValueCache<PARAMETERSClass[]>(() => dataBase.GetMetaData<PARAMETERSClass>("PARAMETERS", r => new PARAMETERSClass(r)));
-                VIEWS = new ValueCache<VIEWSClass[]>(() => dataBase.GetMetaData<VIEWSClass>("VIEWS", r => new VIEWSClass(r)));
+                CHECK_CONSTRAINTS = new ValueCache<CHECK_CONSTRAINTSClass[]>(() => provider.Select<CHECK_CONSTRAINTSClass>("CHECK_CONSTRAINTS", r => new CHECK_CONSTRAINTSClass(r)));
+                REFERENTIAL_CONSTRAINTS = new ValueCache<REFERENTIAL_CONSTRAINTSClass[]>(() => provider.Select<REFERENTIAL_CONSTRAINTSClass>("REFERENTIAL_CONSTRAINTS", r => new REFERENTIAL_CONSTRAINTSClass(r)));
+                COLUMN_DOMAIN_USAGE = new ValueCache<COLUMN_DOMAIN_USAGEClass[]>(() => provider.Select<COLUMN_DOMAIN_USAGEClass>("COLUMN_DOMAIN_USAGE", r => new COLUMN_DOMAIN_USAGEClass(r)));
+                ROUTINES = new ValueCache<ROUTINESClass[]>(() => provider.Select<ROUTINESClass>("ROUTINES", r => new ROUTINESClass(r)));
+                COLUMN_PRIVILEGES = new ValueCache<COLUMN_PRIVILEGESClass[]>(() => provider.Select<COLUMN_PRIVILEGESClass>("COLUMN_PRIVILEGES", r => new COLUMN_PRIVILEGESClass(r)));
+                ROUTINE_COLUMNS = new ValueCache<ROUTINE_COLUMNSClass[]>(() => provider.Select<ROUTINE_COLUMNSClass>("ROUTINE_COLUMNS", r => new ROUTINE_COLUMNSClass(r)));
+                COLUMNS = new ValueCache<COLUMNSClass[]>(() => provider.Select<COLUMNSClass>("COLUMNS", r => new COLUMNSClass(r)));
+                SCHEMATA = new ValueCache<SCHEMATAClass[]>(() => provider.Select<SCHEMATAClass>("SCHEMATA", r => new SCHEMATAClass(r)));
+                CONSTRAINT_COLUMN_USAGE = new ValueCache<CONSTRAINT_COLUMN_USAGEClass[]>(() => provider.Select<CONSTRAINT_COLUMN_USAGEClass>("CONSTRAINT_COLUMN_USAGE", r => new CONSTRAINT_COLUMN_USAGEClass(r)));
+                TABLE_CONSTRAINTS = new ValueCache<TABLE_CONSTRAINTSClass[]>(() => provider.Select<TABLE_CONSTRAINTSClass>("TABLE_CONSTRAINTS", r => new TABLE_CONSTRAINTSClass(r)));
+                CONSTRAINT_TABLE_USAGE = new ValueCache<CONSTRAINT_TABLE_USAGEClass[]>(() => provider.Select<CONSTRAINT_TABLE_USAGEClass>("CONSTRAINT_TABLE_USAGE", r => new CONSTRAINT_TABLE_USAGEClass(r)));
+                TABLE_PRIVILEGES = new ValueCache<TABLE_PRIVILEGESClass[]>(() => provider.Select<TABLE_PRIVILEGESClass>("TABLE_PRIVILEGES", r => new TABLE_PRIVILEGESClass(r)));
+                DOMAIN_CONSTRAINTS = new ValueCache<DOMAIN_CONSTRAINTSClass[]>(() => provider.Select<DOMAIN_CONSTRAINTSClass>("DOMAIN_CONSTRAINTS", r => new DOMAIN_CONSTRAINTSClass(r)));
+                TABLES = new ValueCache<TABLESClass[]>(() => provider.Select<TABLESClass>("TABLES", r => new TABLESClass(r)));
+                DOMAINS = new ValueCache<DOMAINSClass[]>(() => provider.Select<DOMAINSClass>("DOMAINS", r => new DOMAINSClass(r)));
+                VIEW_COLUMN_USAGE = new ValueCache<VIEW_COLUMN_USAGEClass[]>(() => provider.Select<VIEW_COLUMN_USAGEClass>("VIEW_COLUMN_USAGE", r => new VIEW_COLUMN_USAGEClass(r)));
+                KEY_COLUMN_USAGE = new ValueCache<KEY_COLUMN_USAGEClass[]>(() => provider.Select<KEY_COLUMN_USAGEClass>("KEY_COLUMN_USAGE", r => new KEY_COLUMN_USAGEClass(r)));
+                VIEW_TABLE_USAGE = new ValueCache<VIEW_TABLE_USAGEClass[]>(() => provider.Select<VIEW_TABLE_USAGEClass>("VIEW_TABLE_USAGE", r => new VIEW_TABLE_USAGEClass(r)));
+                PARAMETERS = new ValueCache<PARAMETERSClass[]>(() => provider.Select<PARAMETERSClass>("PARAMETERS", r => new PARAMETERSClass(r)));
+                VIEWS = new ValueCache<VIEWSClass[]>(() => provider.Select<VIEWSClass>("VIEWS", r => new VIEWSClass(r)));
             }
 
+        }
+
+        public interface IDataProvider
+        {
+            T[] Select<T>(string name, Func<DbDataRecord, T> func);
         }
 
         public readonly CacheClass Cache;
@@ -102,7 +107,7 @@ namespace Taabus
         public PARAMETERSClass[] PARAMETERS { get { return Cache.PARAMETERS.Value; } }
         public VIEWSClass[] VIEWS { get { return Cache.VIEWS.Value; } }
 
-        public MetaData(DataBase dataBase) { Cache = new CacheClass(dataBase); }
+        public MetaData(IDataProvider provider) { Cache = new CacheClass(provider); }
 
         public sealed class CHECK_CONSTRAINTSClass
         {

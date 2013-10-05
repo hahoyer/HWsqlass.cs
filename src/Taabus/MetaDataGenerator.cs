@@ -59,8 +59,8 @@ namespace Taabus
             
             #line default
             #line hidden
-            this.Write("\r\n            public CacheClass(DataBase dataBase)\r\n            {\r\n              " +
-                    "  ");
+            this.Write("\r\n            public CacheClass(IDataProvider provider)\r\n            {\r\n         " +
+                    "       ");
             
             #line 27 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
     foreach(var name in _objectNames){ 
@@ -81,7 +81,7 @@ namespace Taabus
             
             #line default
             #line hidden
-            this.Write("Class[]>(()=> dataBase.GetMetaData<");
+            this.Write("Class[]>(()=> provider.Select<");
             
             #line 28 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(name));
@@ -109,139 +109,140 @@ namespace Taabus
             
             #line default
             #line hidden
-            this.Write("            }\r\n\r\n        }\r\n        \r\n        public readonly CacheClass Cache;\r\n" +
-                    "\r\n        ");
+            this.Write("            }\r\n\r\n        }\r\n\r\n        public interface IDataProvider \r\n        {\r" +
+                    "\n            T[] Select<T>(string name, Func<DbDataRecord, T> func);\r\n        }\r" +
+                    "\n        \r\n        public readonly CacheClass Cache;\r\n\r\n        ");
             
-            #line 36 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 41 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
     foreach(var name in _objectNames){ 
             
             #line default
             #line hidden
             this.Write("        public ");
             
-            #line 37 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 42 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(name));
             
             #line default
             #line hidden
             this.Write("Class[] ");
             
-            #line 37 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 42 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(name));
             
             #line default
             #line hidden
             this.Write(" {get{ return Cache.");
             
-            #line 37 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 42 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(name));
             
             #line default
             #line hidden
             this.Write(".Value;}}\r\n        ");
             
-            #line 38 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 43 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
     } 
             
             #line default
             #line hidden
-            this.Write("\r\n        public MetaData(DataBase dataBase){Cache = new CacheClass(dataBase);}\r\n" +
-                    "\r\n        ");
+            this.Write("\r\n        public MetaData(IDataProvider provider){Cache = new CacheClass(provider" +
+                    ");}\r\n\r\n        ");
             
-            #line 42 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 47 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
     foreach(var name in _objectNames){ 
-                var reader = _dataBase.Server.ToDataReader(_dataBase.SelectMetaDataStatement(name) + " where 0=1");
+                var reader = _dataBase.Parent.ToDataReader(_dataBase.SelectMetaDataStatement(name) + " where 0=1");
         
             
             #line default
             #line hidden
             this.Write("        public sealed class ");
             
-            #line 45 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 50 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(name));
             
             #line default
             #line hidden
             this.Write("Class\r\n        { \r\n            internal ");
             
-            #line 47 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 52 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(name));
             
             #line default
             #line hidden
             this.Write("Class(DbDataRecord record){\r\n                ");
             
-            #line 48 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 53 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
 for(var index = 0; index < reader.FieldCount; index++){ 
             
             #line default
             #line hidden
             this.Write("                ");
             
-            #line 49 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 54 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(reader.GetName(index)));
             
             #line default
             #line hidden
             this.Write(" = record[");
             
-            #line 49 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 54 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(reader.GetName(index).Quote()));
             
             #line default
             #line hidden
             this.Write("].Convert<");
             
-            #line 49 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 54 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(reader.GetFieldType(index).NullableName()));
             
             #line default
             #line hidden
             this.Write(">();\r\n                ");
             
-            #line 50 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 55 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
 }
             
             #line default
             #line hidden
             this.Write("            }\r\n\r\n            ");
             
-            #line 53 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 58 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
 for(var index = 0; index < reader.FieldCount; index++){ 
             
             #line default
             #line hidden
             this.Write("            public readonly ");
             
-            #line 54 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 59 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(reader.GetFieldType(index).NullableName()));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 54 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 59 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(reader.GetName(index)));
             
             #line default
             #line hidden
             this.Write(";\r\n            ");
             
-            #line 55 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 60 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
 }
             
             #line default
             #line hidden
             this.Write("        }\r\n        ");
             
-            #line 57 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 62 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
     } 
             
             #line default
             #line hidden
             this.Write("\r\n    }\r\n}\r\n");
             
-            #line 61 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 66 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
  // ReSharper disable FieldCanBeMadeReadOnly.Local 
             
             #line default

@@ -22,13 +22,18 @@ namespace Taabus
             public readonly ValueCache<<#=name #>Class[]> <#=name #>;
             <#    } #>
 
-            public CacheClass(DataBase dataBase)
+            public CacheClass(IDataProvider provider)
             {
                 <#    foreach(var name in _objectNames){ #>
-                 <#=name #> = new ValueCache<<#=name #>Class[]>(()=> dataBase.GetMetaData<<#=name #>Class>(<#=name.Quote()#>, r=>new <#=name #>Class(r)));
+                 <#=name #> = new ValueCache<<#=name #>Class[]>(()=> provider.Select<<#=name #>Class>(<#=name.Quote()#>, r=>new <#=name #>Class(r)));
                 <#    } #>
             }
 
+        }
+
+        public interface IDataProvider 
+        {
+            T[] Select<T>(string name, Func<DbDataRecord, T> func);
         }
         
         public readonly CacheClass Cache;
@@ -37,10 +42,10 @@ namespace Taabus
         public <#=name #>Class[] <#=name #> {get{ return Cache.<#=name #>.Value;}}
         <#    } #>
 
-        public MetaData(DataBase dataBase){Cache = new CacheClass(dataBase);}
+        public MetaData(IDataProvider provider){Cache = new CacheClass(provider);}
 
         <#    foreach(var name in _objectNames){ 
-                var reader = _dataBase.Server.ToDataReader(_dataBase.SelectMetaDataStatement(name) + " where 0=1");
+                var reader = _dataBase.Parent.ToDataReader(_dataBase.SelectMetaDataStatement(name) + " where 0=1");
         #>
         public sealed class <#=name #>Class
         { 

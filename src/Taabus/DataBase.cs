@@ -28,23 +28,25 @@ using hw.Helper;
 
 namespace Taabus
 {
-    public sealed class DataBase : NamedObject
+    public sealed class DataBase : NamedObject, MetaData.IDataProvider
     {
         const string MetaDataStatement = "select * from [{0}].[INFORMATION_SCHEMA].[{1}]";
 
         internal static DataBase Create(DbDataRecord record, Server server) { return new DataBase(server, (string) record["name"]); }
 
-        internal readonly Server Server;
+        internal readonly Server Parent;
         internal readonly MetaData MetaData;
 
-        DataBase(Server server, string name)
+
+        DataBase(Server parent, string name)
             : base(name)
         {
-            Server = server;
+            Parent = parent;
             MetaData = new MetaData(this);
         }
 
-        internal T[] GetMetaData<T>(string name, Func<DbDataRecord, T> func) { return Server.Select(SelectMetaDataStatement(name), func); }
+        T[] MetaData.IDataProvider.Select<T>(string name, Func<DbDataRecord, T> func) { return Parent.Select(SelectMetaDataStatement(name), func); }
         internal string SelectMetaDataStatement(string name) { return MetaDataStatement.ReplaceArgs(Name, name); }
     }
+
 }

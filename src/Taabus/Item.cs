@@ -22,44 +22,28 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
-using hw.Debug;
 using hw.Helper;
 using Taabus.MetaData;
 
 namespace Taabus
 {
-    sealed class DataBase : NamedObject, SQLInformation.IDataProvider
+    abstract class Item : NamedObject
     {
-        const string MetaDataStatement = "select * from [{0}].[INFORMATION_SCHEMA].[{1}]";
+        public static Item CreateType(DataBase parent, CompountType metaData) { return new TypeItem(parent, metaData); }
+        protected static Item CreateMember(TypeItem parent, Member metaData) { return new MemberItem(parent, metaData); }
 
-        internal static DataBase Create(DbDataRecord record, Server server) { return new DataBase(server, (string) record["name"]); }
-
-        readonly MetaData.Information _information;
+        internal readonly DataBase Parent;
         readonly ValueCache<Item[]> _itemsCache;
-        [DisableDump]
-        internal readonly Server Parent;
 
-        internal Item[] Items { get { return _itemsCache.Value; } }
-
-        DataBase(Server parent, string name)
+        protected Item(DataBase parent, string name)
             : base(name)
         {
             Parent = parent;
-            _information = new MetaData.Information(this);
             _itemsCache = new ValueCache<Item[]>(GetItems);
         }
 
-        Item[] GetItems()
-        {
-            return _information
-                .Types
-                .Select(metaData => Item.CreateType(this, metaData))
-                .ToArray();
-        }
-
-        T[] SQLInformation.IDataProvider.Select<T>(string name, Func<DbDataRecord, T> func) { return Parent.Select(SelectMetaDataStatement(name), func); }
-        internal string SelectMetaDataStatement(string name) { return MetaDataStatement.ReplaceArgs(Name, name); }
+        internal Item[] Items { get { return _itemsCache.Value; } }
+        protected abstract Item[] GetItems();
     }
 }

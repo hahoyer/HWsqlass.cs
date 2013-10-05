@@ -21,14 +21,12 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
 using hw.Helper;
 
-namespace Taabus
+namespace Taabus.MetaData
 {
-    public class MetaData
+    public class SQLInformation
     {
         public class CacheClass
         {
@@ -107,7 +105,7 @@ namespace Taabus
         public PARAMETERSClass[] PARAMETERS { get { return Cache.PARAMETERS.Value; } }
         public VIEWSClass[] VIEWS { get { return Cache.VIEWS.Value; } }
 
-        public MetaData(IDataProvider provider) { Cache = new CacheClass(provider); }
+        public SQLInformation(IDataProvider provider) { Cache = new CacheClass(provider); }
 
         public sealed class CHECK_CONSTRAINTSClass
         {

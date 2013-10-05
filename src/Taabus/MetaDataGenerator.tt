@@ -12,9 +12,9 @@ using System.Data.Common;
 using System.Linq;
 using hw.Helper;
 
-namespace Taabus
+namespace Taabus.MetaData
 {
-    public class MetaData
+    public class SQLInformation
     {
         public class CacheClass
         {
@@ -28,7 +28,6 @@ namespace Taabus
                  <#=name #> = new ValueCache<<#=name #>Class[]>(()=> provider.Select<<#=name #>Class>(<#=name.Quote()#>, r=>new <#=name #>Class(r)));
                 <#    } #>
             }
-
         }
 
         public interface IDataProvider 
@@ -42,7 +41,7 @@ namespace Taabus
         public <#=name #>Class[] <#=name #> {get{ return Cache.<#=name #>.Value;}}
         <#    } #>
 
-        public MetaData(IDataProvider provider){Cache = new CacheClass(provider);}
+        public SQLInformation(IDataProvider provider){Cache = new CacheClass(provider);}
 
         <#    foreach(var name in _objectNames){ 
                 var reader = _dataBase.Parent.ToDataReader(_dataBase.SelectMetaDataStatement(name) + " where 0=1");
@@ -60,7 +59,6 @@ namespace Taabus
             <#}#>
         }
         <#    } #>
-
     }
 }
 <# // ReSharper disable FieldCanBeMadeReadOnly.Local #>

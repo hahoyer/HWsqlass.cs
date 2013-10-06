@@ -29,13 +29,10 @@ namespace Taabus
 {
     sealed class MemberItem : Item
     {
+        public readonly Member MetaData;
         public MemberItem(TypeItem parent, Member metaData)
-            : base(parent.Parent, metaData.Name) { }
+            : base(parent.Parent, metaData.Name) { MetaData = metaData; }
 
-        protected override Item[] GetItems()
-        {
-            NotImplementedMethod();
-            return null;
-        }
+        protected override Item[] GetItems() { return null; }
     }
 }

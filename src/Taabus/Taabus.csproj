@@ -58,6 +58,7 @@
     <Compile Include="Item.cs" />
     <Compile Include="MainContainer.cs" />
     <Compile Include="MemberItem.cs" />
+    <Compile Include="MetaData\BasicType.cs" />
     <Compile Include="MetaData\Information.cs" />
     <Compile Include="MetaData\Type.cs" />
     <Compile Include="MetaData\SQLInformation.Generated.cs" />

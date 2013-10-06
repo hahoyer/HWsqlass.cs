@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using hw.Debug;
+using hw.Helper;
 using hw.UnitTest;
 
 namespace Taabus
@@ -42,7 +43,7 @@ namespace Taabus
                 var items = dataBase.Items;
                 var item = items.First(i => i.Name.Contains("OrgOrgRole"));
                 var members = item.Items; 
-                Tracer.AssertionFailed("");
+                Tracer.AssertionFailed("", members.Dump);
             }
             catch(Exception exception)
             {

@@ -29,6 +29,7 @@ namespace Taabus
 {
     public abstract class NamedObject : DumpableObject
     {
+        [EnableDump]
         public readonly string Name;
         public NamedObject(string name) { Name = name; }
 

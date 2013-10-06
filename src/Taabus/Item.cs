@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using hw.Debug;
 using hw.Helper;
 using Taabus.MetaData;
 
@@ -33,6 +34,7 @@ namespace Taabus
         public static Item CreateType(DataBase parent, CompountType metaData) { return new TypeItem(parent, metaData); }
         protected static Item CreateMember(TypeItem parent, Member metaData) { return new MemberItem(parent, metaData); }
 
+        [DisableDump]
         internal readonly DataBase Parent;
         readonly ValueCache<Item[]> _itemsCache;
 
@@ -43,7 +45,9 @@ namespace Taabus
             _itemsCache = new ValueCache<Item[]>(GetItems);
         }
 
+        [EnableDumpExcept(null)]
         internal Item[] Items { get { return _itemsCache.Value; } }
+
         protected abstract Item[] GetItems();
     }
 }

@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using hw.Debug;
 
 namespace Taabus.MetaData
 {
@@ -39,18 +40,36 @@ namespace Taabus.MetaData
 
     sealed class CompountType : Type
     {
-        public readonly string Name;
+        readonly string _name;
         public readonly string Schema;
-        public readonly Member[] Members;
+        readonly Member[] _members;
+        readonly Constraint[] _constraints;
 
-        public CompountType(string name, string schema, Member[] members)
+        public CompountType(string name, string schema, Member[] members, Constraint[] constraints)
         {
-            Name = name;
+            _name = name;
             Schema = schema;
-            Members = members;
+            _members = members;
+            _constraints = constraints;
         }
+        protected override string GetName() { return _name; }
+        internal override Member[] Members { get { return _members; } }
     }
 
-    abstract class Type
+    abstract class Constraint : DumpableObject
+    {
+        public readonly string Name;
+        protected Constraint(string name) { Name = name; }
+    }
+
+    class ConstraintMember
     {}
+
+    abstract class Type : DumpableObject
+    {
+        protected abstract string GetName();
+        public string Name { get { return GetName(); } }
+        internal virtual Member[] Members { get { return new Member[0]; } }
+        protected override string GetNodeDump() { return Name; }
+    }
 }

@@ -29,9 +29,9 @@ namespace Taabus
 {
     sealed class MemberItem : Item
     {
-        public readonly Member MetaData;
+        public readonly MetaData.Type Type;
         public MemberItem(TypeItem parent, Member metaData)
-            : base(parent.Parent, metaData.Name) { MetaData = metaData; }
+            : base(parent.Parent, metaData.Name) { Type = metaData.Type; }
 
         protected override Item[] GetItems() { return null; }
     }

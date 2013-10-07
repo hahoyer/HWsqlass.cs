@@ -172,5 +172,28 @@ namespace Taabus.MetaData
             DomainSchema = domainSchema;
             DomainName = domainName;
         }
+
+        protected override string GetName()
+        {
+            var result = DataType;
+
+            switch(DataType)
+            {
+                case "int":
+                case "timestamp":
+                    break;
+                case "datetime":
+                    Tracer.Assert(DatetimePrecision != null);
+                    result += DatetimePrecision.Value;
+                    break;
+                default:
+                    NotImplementedMethod();
+                    break;
+            }
+
+            if(IsNullable)
+                result += "?";
+            return result;
+        }
     }
 }

@@ -31,8 +31,8 @@ namespace Taabus
 {
     abstract class Item : NamedObject
     {
-        public static Item CreateType(DataBase parent, CompountType metaData) { return new TypeItem(parent, metaData); }
-        protected static Item CreateMember(TypeItem parent, Member metaData) { return new MemberItem(parent, metaData); }
+        public static TypeItem CreateType(DataBase parent, MetaData.Type type) { return new TypeItem(parent, type); }
+        protected static MemberItem CreateMember(TypeItem parent, Member member) { return new MemberItem(parent, member); }
 
         [DisableDump]
         internal readonly DataBase Parent;

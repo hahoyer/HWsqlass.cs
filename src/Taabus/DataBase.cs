@@ -36,22 +36,22 @@ namespace Taabus
 
         internal static DataBase Create(DbDataRecord record, Server server) { return new DataBase(server, (string) record["name"]); }
 
-        readonly MetaData.Information _information;
-        readonly ValueCache<Item[]> _itemsCache;
+        readonly Information _information;
+        readonly ValueCache<TypeItem[]> _typeItemsCache;
         [DisableDump]
         internal readonly Server Parent;
 
-        internal Item[] Items { get { return _itemsCache.Value; } }
+        internal TypeItem[] Types { get { return _typeItemsCache.Value; } }
 
         DataBase(Server parent, string name)
             : base(name)
         {
             Parent = parent;
-            _information = new MetaData.Information(this);
-            _itemsCache = new ValueCache<Item[]>(GetItems);
+            _information = new Information(this);
+            _typeItemsCache = new ValueCache<TypeItem[]>(GetTypes);
         }
 
-        Item[] GetItems()
+        TypeItem[] GetTypes()
         {
             return _information
                 .Types

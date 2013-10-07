@@ -23,24 +23,36 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using hw.Debug;
+using hw.Helper;
 using Taabus.MetaData;
 
 namespace Taabus
 {
     sealed class TypeItem : Item
     {
-        readonly CompountType _metaData;
+        readonly MetaData.Type _type;
+        readonly ValueCache<MemberItem[]> _membersCache;
 
-        public TypeItem(DataBase parent, CompountType metaData)
-            : base(parent, metaData.Name) { _metaData = metaData; }
-
-        protected override Item[] GetItems()
+        public TypeItem(DataBase parent, MetaData.Type type)
+            : base(parent, type.Name)
         {
-            var members = _metaData
+            _membersCache = new ValueCache<MemberItem[]>(GetMembers);
+            _type = type;
+        }
+
+        [EnableDumpExcept(null)]
+        internal MemberItem[] Members { get { return _membersCache.Value; } }
+
+        protected override Item[] GetItems() { return GetMembers().Cast<Item>().ToArray(); }
+
+        MemberItem[] GetMembers()
+        {
+            var members = _type
                 .Members
                 .ToArray();
             return members
-                .Select(metaData => Item.CreateMember(this, metaData))
+                .Select(metaData => CreateMember(this, metaData))
                 .ToArray();
         }
     }

@@ -40,9 +40,9 @@ namespace Taabus
                 var server = new Server("ANNE\\OJB_NET");
                 var dataBases = server.DataBases;
                 var dataBase = dataBases.Single(db => db.Name == "cwg_adsalesng_devtest");
-                var items = dataBase.Items;
-                var item = items.First(i => i.Name.Contains("OrgOrgRole"));
-                var members = item.Items; 
+                var types = dataBase.Types;
+                var type = types.First(i => i.Name.Contains("OrgOrgRole"));
+                var members = type.Members; 
                 Tracer.AssertionFailed("", members.Dump);
             }
             catch(Exception exception)

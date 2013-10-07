@@ -31,7 +31,8 @@ namespace Taabus
 {
     abstract class Item : NamedObject
     {
-        public static TypeItem CreateType(DataBase parent, MetaData.Type type) { return new TypeItem(parent, type); }
+        public static TypeItem CreateType(DataBase parent, CompountType type, ReferenceItem[] references) { return new TypeItem(parent, type, references); }
+        public static ReferenceItem CreateReference(DataBase parent, ForeignKeyConstraint constraint, Func<CompountType, TypeItem> getType) { return new ReferenceItem(parent, constraint, getType); }
         protected static MemberItem CreateMember(TypeItem parent, Member member) { return new MemberItem(parent, member); }
 
         [DisableDump]

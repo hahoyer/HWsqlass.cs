@@ -54,11 +54,22 @@ namespace Taabus
         TypeItem[] GetTypes()
         {
             return _information
-                .Types
-                .Select(metaData => Item.CreateType(this, metaData))
+                .CompountTypes
+                .Select(type => Item.CreateType(this, type, References(type)))
                 .ToArray();
         }
 
+        ReferenceItem[] References(CompountType type)
+        {
+            return _information
+                .Constraints
+                .Where(c => c.Type == type)
+                .OfType<ForeignKeyConstraint>()
+                .Select(c => Item.CreateReference(this, c, FindType))
+                .ToArray();
+        }
+
+        TypeItem FindType(CompountType compountType) { return GetTypes().Single(typeItem => typeItem.Type == compountType); }
         T[] SQLInformation.IDataProvider.Select<T>(string name, Func<DbDataRecord, T> func) { return Parent.Select(SelectMetaDataStatement(name), func); }
         internal string SelectMetaDataStatement(string name) { return MetaDataStatement.ReplaceArgs(Name, name); }
     }

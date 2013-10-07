@@ -24,37 +24,29 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using hw.Debug;
-using hw.Helper;
+using Taabus.MetaData;
 
 namespace Taabus
 {
-    sealed class TypeItem : Item
+    sealed class ReferenceItem : Item
     {
-        internal readonly MetaData.Type Type;
-        internal readonly ReferenceItem[] References;
-        readonly ValueCache<MemberItem[]> _membersCache;
+        internal string[] Columns;
+        readonly Func<CompountType, TypeItem> _getType;
+        readonly CompountType _type;
 
-        public TypeItem(DataBase parent, MetaData.Type type, ReferenceItem[] references)
-            : base(parent, type.Name)
+        public ReferenceItem(DataBase parent, ForeignKeyConstraint constraint, Func<CompountType, TypeItem> getType)
+            : base(parent, constraint.Name)
         {
-            _membersCache = new ValueCache<MemberItem[]>(GetMembers);
-            Type = type;
-            References = references;
+            _getType = getType;
+            Columns = constraint.ColumnNames;
+            var target = constraint.Target;
+            Tracer.Assert(target is KeyConstraint);
+            Tracer.Assert(((KeyConstraint) target).IsPrimaryKey);
+            _type = target.Type;
         }
 
-        [EnableDumpExcept(null)]
-        internal MemberItem[] Members { get { return _membersCache.Value; } }
+        public TypeItem TargetType { get { return _getType(_type); } }
 
-        protected override Item[] GetItems() { return GetMembers().Cast<Item>().ToArray(); }
-
-        MemberItem[] GetMembers()
-        {
-            var members = Type
-                .Members
-                .ToArray();
-            return members
-                .Select(metaData => CreateMember(this, metaData))
-                .ToArray();
-        }
+        protected override Item[] GetItems() { return null; }
     }
 }

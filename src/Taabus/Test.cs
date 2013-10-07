@@ -42,6 +42,8 @@ namespace Taabus
                 var dataBase = dataBases.Single(db => db.Name == "cwg_adsalesng_devtest");
                 var types = dataBase.Types;
                 var type = types.First(i => i.Name.Contains("OrgOrgRole"));
+                var refs = type.References;
+                var refsTarget = refs.Select(r => r.TargetType).ToArray();
                 var members = type.Members; 
                 Tracer.AssertionFailed("", members.Dump);
             }

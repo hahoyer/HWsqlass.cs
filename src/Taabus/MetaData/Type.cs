@@ -43,14 +43,12 @@ namespace Taabus.MetaData
         readonly string _name;
         public readonly string Schema;
         readonly Member[] _members;
-        readonly Constraint[] _constraints;
 
-        public CompountType(string name, string schema, Member[] members, Constraint[] constraints)
+        public CompountType(string name, string schema, Member[] members)
         {
             _name = name;
             Schema = schema;
             _members = members;
-            _constraints = constraints;
         }
         protected override string GetName() { return _name; }
         internal override Member[] Members { get { return _members; } }
@@ -59,11 +57,13 @@ namespace Taabus.MetaData
     abstract class Constraint : DumpableObject
     {
         public readonly string Name;
-        protected Constraint(string name) { Name = name; }
+        public readonly CompountType Type;
+        protected Constraint(string name, CompountType type)
+        {
+            Name = name;
+            Type = type;
+        }
     }
-
-    class ConstraintMember
-    {}
 
     abstract class Type : DumpableObject
     {

@@ -24,16 +24,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using hw.Debug;
+using hw.Helper;
 
 namespace Taabus.MetaData
 {
     sealed class Information : DumpableObject
     {
         readonly SQLInformation _sqlInformation;
+        readonly FunctionCache<string, Constraint> _constraintCache;
+        readonly FunctionCache<string, CompountType> _compountTypeCache;
 
         public Information(SQLInformation.IDataProvider provider)
         {
             _sqlInformation = new SQLInformation(provider);
+            _constraintCache = new FunctionCache<string, Constraint>(GetConstraint);
+            _compountTypeCache = new FunctionCache<string, CompountType>(GetCompountType);
+
             Tracer.Assert(IsSimpleScheme);
             Tracer.Assert(IsSimpleConstraintUsage);
         }
@@ -48,7 +54,7 @@ namespace Taabus.MetaData
             {
                 if(_sqlInformation.SCHEMATA.Count() == 1)
                     return true;
-                var groupBy = Types.GroupBy(t => t.Name).FirstOrDefault(g => g.Count() > 1);
+                var groupBy = CompountTypes.GroupBy(t => t.Name).FirstOrDefault(g => g.Count() > 1);
                 if(groupBy == null)
                     return true;
                 var d = groupBy.ToArray();
@@ -94,24 +100,34 @@ namespace Taabus.MetaData
             }
         }
 
-        internal CompountType[] Types
+        internal CompountType[] CompountTypes
         {
             get
             {
                 return _sqlInformation
                     .TABLES
-                    .Select(t => new CompountType(t.TABLE_NAME, t.TABLE_SCHEMA, GetMembers(t), GetConstraints(t)))
+                    .Select(t => _compountTypeCache[t.TABLE_NAME])
                     .ToArray();
             }
         }
 
-        Constraint[] GetConstraints(SQLInformation.TABLESClass table)
+        internal Constraint[] Constraints
         {
-            return _sqlInformation
-                .TABLE_CONSTRAINTS
-                .Where(constraint => constraint.TABLE_NAME == table.TABLE_NAME && constraint.TABLE_SCHEMA == table.TABLE_SCHEMA)
-                .Select(CreateConstraint)
-                .ToArray();
+            get
+            {
+                return _sqlInformation
+                    .TABLE_CONSTRAINTS
+                    .Select(t => _constraintCache[t.CONSTRAINT_NAME])
+                    .ToArray();
+            }
+        }
+
+        CompountType GetCompountType(string name)
+        {
+            var type = _sqlInformation
+                .TABLES
+                .Single(t => t.TABLE_NAME == name);
+            return new CompountType(type.TABLE_NAME, type.TABLE_SCHEMA, GetMembers(type));
         }
 
         Member[] GetMembers(SQLInformation.TABLESClass table)
@@ -123,122 +139,143 @@ namespace Taabus.MetaData
                 .ToArray();
         }
 
-        static Member CreateMember(SQLInformation.COLUMNSClass column)
+        static Member CreateMember(SQLInformation.COLUMNSClass column) { return new Member(column.COLUMN_NAME, BasicType.GetInstance(column)); }
+
+        Constraint GetConstraint(string name)
         {
-            return
-                new Member(column.COLUMN_NAME, BasicType.GetInstance(column));
+            var constraint = _sqlInformation
+                .TABLE_CONSTRAINTS
+                .Single(i => i.CONSTRAINT_NAME == name);
+            return CreateConstraint(_compountTypeCache[constraint.TABLE_NAME], constraint.CONSTRAINT_NAME, constraint.CONSTRAINT_TYPE);
         }
 
-        Constraint CreateConstraint(SQLInformation.TABLE_CONSTRAINTSClass constraint)
+        Constraint CreateConstraint(CompountType compountType, string name, string type)
         {
-            var cc = _sqlInformation
-                .CHECK_CONSTRAINTS
-                .SingleOrDefault(i => i.CONSTRAINT_NAME == constraint.CONSTRAINT_NAME);
+            var cc = CheckConstraints(name);
+            var rc = ReferentialConstraints(name);
+            var ccu = ConstraintColumns(name, type == "CHECK");
 
-            var rc = _sqlInformation
-                .REFERENTIAL_CONSTRAINTS
-                .SingleOrDefault(i => i.CONSTRAINT_NAME == constraint.CONSTRAINT_NAME);
+            CheckConstraintTableUsage(name, compountType.Name);
+            CheckDomainConstraints(name);
 
-            var ccu = _sqlInformation
+            switch(type)
+            {
+                case "CHECK":
+                    Tracer.Assert(cc != null);
+                    return new CheckConstraint(compountType, name, ccu, cc.CHECK_CLAUSE);
+            }
+
+            Tracer.Assert(cc == null);
+            Tracer.Assert(ccu.Length > 0);
+
+            switch(type)
+            {
+                case "PRIMARY KEY":
+                case "UNIQUE":
+                    Tracer.Assert(rc == null);
+                    return new KeyConstraint(compountType, name, type == "PRIMARY KEY", ccu);
+                case "FOREIGN KEY":
+                    Tracer.Assert(rc != null);
+                    return new ForeignKeyConstraint(compountType, name, _constraintCache[rc.UNIQUE_CONSTRAINT_NAME], rc.DELETE_RULE, rc.MATCH_OPTION, rc.UPDATE_RULE, ccu);
+                default:
+                    NotImplementedMethod(name, type);
+                    return null;
+            }
+        }
+
+        void CheckDomainConstraints(string name)
+        {
+            var any = _sqlInformation.DOMAIN_CONSTRAINTS.Any(i => i.CONSTRAINT_NAME == name);
+            Tracer.Assert(!any);
+        }
+
+        void CheckConstraintTableUsage(string name, string tableName)
+        {
+            Tracer.Assert(_sqlInformation
+                .CONSTRAINT_TABLE_USAGE
+                .Count(i => i.CONSTRAINT_NAME == name && i.TABLE_NAME == tableName)
+                == 1);
+        }
+
+        string[] ConstraintColumns(string name, bool isCheck)
+        {
+            var result = _sqlInformation
                 .CONSTRAINT_COLUMN_USAGE
-                .Where(i => i.CONSTRAINT_NAME == constraint.CONSTRAINT_NAME)
+                .Where(i => i.CONSTRAINT_NAME == name)
                 .Select(i => i.COLUMN_NAME)
                 .ToArray();
 
-            var ctu = _sqlInformation
-                .CONSTRAINT_TABLE_USAGE
-                .SingleOrDefault(i => i.CONSTRAINT_NAME == constraint.CONSTRAINT_NAME);
-
-            Tracer.Assert(_sqlInformation.DOMAIN_CONSTRAINTS.All(i => i.CONSTRAINT_NAME != constraint.CONSTRAINT_NAME));
-
-            var kcu = _sqlInformation
+            var keyColumns = _sqlInformation
                 .KEY_COLUMN_USAGE
-                .Where(i => i.CONSTRAINT_NAME == constraint.CONSTRAINT_NAME)
+                .Where(i => i.CONSTRAINT_NAME == name)
                 .Select(i => new {i.COLUMN_NAME, i.ORDINAL_POSITION})
                 .OrderBy(i => i.ORDINAL_POSITION)
                 .ToArray();
 
-            switch(constraint.CONSTRAINT_TYPE)
-            {
-                case "PRIMARY KEY":
-                case "UNIQUE":
-                case "FOREIGN KEY":
-                    Tracer.Assert(cc == null);
-                    Tracer.Assert(ccu.Length > 0);
-                    Tracer.Assert(ctu != null);
-                    Tracer.Assert(ctu.TABLE_NAME == constraint.TABLE_NAME);
-                    Tracer.Assert(kcu.Length == ccu.Length);
-                    Tracer.Assert(kcu.All(kcui => ccu.Any(ccui => ccui == kcui.COLUMN_NAME)));
-                    Tracer.Assert(!kcu.Where((kcui, i) => kcui.ORDINAL_POSITION != i + 1).Any());
-                    break;
-            }
+            if(isCheck)
+                Tracer.Assert(keyColumns.Length == 0);
+            else
+                Tracer.Assert(keyColumns.Length == result.Length);
+            Tracer.Assert(!keyColumns.Where((kcui, i) => kcui.ORDINAL_POSITION != i + 1).Any());
+            Tracer.Assert(keyColumns.All(kcui => result.Any(ccui => ccui == kcui.COLUMN_NAME)));
 
-            switch(constraint.CONSTRAINT_TYPE)
-            {
-                case "PRIMARY KEY":
-                    Tracer.Assert(rc == null);
-                    return new PrimaryKeyConstraint(constraint.CONSTRAINT_NAME, ccu);
-                case "UNIQUE":
-                    Tracer.Assert(rc == null);
-                    return new UniqueConstraint(constraint.CONSTRAINT_NAME, ccu);
-                case "FOREIGN KEY":
-                    Tracer.Assert(rc != null);
-                    return new ForeignKeyConstraint(constraint.CONSTRAINT_NAME, rc.DELETE_RULE, rc.MATCH_OPTION, rc.UPDATE_RULE, rc.UNIQUE_CONSTRAINT_NAME);
-                case "CHECK":
-                    Tracer.Assert(cc != null);
-                    Tracer.Assert(rc == null);
-                    Tracer.Assert(ccu.Length > 0);
-                    Tracer.Assert(ctu != null);
-                    Tracer.Assert(ctu.TABLE_NAME == constraint.TABLE_NAME);
-                    Tracer.Assert(kcu.Length == 0);
-                    return new CheckConstraint(constraint.CONSTRAINT_NAME,ccu, cc.CHECK_CLAUSE);
-            }
+            return result;
+        }
 
-            Tracer.Assert(rc == null);
-            Tracer.Assert(ccu.Length == 0);
-            Tracer.Assert(ctu == null);
-            Tracer.Assert(kcu.Length == 0);
-            NotImplementedMethod(constraint);
-            return null;
+        SQLInformation.REFERENTIAL_CONSTRAINTSClass ReferentialConstraints(string name)
+        {
+            return _sqlInformation
+                .REFERENTIAL_CONSTRAINTS
+                .SingleOrDefault(i => i.CONSTRAINT_NAME == name);
+        }
+
+        SQLInformation.CHECK_CONSTRAINTSClass CheckConstraints(string name)
+        {
+            return _sqlInformation
+                .CHECK_CONSTRAINTS
+                .SingleOrDefault(i => i.CONSTRAINT_NAME == name);
         }
     }
 
     sealed class ForeignKeyConstraint : Constraint
     {
-        readonly string _deleteRule;
-        readonly string _matchOption;
-        readonly string _updateRule;
-        readonly string _uniqueConstraintName;
-        public ForeignKeyConstraint(string name, string deleteRule, string matchOption, string updateRule, string uniqueConstraintName)
-            : base(name)
+        public readonly string DeleteRule;
+        public readonly string MatchOption;
+        public readonly string UpdateRule;
+        public readonly string[] ColumnNames;
+        public readonly Constraint Target;
+
+        public ForeignKeyConstraint(CompountType type, string name, Constraint target, string deleteRule, string matchOption, string updateRule, string[] columnNames)
+            : base(name, type)
         {
-            _deleteRule = deleteRule;
-            _matchOption = matchOption;
-            _updateRule = updateRule;
-            _uniqueConstraintName = uniqueConstraintName;
+            DeleteRule = deleteRule;
+            MatchOption = matchOption;
+            UpdateRule = updateRule;
+            ColumnNames = columnNames;
+            Target = target;
         }
     }
 
-    sealed class UniqueConstraint : Constraint
+    sealed class KeyConstraint : Constraint
     {
+        public readonly bool IsPrimaryKey;
         public readonly string[] ColumnNames;
-        public UniqueConstraint(string name, string[] columnNames)
-            : base(name) { ColumnNames = columnNames; }
-    }
 
-    sealed class PrimaryKeyConstraint : Constraint
-    {
-        public readonly string[] ColumnNames;
-        public PrimaryKeyConstraint(string name, string[] columnNames)
-            : base(name) { ColumnNames = columnNames; }
+        public KeyConstraint(CompountType type, string name, bool isPrimaryKey, string[] columnNames)
+            : base(name, type)
+        {
+            IsPrimaryKey = isPrimaryKey;
+            ColumnNames = columnNames;
+        }
     }
 
     sealed class CheckConstraint : Constraint
     {
         public readonly string[] ColumnNames;
         public readonly string Clause;
-        public CheckConstraint(string name, string[] columnNames, string clause)
-            : base(name)
+
+        public CheckConstraint(CompountType type, string name, string[] columnNames, string clause)
+            : base(name, type)
         {
             ColumnNames = columnNames;
             Clause = clause;

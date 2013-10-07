@@ -1,6 +1,6 @@
 SQL Classes
 
-It is implemented as a VisualStudio 2010 solution
+It is implemented as a VisualStudio 2012 solution
 The solution file is located in subdirectory "src" and is is called sqlass.sln
 
 

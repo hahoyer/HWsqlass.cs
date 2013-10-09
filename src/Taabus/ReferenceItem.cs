@@ -31,6 +31,7 @@ namespace Taabus
     sealed class ReferenceItem : Item
     {
         internal string[] Columns;
+        internal string[] TargetColumns;
         readonly Func<CompountType, TypeItem> _getType;
         readonly CompountType _type;
 
@@ -39,10 +40,12 @@ namespace Taabus
         {
             _getType = getType;
             Columns = constraint.ColumnNames;
-            var target = constraint.Target;
-            Tracer.Assert(target is KeyConstraint);
-            Tracer.Assert(((KeyConstraint) target).IsPrimaryKey);
+            var target = constraint.Target as KeyConstraint;
+            Tracer.Assert(target != null);
+            Tracer.Assert(target.IsPrimaryKey);
             _type = target.Type;
+            TargetColumns = target.ColumnNames;
+            Tracer.Assert(Columns.Length == TargetColumns.Length);
         }
 
         public TypeItem TargetType { get { return _getType(_type); } }

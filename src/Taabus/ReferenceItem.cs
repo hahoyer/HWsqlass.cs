@@ -24,14 +24,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using hw.Debug;
+using hw.Forms;
 using Taabus.MetaData;
 
 namespace Taabus
 {
     sealed class ReferenceItem : Item
     {
-        internal string[] Columns;
-        internal string[] TargetColumns;
+        [Node]
+        internal readonly string[] Columns;
+        [Node]
+        internal readonly string[] TargetColumns;
         readonly Func<CompountType, TypeItem> _getType;
         readonly CompountType _type;
 
@@ -48,8 +51,10 @@ namespace Taabus
             Tracer.Assert(Columns.Length == TargetColumns.Length);
         }
 
+        [Node]
         public TypeItem TargetType { get { return _getType(_type); } }
 
         protected override Item[] GetItems() { return null; }
+        protected override string GetNodeDump() { return "->"+TargetType.Name; }
     }
 }

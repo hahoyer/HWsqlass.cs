@@ -24,13 +24,15 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Windows.Forms;
 using hw.Debug;
+using hw.Forms;
 using hw.Helper;
 using Taabus.MetaData;
 
 namespace Taabus
 {
-    sealed class DataBase : NamedObject, SQLInformation.IDataProvider
+    public sealed class DataBase : NamedObject, SQLInformation.IDataProvider, ITreeNodeSupport
     {
         const string MetaDataStatement = "select * from [{0}].[INFORMATION_SCHEMA].[{1}]";
 
@@ -41,8 +43,6 @@ namespace Taabus
         [DisableDump]
         internal readonly Server Parent;
 
-        internal TypeItem[] Types { get { return _typeItemsCache.Value; } }
-
         DataBase(Server parent, string name)
             : base(name)
         {
@@ -51,11 +51,20 @@ namespace Taabus
             _typeItemsCache = new ValueCache<TypeItem[]>(GetTypes);
         }
 
+        internal TypeItem[] Types { get { return _typeItemsCache.Value; } }
+
+        internal string SelectMetaDataStatement(string name)
+        {
+            return MetaDataStatement
+                .ReplaceArgs(Name, name);
+        }
+
         TypeItem[] GetTypes()
         {
             return _information
                 .CompountTypes
                 .Select(type => Item.CreateType(this, type, References(type)))
+                .OrderBy(type => type.Name)
                 .ToArray();
         }
 
@@ -63,14 +72,19 @@ namespace Taabus
         {
             return _information
                 .Constraints
-                .Where(c => c.Type == type)
+                .Where(c => c != null && c.Type == type)
                 .OfType<ForeignKeyConstraint>()
                 .Select(c => Item.CreateReference(this, c, FindType))
                 .ToArray();
         }
 
-        TypeItem FindType(CompountType compountType) { return GetTypes().Single(typeItem => typeItem.Type == compountType); }
+        TypeItem FindType(CompountType compountType)
+        {
+            return GetTypes()
+                .Single(typeItem => typeItem.Type == compountType);
+        }
+
         T[] SQLInformation.IDataProvider.Select<T>(string name, Func<DbDataRecord, T> func) { return Parent.Select(SelectMetaDataStatement(name), func); }
-        internal string SelectMetaDataStatement(string name) { return MetaDataStatement.ReplaceArgs(Name, name); }
+        IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes() { return Types.CreateNodes(); }
     }
 }

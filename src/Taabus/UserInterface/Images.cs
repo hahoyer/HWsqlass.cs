@@ -1,4 +1,4 @@
-﻿#region Copyright (C) 2013
+#region Copyright (C) 2013
 
 //     Project Taabus
 //     Copyright (C) 2013 - 2013 Harald Hoyer
@@ -22,19 +22,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using hw.Forms;
-using Taabus.MetaData;
+using System.Windows.Forms;
 
-namespace Taabus
+namespace Taabus.UserInterface
 {
-    sealed class MemberItem : Item
+    public sealed partial class Images : Component, IComponent, IDisposable
     {
-        [Node]
-        public readonly MetaData.Type Type;
-        public MemberItem(TypeItem parent, Member metaData)
-            : base(parent.Parent, metaData.Name) { Type = metaData.Type; }
-
-        protected override Item[] GetItems() { return null; }
+        static readonly Images _imageInstance = new Images();
+        public static ImageList Instance { get { return _imageInstance._data; } }
+        public Images() { InitializeComponent(); }
     }
 }

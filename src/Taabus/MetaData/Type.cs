@@ -65,7 +65,7 @@ namespace Taabus.MetaData
         }
     }
 
-    abstract class Type : DumpableObject
+    public abstract class Type : DumpableObject
     {
         protected abstract string GetName();
         public string Name { get { return GetName(); } }

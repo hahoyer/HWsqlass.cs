@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using hw.Debug;
+using hw.Forms;
 using hw.Helper;
 
 namespace Taabus
@@ -31,6 +32,7 @@ namespace Taabus
     sealed class TypeItem : Item
     {
         internal readonly MetaData.Type Type;
+        [Node]
         internal readonly ReferenceItem[] References;
         readonly ValueCache<MemberItem[]> _membersCache;
 
@@ -42,6 +44,7 @@ namespace Taabus
             References = references;
         }
 
+        [Node]
         [EnableDumpExcept(null)]
         internal MemberItem[] Members { get { return _membersCache.Value; } }
 

@@ -145,8 +145,10 @@ namespace Taabus.MetaData
         {
             var constraint = _sqlInformation
                 .TABLE_CONSTRAINTS
-                .Single(i => i.CONSTRAINT_NAME == name);
-            return CreateConstraint(_compountTypeCache[constraint.TABLE_NAME], constraint.CONSTRAINT_NAME, constraint.CONSTRAINT_TYPE);
+                .SingleOrDefault(i => i.CONSTRAINT_NAME == name);
+            return constraint == null 
+                ? null 
+                : CreateConstraint(_compountTypeCache[constraint.TABLE_NAME], constraint.CONSTRAINT_NAME, constraint.CONSTRAINT_TYPE);
         }
 
         Constraint CreateConstraint(CompountType compountType, string name, string type)
@@ -176,7 +178,19 @@ namespace Taabus.MetaData
                     return new KeyConstraint(compountType, name, type == "PRIMARY KEY", ccu);
                 case "FOREIGN KEY":
                     Tracer.Assert(rc != null);
-                    return new ForeignKeyConstraint(compountType, name, _constraintCache[rc.UNIQUE_CONSTRAINT_NAME], rc.DELETE_RULE, rc.MATCH_OPTION, rc.UPDATE_RULE, ccu);
+                    var constraint = _constraintCache[rc.UNIQUE_CONSTRAINT_NAME];
+                    if(constraint == null)
+                        return null;
+                    return new ForeignKeyConstraint
+                        (
+                        compountType,
+                        name,
+                        constraint,
+                        rc.DELETE_RULE,
+                        rc.MATCH_OPTION,
+                        rc.UPDATE_RULE,
+                        ccu
+                        );
                 default:
                     NotImplementedMethod(name, type);
                     return null;

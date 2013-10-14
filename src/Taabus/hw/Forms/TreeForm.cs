@@ -1,6 +1,6 @@
-﻿#region Copyright (C) 2013
+#region Copyright (C) 2013
 
-//     Project Taabus
+//     Project hw.nuget
 //     Copyright (C) 2013 - 2013 Harald Hoyer
 // 
 //     This program is free software: you can redistribute it and/or modify
@@ -23,18 +23,29 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using hw.Forms;
-using Taabus.MetaData;
+using System.Windows.Forms;
 
-namespace Taabus
+namespace hw.Forms
 {
-    sealed class MemberItem : Item
+    public sealed partial class TreeForm : Form
     {
-        [Node]
-        public readonly MetaData.Type Type;
-        public MemberItem(TypeItem parent, Member metaData)
-            : base(parent.Parent, metaData.Name) { Type = metaData.Type; }
+        readonly PositionConfig _positionConfig;
+        object _target;
+        public TreeForm()
+        {
+            InitializeComponent();
+            _positionConfig = new PositionConfig(this);
+        }
 
-        protected override Item[] GetItems() { return null; }
+        public object Target
+        {
+            get { return _target; }
+            set
+            {
+                _target = value;
+                treeView1.Connect(_target);
+                Text = _target.GetAdditionalInfo();
+            }
+        }
     }
 }

@@ -23,7 +23,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using hw.Debug;
+using hw.Forms;
 using hw.Helper;
 using hw.UnitTest;
 
@@ -33,6 +35,24 @@ namespace Taabus
     public sealed class Test
     {
         [Test]
+        public void UI()
+        {
+            try
+            {
+                var server = new Server("ANNE\\OJB_NET");
+                var dataBases = server.DataBases;
+                var form = new TreeForm {Target = dataBases};
+                Application.Run(form);
+                Tracer.AssertionFailed("", () => "");
+            }
+            catch(Exception exception)
+            {
+                Tracer.AssertionFailed("");
+                throw;
+            }
+        }
+
+        [Test]
         public void Base()
         {
             try
@@ -41,12 +61,12 @@ namespace Taabus
                 var dataBases = server.DataBases;
                 var dataBase = dataBases.Single(db => db.Name == "cwg_adsalesng_devtest");
                 var types = dataBase.Types;
-                var typeOOR = types.Where(i => i.Name.Contains("OrgOrgRole"));
-                var type = typeOOR.First();
+                var typetypeOrgOrgRole = types.Where(i => i.Name.Contains("OrgOrgRole"));
+                var type = typetypeOrgOrgRole.First();
                 var refs = type.References;
                 var refsTarget = refs.Select(r => r.TargetType).ToArray();
-                var members = type.Members; 
-                Tracer.AssertionFailed("", members.Dump);
+                var members = type.Members;
+                Tracer.FlaggedLine(members.Dump());
             }
             catch(Exception exception)
             {

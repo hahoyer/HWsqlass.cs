@@ -1,6 +1,6 @@
-﻿#region Copyright (C) 2013
+#region Copyright (C) 2013
 
-//     Project Taabus
+//     Project hw.nuget
 //     Copyright (C) 2013 - 2013 Harald Hoyer
 // 
 //     This program is free software: you can redistribute it and/or modify
@@ -23,18 +23,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using hw.Forms;
-using Taabus.MetaData;
+using System.Windows.Forms;
 
-namespace Taabus
+namespace hw.Forms
 {
-    sealed class MemberItem : Item
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    public sealed class SmartNodeAttribute : Attribute
     {
-        [Node]
-        public readonly MetaData.Type Type;
-        public MemberItem(TypeItem parent, Member metaData)
-            : base(parent.Parent, metaData.Name) { Type = metaData.Type; }
-
-        protected override Item[] GetItems() { return null; }
+        public static TreeNode Process(TreeNode treeNode)
+        {
+            treeNode.CreateNodeList();
+            switch(treeNode.Nodes.Count)
+            {
+                case 0:
+                    return null;
+                case 1:
+                    var node = treeNode.Nodes[0];
+                    node.Text = treeNode.Text + " \\ " + node.Text;
+                    return Process(node);
+            }
+            return treeNode;
+        }
     }
 }

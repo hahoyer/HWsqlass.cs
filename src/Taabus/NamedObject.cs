@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using hw.Debug;
+using JetBrains.Annotations;
 
 namespace Taabus
 {
@@ -31,7 +32,7 @@ namespace Taabus
     {
         [EnableDump]
         public readonly string Name;
-        public NamedObject(string name) { Name = name; }
+        public NamedObject([NotNull] string name) { Name = name; }
 
         protected override string GetNodeDump() { return Name; }
     }

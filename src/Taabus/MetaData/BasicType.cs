@@ -180,11 +180,20 @@ namespace Taabus.MetaData
             switch(DataType)
             {
                 case "int":
+                case "smallint":
                 case "timestamp":
+                case "bit":
                     break;
                 case "datetime":
                     Tracer.Assert(DatetimePrecision != null);
-                    result += DatetimePrecision.Value;
+                    result += "("+DatetimePrecision.Value+")";
+                    break;
+                case "char":
+                case "nchar":
+                case "varchar":
+                case "nvarchar":
+                    Tracer.Assert(CharacterMaximumLength != null);
+                    result += "("+CharacterMaximumLength.Value+")";
                     break;
                 default:
                     NotImplementedMethod();

@@ -24,12 +24,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel.Description;
-using DotNetOpenAuth.Messaging;
-using DotNetOpenAuth.OAuth2;
-using Google.Apis.Authentication;
-using Google.Apis.Authentication.OAuth2;
-using Google.Apis.Calendar.v3;
-using Google.Apis.Calendar.v3.Data;
 
 namespace main
 {
@@ -41,21 +35,6 @@ namespace main
 
         public static void Main()
         {
-        }
-
-        OAuth2Authenticator<WebServerClient> CreateAuthenticator()
-        {
-            // Register the authenticator.
-            var provider = new WebServerClient(GoogleAuthenticationServer.Description);
-            provider.ClientIdentifier = ClientID;
-            provider.ClientSecret = ClientSecret;
-            var authenticator =
-                new OAuth2Authenticator<WebServerClient>(provider, GetAuthorization) {NoCaching = true};
-            return authenticator;
-        }
-        IAuthorizationState GetAuthorization(WebServerClient client)
-        {
-            return null;
         }
 
     }

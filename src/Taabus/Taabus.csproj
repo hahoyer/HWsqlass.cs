@@ -44,9 +44,7 @@
     <Compile Include="hw\Forms\TreeForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="hw\Forms\TreeForm.Designer.cs">
-      <DependentUpon>TreeForm.cs</DependentUpon>
-    </Compile>
+    <Compile Include="hw\Forms\TreeForm.Designer.cs" />
     <Compile Include="hw\Helper\AdoExtension.cs" />
     <Compile Include="hw\Helper\Box.cs" />
     <Compile Include="hw\Helper\DateTimeExtender.cs" />
@@ -108,9 +106,7 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hw\Forms\TreeForm.resx">
-      <DependentUpon>TreeForm.cs</DependentUpon>
-    </EmbeddedResource>
+    <EmbeddedResource Include="hw\Forms\TreeForm.resx" />
     <EmbeddedResource Include="UserInterface\Images.resx">
       <DependentUpon>Images.cs</DependentUpon>
     </EmbeddedResource>

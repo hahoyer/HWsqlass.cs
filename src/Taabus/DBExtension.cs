@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Linq.Expressions;
 using hw.Helper;
 
 namespace Taabus
@@ -50,5 +51,17 @@ namespace Taabus
                 return type.PrettyName();
             return type.PrettyName() + "?";
         }
+
+
+        static public T Eval<T>(this Expression x)
+        {
+            return (T)Expression
+                .Lambda(x)
+                .Compile()
+                .DynamicInvoke();
+        }
+
+        public static string SQLFormat(this string data) { return "'" + data.Replace("'", "''") + "'"; }
+
     }
 }

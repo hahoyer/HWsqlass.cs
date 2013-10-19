@@ -30,7 +30,7 @@ namespace Taabus
 {
     public abstract class NamedObject : DumpableObject
     {
-        [EnableDump]
+        [DisableDump]
         public readonly string Name;
         public NamedObject([NotNull] string name) { Name = name; }
 

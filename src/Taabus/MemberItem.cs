@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using hw.Debug;
 using hw.Forms;
 using Taabus.MetaData;
 
@@ -31,9 +32,12 @@ namespace Taabus
     sealed class MemberItem : Item
     {
         [Node]
-        public readonly MetaData.Type Type;
+        public readonly BasicType Type;
         public MemberItem(TypeItem parent, Member metaData)
             : base(parent.Parent, metaData.Name) { Type = metaData.Type; }
+
+        [DisableDump]
+        public Field Field { get { return new Field {Name = Name, Type = Type}; } }
 
         protected override Item[] GetItems() { return null; }
     }

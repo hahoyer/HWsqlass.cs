@@ -22,31 +22,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
+using System.Linq.Expressions;
 using hw.Debug;
-using hw.Helper;
 
 namespace Taabus
 {
-    sealed class Server : NamedObject
+    sealed class ExpressionQuery : QueryBase
     {
-        const string SelectDatabases = "select name from master.sys.databases";
+        [EnableDump]
+        readonly Expression _expression;
 
-        readonly ValueCache<DataBase[]> _dataBasesCache;
+        public ExpressionQuery(QueryProvider queryProvider, Expression expression)
+            : base(queryProvider) { _expression = expression; }
 
-        internal Server(string name)
-            : base(name) { _dataBasesCache = new ValueCache<DataBase[]>(GetDataBases); }
-
-        internal DataBase[] DataBases { get { return _dataBasesCache.Value; } }
-
-        DataBase[] GetDataBases() { return Select(SelectDatabases, record => DataBase.Create(record, this)); }
-
-        internal T[] Select<T>(string statement, Func<DbDataRecord, T> func) { return ToDataReader(statement).SelectFromReader(func); }
-        internal DbDataReader ToDataReader(string statement)
-        {
-            Tracer.Line(statement);
-            return Name.ToConnection().ToDataReader(statement);
-        }
+        internal override string CreateSQL() { return _provider.CreateSQL(_expression); }
     }
 }

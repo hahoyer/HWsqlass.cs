@@ -22,31 +22,26 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 using hw.Debug;
-using hw.Helper;
+using Taabus.MetaData;
 
 namespace Taabus
 {
-    sealed class Server : NamedObject
+    sealed class Field : DumpableObject
     {
-        const string SelectDatabases = "select name from master.sys.databases";
+        [DisableDump]
+        public DataBase DataBase;
+        public string Name;
+        public BasicType Type;
+        [DisableDump]
+        public CompountType Container;
+    }
 
-        readonly ValueCache<DataBase[]> _dataBasesCache;
-
-        internal Server(string name)
-            : base(name) { _dataBasesCache = new ValueCache<DataBase[]>(GetDataBases); }
-
-        internal DataBase[] DataBases { get { return _dataBasesCache.Value; } }
-
-        DataBase[] GetDataBases() { return Select(SelectDatabases, record => DataBase.Create(record, this)); }
-
-        internal T[] Select<T>(string statement, Func<DbDataRecord, T> func) { return ToDataReader(statement).SelectFromReader(func); }
-        internal DbDataReader ToDataReader(string statement)
-        {
-            Tracer.Line(statement);
-            return Name.ToConnection().ToDataReader(statement);
-        }
+    class FieldValue
+    {
+        public Field Parent;
+        public object Key;
+        public object Value;
     }
 }

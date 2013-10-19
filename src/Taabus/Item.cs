@@ -46,7 +46,7 @@ namespace Taabus
             _itemsCache = new ValueCache<Item[]>(GetItems);
         }
 
-        [EnableDumpExcept(null)]
+        [DisableDump]
         internal Item[] Items { get { return _itemsCache.Value; } }
 
         protected abstract Item[] GetItems();

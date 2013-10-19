@@ -53,6 +53,8 @@ namespace Taabus
 
         internal TypeItem[] Types { get { return _typeItemsCache.Value; } }
 
+        internal IEnumerable<Field> Fields { get { return Types.SelectMany(t => t.Fields); } }
+
         internal string SelectMetaDataStatement(string name)
         {
             return MetaDataStatement

@@ -21,6 +21,8 @@
   <ItemGroup>
     <Compile Include="DataBase.cs" />
     <Compile Include="DBExtension.cs" />
+    <Compile Include="ExpressionQuery.cs" />
+    <Compile Include="Field.cs" />
     <Compile Include="hw\Debug\DisableDumpAttribute.cs" />
     <Compile Include="hw\Debug\Dumpable.cs" />
     <Compile Include="hw\Debug\DumpableObject.cs" />
@@ -83,6 +85,8 @@
     </Compile>
     <Compile Include="NamedObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryBase.cs" />
+    <Compile Include="QueryProvider.cs" />
     <Compile Include="ReferenceItem.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="TableItem.cs" />

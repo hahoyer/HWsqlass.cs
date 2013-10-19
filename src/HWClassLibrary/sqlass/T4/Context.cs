@@ -41,7 +41,7 @@ namespace HWClassLibrary.sqlass.T4
             var context = new Context(text, host);
             foreach(var type in frame.GetType().GetNestedTypes())
                 context.AddTable(type);
-            context.AddContext();
+            context.ÂddContext();
         }
 
         Context(StringBuilder text, ITextTemplatingEngineHost host)
@@ -59,7 +59,7 @@ namespace HWClassLibrary.sqlass.T4
 
         SQLTable ObtainSQLTable(Type type) { return new SQLTable(this, Table.FromMetaType(type)); }
 
-        void AddContext()
+        void ÂddContext()
         {
             File = null;
             AppendText(new SQLContext(this, _tables.ToArray()).TransformText());

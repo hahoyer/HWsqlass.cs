@@ -35,6 +35,38 @@ namespace Taabus
     public sealed class Test
     {
         [Test]
+        public void FullTextIndex()
+        {
+            try
+            {
+                var server = new Server("ANNE\\OJB_NET");
+                var dataBase = server
+                    .DataBases
+                    .Single(db => db.Name == "cwg_adsalesng_devtest");
+
+                var query = dataBase
+                    .Types
+                    .SelectMany(t => FindAllText(t, "Contract").Select(r => new TableRecord {Name = t.Name, Record = r}));
+                var result = query.ToArray();
+                Tracer.FlaggedLine(result.Length + " records found.");
+                Tracer.Assert(result.Any());
+                Tracer.Line(result[0].Dump());
+            }
+            catch(Exception exception)
+            {
+                Tracer.AssertionFailed("");
+                throw;
+            }
+        }
+        static IEnumerable<DataRecord> FindAllText(TypeItem t, string value)
+        {
+            var fields = t.Fields.Where(f => f.Type.IsText).ToArray();
+            if(fields.Any())
+                return t.Data.Where(r => r.Contains(fields, value));
+            return new DataRecord[0];
+        }
+
+        [Test]
         public void UI()
         {
             try
@@ -43,7 +75,6 @@ namespace Taabus
                 var dataBases = server.DataBases;
                 var form = new TreeForm {Target = dataBases};
                 Application.Run(form);
-                Tracer.AssertionFailed("", () => "");
             }
             catch(Exception exception)
             {

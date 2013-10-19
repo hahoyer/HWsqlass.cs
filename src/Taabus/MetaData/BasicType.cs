@@ -31,7 +31,7 @@ namespace Taabus.MetaData
     {
         static readonly HashSet<BasicType> _cache = new HashSet<BasicType>(_comparer);
 
-        internal static Type GetInstance(SQLInformation.COLUMNSClass column)
+        internal static BasicType GetInstance(SQLInformation.COLUMNSClass column)
         {
             var probe = new BasicType(
                 column.IS_NULLABLE != "NO",
@@ -118,38 +118,39 @@ namespace Taabus.MetaData
 
         static readonly IEqualityComparer<BasicType> _comparer = new Comparer();
 
-        [EnableDumpExcept(false)]
+        [DisableDump]
         public readonly bool IsNullable;
+        [DisableDump]
         public readonly string DataType;
-        [EnableDumpExcept(null)]
+        [DisableDump]
         public readonly int? CharacterMaximumLength;
-        [EnableDumpExcept(null)]
+        [DisableDump]
         public readonly int? CharacterOctetLength;
-        [EnableDumpExcept(null)]
+        [DisableDump]
         public readonly Byte? NumericPrecision;
-        [EnableDumpExcept(null)]
+        [DisableDump]
         public readonly Int16? NumericPrecisionRadix;
-        [EnableDumpExcept(null)]
+        [DisableDump]
         public readonly int? NumericScale;
-        [EnableDumpExcept(null)]
+        [DisableDump]
         public readonly Int16? DatetimePrecision;
-        [EnableDumpExcept(null)]
+        [DisableDump]
         public readonly string CharacterSetCatalog;
-        [EnableDumpExcept(null)]
+        [DisableDump]
         public readonly string CharacterSetSchema;
-        [EnableDumpExcept(null)]
+        [DisableDump]
         public readonly string CharacterSetName;
-        [EnableDumpExcept(null)]
+        [DisableDump]
         public readonly string CollationCatalog;
-        [EnableDumpExcept(null)]
+        [DisableDump]
         public readonly string CollationSchema;
-        [EnableDumpExcept(null)]
+        [DisableDump]
         public readonly string CollationName;
-        [EnableDumpExcept(null)]
+        [DisableDump]
         public readonly string DomainCatalog;
-        [EnableDumpExcept(null)]
+        [DisableDump]
         public readonly string DomainSchema;
-        [EnableDumpExcept(null)]
+        [DisableDump]
         public readonly string DomainName;
 
         BasicType(bool isNullable, string dataType, int? characterMaximumLength, int? characterOctetLength, byte? numericPrecision, short? numericPrecisionRadix, int? numericScale, short? datetimePrecision, string characterSetCatalog, string characterSetSchema, string characterSetName, string collationCatalog, string collationSchema, string collationName, string domainCatalog, string domainSchema, string domainName)
@@ -173,6 +174,23 @@ namespace Taabus.MetaData
             DomainName = domainName;
         }
 
+        [DisableDump]
+        internal bool IsText
+        {
+            get
+            {
+                switch (DataType)
+                {
+                    case "char":
+                    case "nchar":
+                    case "varchar":
+                    case "nvarchar":
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        }
         protected override string GetName()
         {
             var result = DataType;
@@ -181,8 +199,10 @@ namespace Taabus.MetaData
             {
                 case "int":
                 case "smallint":
+                case "tinyint":
                 case "timestamp":
                 case "bit":
+                case "uniqueidentifier":
                     break;
                 case "datetime":
                     Tracer.Assert(DatetimePrecision != null);

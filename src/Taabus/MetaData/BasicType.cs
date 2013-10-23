@@ -101,7 +101,6 @@ namespace Taabus.MetaData
             CharacterOctetLength = characterOctetLength;
             NumericPrecision = numericPrecision;
             NumericScale = numericScale;
-            Tracer.Assert(DataType != "datetime");
         }
 
         [DisableDump]
@@ -153,8 +152,8 @@ namespace Taabus.MetaData
                 case "uniqueidentifier":
                     break;
                 case "datetime":
-                    Tracer.AssertionFailed(DataType);
-                    //result += "("+DatetimePrecision.Value+")";
+                    Tracer.Assert(NumericScale != null);
+                    result += "("+NumericScale.Value+")";
                     break;
                 case "char":
                 case "varchar":

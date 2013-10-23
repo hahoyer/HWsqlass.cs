@@ -33,9 +33,10 @@ namespace Taabus
     {
         public static void Main()
         {
-            new Test().NewMetaData();
+            new Test().Base();
             return;
-            if(Debugger.IsAttached)
+            new Test().NewMetaData();
+            if (Debugger.IsAttached)
                 TestRunner.IsModeErrorFocus = true;
             Assembly.GetExecutingAssembly().RunTests();
         }

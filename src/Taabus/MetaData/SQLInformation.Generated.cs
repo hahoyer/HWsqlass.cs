@@ -38,7 +38,6 @@ namespace Taabus.MetaData
             public readonly ValueCache<ROUTINESClass[]> ROUTINES;
             public readonly ValueCache<COLUMN_PRIVILEGESClass[]> COLUMN_PRIVILEGES;
             public readonly ValueCache<ROUTINE_COLUMNSClass[]> ROUTINE_COLUMNS;
-            public readonly ValueCache<COLUMNSClass[]> COLUMNS;
             public readonly ValueCache<SCHEMATAClass[]> SCHEMATA;
             public readonly ValueCache<CONSTRAINT_COLUMN_USAGEClass[]> CONSTRAINT_COLUMN_USAGE;
             public readonly ValueCache<TABLE_CONSTRAINTSClass[]> TABLE_CONSTRAINTS;
@@ -61,7 +60,6 @@ namespace Taabus.MetaData
                 ROUTINES = new ValueCache<ROUTINESClass[]>(() => provider.Select<ROUTINESClass>("INFORMATION_SCHEMA", "ROUTINES", r => new ROUTINESClass(r)));
                 COLUMN_PRIVILEGES = new ValueCache<COLUMN_PRIVILEGESClass[]>(() => provider.Select<COLUMN_PRIVILEGESClass>("INFORMATION_SCHEMA", "COLUMN_PRIVILEGES", r => new COLUMN_PRIVILEGESClass(r)));
                 ROUTINE_COLUMNS = new ValueCache<ROUTINE_COLUMNSClass[]>(() => provider.Select<ROUTINE_COLUMNSClass>("INFORMATION_SCHEMA", "ROUTINE_COLUMNS", r => new ROUTINE_COLUMNSClass(r)));
-                COLUMNS = new ValueCache<COLUMNSClass[]>(() => provider.Select<COLUMNSClass>("INFORMATION_SCHEMA", "COLUMNS", r => new COLUMNSClass(r)));
                 SCHEMATA = new ValueCache<SCHEMATAClass[]>(() => provider.Select<SCHEMATAClass>("INFORMATION_SCHEMA", "SCHEMATA", r => new SCHEMATAClass(r)));
                 CONSTRAINT_COLUMN_USAGE = new ValueCache<CONSTRAINT_COLUMN_USAGEClass[]>(() => provider.Select<CONSTRAINT_COLUMN_USAGEClass>("INFORMATION_SCHEMA", "CONSTRAINT_COLUMN_USAGE", r => new CONSTRAINT_COLUMN_USAGEClass(r)));
                 TABLE_CONSTRAINTS = new ValueCache<TABLE_CONSTRAINTSClass[]>(() => provider.Select<TABLE_CONSTRAINTSClass>("INFORMATION_SCHEMA", "TABLE_CONSTRAINTS", r => new TABLE_CONSTRAINTSClass(r)));
@@ -86,8 +84,6 @@ namespace Taabus.MetaData
         public ROUTINESClass[] ROUTINES { get { return Cache.ROUTINES.Value; } }
         public COLUMN_PRIVILEGESClass[] COLUMN_PRIVILEGES { get { return Cache.COLUMN_PRIVILEGES.Value; } }
         public ROUTINE_COLUMNSClass[] ROUTINE_COLUMNS { get { return Cache.ROUTINE_COLUMNS.Value; } }
-        [Obsolete("", true)]
-        public COLUMNSClass[] COLUMNS { get { return Cache.COLUMNS.Value; } }
         public SCHEMATAClass[] SCHEMATA { get { return Cache.SCHEMATA.Value; } }
         public CONSTRAINT_COLUMN_USAGEClass[] CONSTRAINT_COLUMN_USAGE { get { return Cache.CONSTRAINT_COLUMN_USAGE.Value; } }
         public TABLE_CONSTRAINTSClass[] TABLE_CONSTRAINTS { get { return Cache.TABLE_CONSTRAINTS.Value; } }
@@ -351,7 +347,7 @@ namespace Taabus.MetaData
             public readonly string DOMAIN_NAME;
         }
 
-        [Obsolete("",false)]
+        [Obsolete("",true)]
         public sealed class COLUMNSClass
         {
             internal COLUMNSClass(DbDataRecord record)

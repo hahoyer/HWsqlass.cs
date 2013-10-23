@@ -53,9 +53,9 @@ namespace Taabus
         }
 
 
-        static public T Eval<T>(this Expression x)
+        public static T Eval<T>(this Expression x)
         {
-            return (T)Expression
+            return (T) Expression
                 .Lambda(x)
                 .Compile()
                 .DynamicInvoke();
@@ -63,5 +63,25 @@ namespace Taabus
 
         public static string SQLFormat(this string data) { return "'" + data.Replace("'", "''") + "'"; }
 
+        /// <summary>Finds the index of the first item matching an expression in an enumerable.</summary>
+        /// <param name="items">The enumerable to search.</param>
+        /// <param name="predicate">The expression to test the items against.</param>
+        /// <returns>The index of the first matching item, or null if no items match.</returns>
+        public static int? IndexOf<T>(this IEnumerable<T> items, Func<T, bool> predicate)
+        {
+            if(items == null)
+                throw new ArgumentNullException("items");
+            if(predicate == null)
+                throw new ArgumentNullException("predicate");
+            
+            var result = 0;
+            foreach(var item in items)
+            {
+                if(predicate(item))
+                    return result;
+                result++;
+            }
+            return null;
+        }
     }
 }

@@ -20,24 +20,13 @@
 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using hw.UnitTest;
-
-namespace Taabus
+namespace Taabus.MetaData
 {
-    static class MainContainer
+    class Relation
     {
-        public static void Main()
-        {
-            new Test().NewMetaData();
-            return;
-            if(Debugger.IsAttached)
-                TestRunner.IsModeErrorFocus = true;
-            Assembly.GetExecutingAssembly().RunTests();
-        }
+        public string Type;
+        public string Name;
+        public string Key;
+        public string ForeignKey;
     }
 }

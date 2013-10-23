@@ -45,7 +45,7 @@ namespace Taabus
         internal T[] Select<T>(string statement, Func<DbDataRecord, T> func) { return ToDataReader(statement).SelectFromReader(func); }
         internal DbDataReader ToDataReader(string statement)
         {
-            Tracer.Line(statement);
+            //Tracer.Line(statement);
             return Name.ToConnection().ToDataReader(statement);
         }
     }

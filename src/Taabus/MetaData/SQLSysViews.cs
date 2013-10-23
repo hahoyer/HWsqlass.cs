@@ -22,22 +22,37 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
-using hw.UnitTest;
 
-namespace Taabus
+namespace Taabus.MetaData
 {
-    static class MainContainer
+    partial class SQLSysViews
     {
-        public static void Main()
+// ReSharper disable once InconsistentNaming
+        partial class columnsClass
         {
-            new Test().NewMetaData();
-            return;
-            if(Debugger.IsAttached)
-                TestRunner.IsModeErrorFocus = true;
-            Assembly.GetExecutingAssembly().RunTests();
+
+            public string TypeName
+            {
+                get
+                {
+                    var result = Type.name;
+                    switch(Type.name)
+                    {
+                        case "decimal":
+                            return result + "(" + precision + ","+ scale+")";
+                        case "char":
+                            return result + "(" + max_length + ")";
+                        case "nvarchar":
+                            return result + "(" + (max_length == -1? "max":(max_length/2).ToString())+ ")";
+                        case "nchar":
+                            return result + "(" + max_length / 2 + ")";
+                            
+                        default:
+                            return result;
+                    }
+                }
+            }
         }
     }
 }

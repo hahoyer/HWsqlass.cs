@@ -32,9 +32,9 @@ using Taabus.MetaData;
 
 namespace Taabus
 {
-    public sealed class DataBase : NamedObject, SQLInformation.IDataProvider, ITreeNodeSupport
+    public sealed class DataBase : NamedObject, IDataProvider, ITreeNodeSupport
     {
-        const string MetaDataStatement = "select * from [{0}].[INFORMATION_SCHEMA].[{1}]";
+        const string MetaDataStatement = "select * from [{0}].[{1}].[{2}]";
 
         internal static DataBase Create(DbDataRecord record, Server server) { return new DataBase(server, (string) record["name"]); }
 
@@ -51,26 +51,99 @@ namespace Taabus
             _typeItemsCache = new ValueCache<TypeItem[]>(GetTypes);
         }
 
-        internal TypeItem[] Types { get { return _typeItemsCache.Value; } }
+        internal TypeItem[] Types
+        {
+            get
+            {
+                if(_typeItemsCache.IsBusy)
+                    return null;
+                return _typeItemsCache.Value;
+            }
+        }
 
-        internal IEnumerable<Field> Fields { get { return Types.SelectMany(t => t.Fields); } }
+        internal IEnumerable<Field> Fields
+        {
+            get
+            {
+                if(_typeItemsCache.IsBusy)
+                    return null;
 
-        internal string SelectMetaDataStatement(string name)
+                return Types.SelectMany(t => t.Fields);
+            }
+        }
+
+        internal string SelectMetaDataStatement(string schema, string name)
         {
             return MetaDataStatement
-                .ReplaceArgs(Name, name);
+                .ReplaceArgs(Name, schema, name);
         }
 
         TypeItem[] GetTypes()
         {
             return _information
                 .CompountTypes
-                .Select(type => Item.CreateType(this, type, References(type)))
+                .Select
+                (
+                    type
+                        =>
+                        Item
+                            .CreateType
+                            (
+                                this,
+                                type,
+                                GetReferences(type),
+                                GetPrimaryKeyIndex(type),
+                                GetUniques(type)
+                            )
+                )
                 .OrderBy(type => type.Name)
                 .ToArray();
         }
 
-        ReferenceItem[] References(CompountType type)
+        int[][] GetUniques(CompountType type)
+        {
+            if(IsInDump)
+                return null;
+            var keyConstraint = _information
+                .Constraints
+                .Where(c => c != null && c.Type == type)
+                .OfType<KeyConstraint>()
+                .Select
+                (
+                    kc
+                        =>
+                        kc
+                            .ColumnNames
+                            .Select(kccn => type.Members.IndexOf(m => m.Name == kccn).AssertValue())
+                            .ToArray()
+                )
+                .ToArray();
+            return keyConstraint;
+        }
+
+        int? GetPrimaryKeyIndex(CompountType type)
+        {
+            if(IsInDump)
+                return null;
+            var constraints = _information
+                .Constraints
+                .Where(c => c != null && c.Type == type);
+            var keyConstraint = constraints
+                .OfType<KeyConstraint>()
+                .Single(kc => kc.IsPrimaryKey);
+
+            if(keyConstraint.ColumnNames.Length != 1)
+                return null;
+
+            var result = type
+                .Members
+                .IndexOf(m => m.Name == keyConstraint.ColumnNames[0])
+                .AssertValue();
+
+            return result;
+        }
+
+        ReferenceItem[] GetReferences(CompountType type)
         {
             return _information
                 .Constraints
@@ -86,7 +159,29 @@ namespace Taabus
                 .Single(typeItem => typeItem.Type == compountType);
         }
 
-        T[] SQLInformation.IDataProvider.Select<T>(string name, Func<DbDataRecord, T> func) { return Parent.Select(SelectMetaDataStatement(name), func); }
+        T[] IDataProvider.Select<T>(string schema, string name, Func<DbDataRecord, T> func) { return Parent.Select(SelectMetaDataStatement(schema, name), func); }
         IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes() { return Types.CreateNodes(); }
+    }
+
+    partial class MetaDataGenerator
+    {
+        readonly string _className;
+        readonly string _schema;
+        readonly string[] _objectNames;
+        readonly DataBase _dataBase;
+        readonly Dictionary<string, Relation[]> _relations;
+        internal MetaDataGenerator(string schema, DataBase dataBase, string[] objectNames, string className, Dictionary<string, Relation[]> relations = null)
+        {
+            _dataBase = dataBase;
+            _objectNames = objectNames;
+            _className = className;
+            if(relations == null)
+                relations = new Dictionary<string, Relation[]>();
+            _relations =
+                _objectNames
+                    .Select(on => new {key = on, value = relations.ContainsKey(on) ? relations[on] : new Relation[0]})
+                    .ToDictionary(o => o.key, o => o.value);
+            _schema = schema;
+        }
     }
 }

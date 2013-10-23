@@ -31,12 +31,14 @@ namespace Taabus.MetaData
     sealed class Information : DumpableObject
     {
         readonly SQLInformation _sqlInformation;
+        readonly SQLSysViews _sqlSysViews;
         readonly FunctionCache<string, Constraint> _constraintCache;
         readonly FunctionCache<string, CompountType> _compountTypeCache;
 
-        public Information(SQLInformation.IDataProvider provider)
+        public Information(IDataProvider provider)
         {
             _sqlInformation = new SQLInformation(provider);
+            _sqlSysViews = new SQLSysViews(provider);
             _constraintCache = new FunctionCache<string, Constraint>(GetConstraint);
             _compountTypeCache = new FunctionCache<string, CompountType>(GetCompountType);
 
@@ -127,27 +129,32 @@ namespace Taabus.MetaData
             var type = _sqlInformation
                 .TABLES
                 .Single(t => t.TABLE_NAME == name);
-            return new CompountType(type.TABLE_NAME, type.TABLE_SCHEMA, GetMembers(type));
+            return new CompountType
+                (
+                type.TABLE_NAME, 
+                type.TABLE_SCHEMA, 
+                GetMembers(type)
+                );
         }
 
         Member[] GetMembers(SQLInformation.TABLESClass table)
         {
-            return _sqlInformation
-                .COLUMNS
-                .Where(column => column.TABLE_NAME == table.TABLE_NAME && column.TABLE_SCHEMA == table.TABLE_SCHEMA)
+            return _sqlSysViews
+                .columns
+                .Where(column => column.Object.name == table.TABLE_NAME && column.Object.Schema.name == table.TABLE_SCHEMA)
                 .Select(CreateMember)
                 .ToArray();
         }
 
-        static Member CreateMember(SQLInformation.COLUMNSClass column) { return new Member(column.COLUMN_NAME, BasicType.GetInstance(column)); }
+        static Member CreateMember(SQLSysViews.columnsClass column) { return new Member(column.name, BasicType.GetInstance(column)); }
 
         Constraint GetConstraint(string name)
         {
             var constraint = _sqlInformation
                 .TABLE_CONSTRAINTS
                 .SingleOrDefault(i => i.CONSTRAINT_NAME == name);
-            return constraint == null 
-                ? null 
+            return constraint == null
+                ? null
                 : CreateConstraint(_compountTypeCache[constraint.TABLE_NAME], constraint.CONSTRAINT_NAME, constraint.CONSTRAINT_TYPE);
         }
 

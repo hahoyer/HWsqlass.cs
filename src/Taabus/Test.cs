@@ -28,6 +28,7 @@ using hw.Debug;
 using hw.Forms;
 using hw.Helper;
 using hw.UnitTest;
+using Taabus.MetaData;
 
 namespace Taabus
 {
@@ -35,7 +36,7 @@ namespace Taabus
     public sealed class Test
     {
         [Test]
-        public void FullTextIndex()
+        public void FullTextSearch()
         {
             try
             {
@@ -46,7 +47,7 @@ namespace Taabus
 
                 var query = dataBase
                     .Types
-                    .SelectMany(t => FindAllText(t, "Contract").Select(r => new TableRecord {Name = t.Name, Record = r}));
+                    .SelectMany(t => t.FindAllText("Contract").Select(r => new TableRecord {Name = t.Name, Record = r}));
                 var result = query.ToArray();
                 Tracer.FlaggedLine(result.Length + " records found.");
                 Tracer.Assert(result.Any());
@@ -57,13 +58,6 @@ namespace Taabus
                 Tracer.AssertionFailed("");
                 throw;
             }
-        }
-        static IEnumerable<DataRecord> FindAllText(TypeItem t, string value)
-        {
-            var fields = t.Fields.Where(f => f.Type.IsText).ToArray();
-            if(fields.Any())
-                return t.Data.Where(r => r.Contains(fields, value));
-            return new DataRecord[0];
         }
 
         [Test]
@@ -78,7 +72,7 @@ namespace Taabus
             }
             catch(Exception exception)
             {
-                Tracer.AssertionFailed("");
+                Tracer.AssertionFailed(exception.Message);
                 throw;
             }
         }
@@ -101,7 +95,7 @@ namespace Taabus
             }
             catch(Exception exception)
             {
-                Tracer.AssertionFailed("");
+                Tracer.AssertionFailed(exception.Message);
                 throw;
             }
         }
@@ -109,42 +103,95 @@ namespace Taabus
         [Test]
         public void MetaData()
         {
+            string[] objectNames =
+            {
+                "CHECK_CONSTRAINTS",
+                "REFERENTIAL_CONSTRAINTS",
+                "COLUMN_DOMAIN_USAGE",
+                "ROUTINES",
+                "COLUMN_PRIVILEGES",
+                "ROUTINE_COLUMNS",
+                "COLUMNS",
+                "SCHEMATA",
+                "CONSTRAINT_COLUMN_USAGE",
+                "TABLE_CONSTRAINTS",
+                "CONSTRAINT_TABLE_USAGE",
+                "TABLE_PRIVILEGES",
+                "DOMAIN_CONSTRAINTS",
+                "TABLES",
+                "DOMAINS",
+                "VIEW_COLUMN_USAGE",
+                "KEY_COLUMN_USAGE",
+                "VIEW_TABLE_USAGE",
+                "PARAMETERS",
+                "VIEWS",
+            };
+
             var server = new Server("ANNE\\OJB_NET");
             var metaDatas = server
                 .DataBases
-                .Select(dataBase => new MetaDataGenerator(dataBase).TransformText())
+                .Select
+                (
+                    dataBase => new MetaDataGenerator
+                        (
+                        className: "SQLInformation",
+                        schema: "INFORMATION_SCHEMA",
+                        dataBase: dataBase,
+                        objectNames: objectNames
+                        )
+                        .TransformText()
+                )
                 .ToArray();
             Tracer.Assert(metaDatas.Distinct().Count() == 1);
             Tracer.FlaggedLine("\n" + metaDatas.First());
         }
-    }
 
-    partial class MetaDataGenerator
-    {
-        readonly string[] _objectNames =
+        [Test]
+        public void NewMetaData()
         {
-            "CHECK_CONSTRAINTS",
-            "REFERENTIAL_CONSTRAINTS",
-            "COLUMN_DOMAIN_USAGE",
-            "ROUTINES",
-            "COLUMN_PRIVILEGES",
-            "ROUTINE_COLUMNS",
-            "COLUMNS",
-            "SCHEMATA",
-            "CONSTRAINT_COLUMN_USAGE",
-            "TABLE_CONSTRAINTS",
-            "CONSTRAINT_TABLE_USAGE",
-            "TABLE_PRIVILEGES",
-            "DOMAIN_CONSTRAINTS",
-            "TABLES",
-            "DOMAINS",
-            "VIEW_COLUMN_USAGE",
-            "KEY_COLUMN_USAGE",
-            "VIEW_TABLE_USAGE",
-            "PARAMETERS",
-            "VIEWS"
-        };
-        readonly DataBase _dataBase;
-        internal MetaDataGenerator(DataBase dataBase) { _dataBase = dataBase; }
+            string[] objectNames =
+            {
+                "columns",
+                "objects",
+                "schemas",
+                "types"
+            };
+
+            var relations = new Dictionary<string, Relation[]>
+            {
+                {
+                    "columns", new[]
+                    {
+                        new Relation {Name = "Object", Type = "objects", ForeignKey = "object_id", Key = "object_id"},
+                        new Relation {Name = "Type", Type = "types", ForeignKey = "user_type_id", Key = "user_type_id"}
+                    }
+                },
+                {
+                    "objects", new[]
+                    {
+                        new Relation {Name = "Schema", Type = "schemas", ForeignKey = "schema_id", Key = "schema_id"},
+                    }
+                }
+            };
+
+            var server = new Server("ANNE\\OJB_NET");
+            var metaDatas = server
+                .DataBases
+                .Select
+                (
+                    dataBase => new MetaDataGenerator
+                        (
+                        className: "SQLSysViews",
+                        schema: "sys",
+                        dataBase: dataBase,
+                        objectNames: objectNames,
+                        relations: relations
+                        )
+                        .TransformText()
+                )
+                .ToArray();
+            Tracer.Assert(metaDatas.Distinct().Count() == 1);
+            Tracer.FlaggedLine("\n" + metaDatas.First());
+        }
     }
 }

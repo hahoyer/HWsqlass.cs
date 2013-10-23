@@ -5,7 +5,6 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="hw.Helper" #>
 
-
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -14,7 +13,7 @@ using hw.Helper;
 
 namespace Taabus.MetaData
 {
-    public class SQLInformation
+    public sealed partial class <#=_className#>
     {
         public class CacheClass
         {
@@ -22,33 +21,30 @@ namespace Taabus.MetaData
             public readonly ValueCache<<#=name #>Class[]> <#=name #>;
             <#    } #>
 
-            public CacheClass(IDataProvider provider)
+            public CacheClass(IDataProvider provider, SQLSysViews parent)
             {
                 <#    foreach(var name in _objectNames){ #>
-                 <#=name #> = new ValueCache<<#=name #>Class[]>(()=> provider.Select<<#=name #>Class>(<#=name.Quote()#>, r=>new <#=name #>Class(r)));
+                 <#=name #> = new ValueCache<<#=name #>Class[]>(()=> provider.Select<<#=name #>Class>(<#=_schema.Quote()#>, <#=name.Quote()#>, r=>new <#=name #>Class(r, parent)));
                 <#    } #>
             }
         }
 
-        public interface IDataProvider 
-        {
-            T[] Select<T>(string name, Func<DbDataRecord, T> func);
-        }
-        
         public readonly CacheClass Cache;
 
         <#    foreach(var name in _objectNames){ #>
         public <#=name #>Class[] <#=name #> {get{ return Cache.<#=name #>.Value;}}
         <#    } #>
 
-        public SQLInformation(IDataProvider provider){Cache = new CacheClass(provider);}
+        public <#=_className#>(IDataProvider provider){Cache = new CacheClass(provider,this);}
 
         <#    foreach(var name in _objectNames){ 
-                var reader = _dataBase.Parent.ToDataReader(_dataBase.SelectMetaDataStatement(name) + " where 0=1");
+                var reader = _dataBase.Parent.ToDataReader(_dataBase.SelectMetaDataStatement(_schema, name) + " where 0=1");
         #>
-        public sealed class <#=name #>Class
-        { 
-            internal <#=name #>Class(DbDataRecord record){
+        public sealed partial class <#=name #>Class
+        {
+            readonly <#=_className#> _parent; 
+            internal <#=name #>Class(DbDataRecord record, <#=_className#> parent){
+                _parent= parent;
                 <#for(var index = 0; index < reader.FieldCount; index++){ #>
                 <#=reader.GetName(index)#> = record[<#=reader.GetName(index).Quote()#>].Convert<<#=reader.GetFieldType(index).NullableName()#>>();
                 <#}#>
@@ -57,6 +53,13 @@ namespace Taabus.MetaData
             <#for(var index = 0; index < reader.FieldCount; index++){ #>
             public readonly <#=reader.GetFieldType(index).NullableName() #> <#=reader.GetName(index)#>;
             <#}#>
+
+            <#    foreach(var relation in _relations[name]){ #>
+            <#=relation.Type#>Class _<#=relation.Name#>Cache;
+            public <#=relation.Type#>Class <#=relation.Name#> { get { return _<#=relation.Name#>Cache?? (_<#=relation.Name#>Cache= _parent.<#=relation.Type#>.Single(t => t.<#=relation.Key#>== <#=relation.ForeignKey#>)); } }
+
+            <#}#>
+            
         }
         <#    } #>
     }

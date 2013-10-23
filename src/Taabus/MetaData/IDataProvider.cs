@@ -22,22 +22,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Data.Common;
 using System.Linq;
-using System.Reflection;
-using hw.UnitTest;
 
-namespace Taabus
+namespace Taabus.MetaData
 {
-    static class MainContainer
+    public interface IDataProvider
     {
-        public static void Main()
-        {
-            new Test().NewMetaData();
-            return;
-            if(Debugger.IsAttached)
-                TestRunner.IsModeErrorFocus = true;
-            Assembly.GetExecutingAssembly().RunTests();
-        }
+        T[] Select<T>(string schema, string name, Func<DbDataRecord, T> func);
     }
 }

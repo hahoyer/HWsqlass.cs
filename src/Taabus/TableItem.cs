@@ -41,14 +41,19 @@ namespace Taabus
         internal readonly TypeQuery Data;
         [Node]
         internal readonly ReferenceItem[] References;
+        internal readonly int? KeyIndex;
+        internal readonly int[][] Uniques;
+
         readonly ValueCache<MemberItem[]> _membersCache;
 
-        public TypeItem(DataBase parent, CompountType type, ReferenceItem[] references)
+        public TypeItem(DataBase parent, CompountType type, ReferenceItem[] references, int? keyIndex, int[][] uniques)
             : base(parent, type.Name)
         {
             _membersCache = new ValueCache<MemberItem[]>(GetMembers);
             Type = type;
             References = references;
+            KeyIndex = keyIndex;
+            Uniques = uniques;
             Data = new TypeQuery(parent.Parent, Parent.Name + "." + Type.FullName);
         }
 
@@ -81,6 +86,24 @@ namespace Taabus
             return members
                 .Select(metaData => CreateMember(this, metaData))
                 .ToArray();
+        }
+
+        internal IEnumerable<DataRecord> FindAllText(string value)
+        {
+            var fields = Fields.Where(f => f.Type.IsText).ToArray();
+            if(fields.Any())
+                return Data.Where(r => r.Contains(fields, value));
+            return new DataRecord[0];
+        }
+
+        internal IEnumerable<DataRecord> FindKeyCandiadtes()
+        {
+            var fields = Fields
+                .Where(f => f.Type.IsInteger)
+                .ToArray();
+
+            NotImplementedMethod("fields", fields);
+            return null;
         }
     }
 
@@ -140,8 +163,8 @@ namespace Taabus
                 var field = QueryProvider.CreateFieldNames(name, args[0]).ToArray();
                 if(field.Length == 0)
                     return "1=0";
-                var value = ("%"+args[1].Eval<string>() +"%").SQLFormat();
-                return "("+ field.Select(f => f + " like " + value).Stringify(" or ") +")";
+                var value = ("%" + args[1].Eval<string>() + "%").SQLFormat();
+                return "(" + field.Select(f => f + " like " + value).Stringify(" or ") + ")";
             }
         }
     }

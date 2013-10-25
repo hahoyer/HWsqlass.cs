@@ -20,13 +20,47 @@
 
 #endregion
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using hw.Helper;
+
 namespace Taabus.MetaData
 {
-    class Relation
+    sealed class Relation
     {
-        public string Type;
-        public string Name;
-        public string Key;
-        public string ForeignKey;
+        public readonly string Type;
+        public readonly string Name;
+        public readonly KeyPart[] Key;
+        public Relation(string s)
+        {
+            var x = s.Split(' ');
+            Name = x[0];
+            Type = x[1];
+            Key = x.Skip(2).Select(KeyPart.Create).ToArray();
+        }
+
+        internal sealed class KeyPart
+        {
+            public readonly string This;
+            public readonly string Foreign;
+            KeyPart(string @this, string foreign)
+            {
+                This = @this;
+                Foreign = foreign;
+            }
+            public static KeyPart Create(string s)
+            {
+                var y = s.Split('>');
+                return new KeyPart(y[0], y[y.Length - 1]);
+            }
+        }
+
+        public string GenerateKeyCompare(string foreign)
+        {
+            return Key
+                .Select(k => k.This + "==" + foreign + "." + k.Foreign)
+                .Stringify("&&");
+        }
     }
 }

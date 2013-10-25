@@ -55,8 +55,7 @@ namespace Taabus
 
         public static T Eval<T>(this Expression x)
         {
-            return (T) Expression
-                .Lambda(x)
+            return (T) Expression.Lambda(x)
                 .Compile()
                 .DynamicInvoke();
         }
@@ -73,7 +72,7 @@ namespace Taabus
                 throw new ArgumentNullException("items");
             if(predicate == null)
                 throw new ArgumentNullException("predicate");
-            
+
             var result = 0;
             foreach(var item in items)
             {
@@ -83,5 +82,14 @@ namespace Taabus
             }
             return null;
         }
+
+        internal static int BeginMatch(string a, string b)
+        {
+            for(var i = 0;; i++)
+                if(i >= a.Length || i >= b.Length || a[i] != b[i])
+                    return i;
+        }
+
+        internal static bool In(this string a, params string[] b) { return b.Contains(a); }
     }
 }

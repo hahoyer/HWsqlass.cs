@@ -96,15 +96,6 @@ namespace Taabus
             return new DataRecord[0];
         }
 
-        internal IEnumerable<DataRecord> FindKeyCandiadtes()
-        {
-            var fields = Fields
-                .Where(f => f.Type.IsInteger)
-                .ToArray();
-
-            NotImplementedMethod("fields", fields);
-            return null;
-        }
     }
 
     sealed class TypeQuery : QueryBase

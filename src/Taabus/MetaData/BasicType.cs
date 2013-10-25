@@ -31,7 +31,7 @@ namespace Taabus.MetaData
     {
         static readonly HashSet<BasicType> _cache = new HashSet<BasicType>(_comparer);
 
-        internal static BasicType GetInstance(SQLSysViews.columnsClass column)
+        internal static BasicType GetInstance(SQLSysViews.all_columnsClass column)
         {
             var probe = new BasicType(
                 isNullable: column.is_nullable == true,
@@ -40,10 +40,10 @@ namespace Taabus.MetaData
                 numericPrecision: column.precision,
                 numericScale: column.scale
                 );
-
             var result = _cache.FirstOrDefault(e => _comparer.Equals(e, probe));
             if(result != null)
                 return result;
+            //Tracer.ConditionalBreak(column.Type.name == "money");
             _cache.Add(probe);
             return probe;
         }
@@ -131,6 +131,7 @@ namespace Taabus.MetaData
                     case "int":
                     case "smallint":
                     case "tinyint":
+                    case "bigint":
                         return true;
                     default:
                         return false;
@@ -147,16 +148,32 @@ namespace Taabus.MetaData
                 case "int":
                 case "smallint":
                 case "tinyint":
+                case "bigint":
                 case "timestamp":
                 case "bit":
                 case "uniqueidentifier":
-                    break;
+                case "smalldatetime":
                 case "datetime":
+                case "datetime2":
+                case "datetimeoffset":
+                    break;
+                case "numeric":
+                case "decimal":
+                case "float":
+                case "real":
+                case "money":
+                    Tracer.Assert(NumericPrecision != null);
+                    result += "(" + NumericPrecision.Value + ")";
                     Tracer.Assert(NumericScale != null);
-                    result += "("+NumericScale.Value+")";
+                    result += "(" + NumericScale.Value + ")";
                     break;
                 case "char":
                 case "varchar":
+                case "varbinary":
+                case "binary":
+                case "sysname":
+                case "sql_variant":
+                case "image":
                     Tracer.Assert(CharacterOctetLength != null);
                     result += "(" + CharacterOctetLength.Value + ")";
                     break;

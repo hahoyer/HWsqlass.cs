@@ -72,6 +72,9 @@ namespace Taabus
             }
         }
 
+        internal SQLSysViews.all_columnsClass[] SysColumns { get { return _information.SysColumns; } }
+        internal SQLSysViews.all_objectsClass[] SysObjects { get { return _information.SysObjects; } }
+
         internal string SelectMetaDataStatement(string schema, string name)
         {
             return MetaDataStatement
@@ -170,16 +173,21 @@ namespace Taabus
         readonly string[] _objectNames;
         readonly DataBase _dataBase;
         readonly Dictionary<string, Relation[]> _relations;
-        internal MetaDataGenerator(string schema, DataBase dataBase, string[] objectNames, string className, Dictionary<string, Relation[]> relations = null)
+        internal MetaDataGenerator(string schema, DataBase dataBase, string className, string[][] relations)
         {
             _dataBase = dataBase;
-            _objectNames = objectNames;
+            _objectNames = relations.Select(r=>r[0]).ToArray();
             _className = className;
-            if(relations == null)
-                relations = new Dictionary<string, Relation[]>();
             _relations =
-                _objectNames
-                    .Select(on => new {key = on, value = relations.ContainsKey(on) ? relations[on] : new Relation[0]})
+                relations
+                    .Select
+                    (r =>
+                        new
+                        {
+                            key = r[0],
+                            value = r.Skip(1).Select(rr => new Relation(rr)).ToArray()
+                        }
+                    )
                     .ToDictionary(o => o.key, o => o.value);
             _schema = schema;
         }

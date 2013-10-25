@@ -30,20 +30,17 @@ namespace Taabus.MetaData
 {
     sealed class Information : DumpableObject
     {
-        readonly SQLInformation _sqlInformation;
         readonly SQLSysViews _sqlSysViews;
         readonly FunctionCache<string, Constraint> _constraintCache;
         readonly FunctionCache<string, CompountType> _compountTypeCache;
 
         public Information(IDataProvider provider)
         {
-            _sqlInformation = new SQLInformation(provider);
             _sqlSysViews = new SQLSysViews(provider);
             _constraintCache = new FunctionCache<string, Constraint>(GetConstraint);
             _compountTypeCache = new FunctionCache<string, CompountType>(GetCompountType);
 
             Tracer.Assert(IsSimpleScheme);
-            Tracer.Assert(IsSimpleConstraintUsage);
         }
 
         /// <summary>
@@ -54,7 +51,7 @@ namespace Taabus.MetaData
         {
             get
             {
-                if(_sqlInformation.SCHEMATA.Count() == 1)
+                if(_sqlSysViews.schemas.Count() == 1)
                     return true;
                 var groupBy = CompountTypes.GroupBy(t => t.Name).FirstOrDefault(g => g.Count() > 1);
                 if(groupBy == null)
@@ -64,51 +61,14 @@ namespace Taabus.MetaData
             }
         }
 
-        /// <summary>
-        ///     Check if scheme is not required to identify an object, i. e. there are not objects with the same name under
-        ///     different schemes
-        /// </summary>
-        bool IsSimpleConstraintUsage
-        {
-            get
-            {
-                var cc = _sqlInformation.TABLE_CONSTRAINTS.GroupBy(c => c.CONSTRAINT_CATALOG).ToArray();
-                switch(cc.Length)
-                {
-                    case 0:
-                        return true;
-                    case 1:
-                        break;
-                    default:
-                        return false;
-                }
-
-                var cs = cc[0].GroupBy(c => c.CONSTRAINT_SCHEMA).ToArray();
-                if(cs.Length > 1)
-                    return false;
-                var tc = cs[0].GroupBy(c => c.TABLE_CATALOG).ToArray();
-                if(tc.Length > 1)
-                    return false;
-                var ts = tc[0].GroupBy(c => c.TABLE_SCHEMA).ToArray();
-                if(ts.Length > 1)
-                    return false;
-                var id = ts[0].GroupBy(c => c.INITIALLY_DEFERRED).ToArray();
-                if(id.Length > 1)
-                    return false;
-                var d = id[0].GroupBy(c => c.IS_DEFERRABLE).ToArray();
-                if(d.Length > 1)
-                    return false;
-                return true;
-            }
-        }
-
         internal CompountType[] CompountTypes
         {
             get
             {
-                return _sqlInformation
-                    .TABLES
-                    .Select(t => _compountTypeCache[t.TABLE_NAME])
+                return _sqlSysViews
+                    .all_objects
+                    .Where(o => o.type.In("IT", "S ", "U ", "V ") && o.Schema.name != "sys")
+                    .Select(t => _compountTypeCache[t.name])
                     .ToArray();
             }
         }
@@ -117,160 +77,110 @@ namespace Taabus.MetaData
         {
             get
             {
-                return _sqlInformation
-                    .TABLE_CONSTRAINTS
-                    .Select(t => _constraintCache[t.CONSTRAINT_NAME])
+                return _sqlSysViews
+                    .all_objects
+                    .Where(o => o.type.In("PK", "UQ", "C ", "F "))
+                    .Select(t => _constraintCache[t.name])
                     .ToArray();
             }
         }
 
+        internal SQLSysViews.all_columnsClass[] SysColumns { get { return _sqlSysViews.all_columns; } }
+        internal SQLSysViews.all_objectsClass[] SysObjects { get { return _sqlSysViews.all_objects; } }
+
         CompountType GetCompountType(string name)
         {
-            var type = _sqlInformation
-                .TABLES
-                .Single(t => t.TABLE_NAME == name);
+            var type = _sqlSysViews
+                .all_objects
+                .Single(t => t.name == name);
             return new CompountType
                 (
-                type.TABLE_NAME, 
-                type.TABLE_SCHEMA, 
+                type.name,
+                type.Schema.name,
                 GetMembers(type)
                 );
         }
 
-        Member[] GetMembers(SQLInformation.TABLESClass table)
+        Member[] GetMembers(SQLSysViews.all_objectsClass table)
         {
             return _sqlSysViews
-                .columns
-                .Where(column => column.Object.name == table.TABLE_NAME && column.Object.Schema.name == table.TABLE_SCHEMA)
+                .all_columns
+                .Where(column => column.Object == table && column.Object.Schema == table.Schema)
                 .Select(CreateMember)
                 .ToArray();
         }
 
-        static Member CreateMember(SQLSysViews.columnsClass column) { return new Member(column.name, BasicType.GetInstance(column)); }
+        static Member CreateMember(SQLSysViews.all_columnsClass column) { return new Member(column.name, BasicType.GetInstance(column)); }
 
         Constraint GetConstraint(string name)
         {
-            var constraint = _sqlInformation
-                .TABLE_CONSTRAINTS
-                .SingleOrDefault(i => i.CONSTRAINT_NAME == name);
+            var constraint = _sqlSysViews
+                .all_objects
+                .SingleOrDefault(i => i.name == name);
             return constraint == null
                 ? null
-                : CreateConstraint(_compountTypeCache[constraint.TABLE_NAME], constraint.CONSTRAINT_NAME, constraint.CONSTRAINT_TYPE);
+                : CreateConstraint(_compountTypeCache[constraint.Parent.name], constraint.name, constraint.Type);
         }
 
-        Constraint CreateConstraint(CompountType compountType, string name, string type)
+        Constraint CreateConstraint(CompountType compountType, string name, ConstraintType type)
         {
-            var cc = CheckConstraints(name);
-            var rc = ReferentialConstraints(name);
-            var ccu = ConstraintColumns(name, type == "CHECK");
 
-            CheckConstraintTableUsage(name, compountType.Name);
-            CheckDomainConstraints(name);
-
-            switch(type)
+            if(type == ConstraintType.PrimaryKey || type == ConstraintType.UniqueIndex)
             {
-                case "CHECK":
-                    Tracer.Assert(cc != null);
-                    return new CheckConstraint(compountType, name, ccu, cc.CHECK_CLAUSE);
+                var ccu = _sqlSysViews
+                    .key_constraints
+                    .Single(i => i.name == name)
+                    .Index
+                    .Columns
+                    .Select(c=>c.Column.name)
+                    .ToArray();
+         
+                Tracer.Assert(ccu.Length > 0);
+                return new KeyConstraint(compountType, name, type == ConstraintType.PrimaryKey, ccu);
             }
-
-            Tracer.Assert(cc == null);
-            Tracer.Assert(ccu.Length > 0);
-
-            switch(type)
+            
+            if(type == ConstraintType.ForeignKey)
             {
-                case "PRIMARY KEY":
-                case "UNIQUE":
-                    Tracer.Assert(rc == null);
-                    return new KeyConstraint(compountType, name, type == "PRIMARY KEY", ccu);
-                case "FOREIGN KEY":
-                    Tracer.Assert(rc != null);
-                    var constraint = _constraintCache[rc.UNIQUE_CONSTRAINT_NAME];
-                    if(constraint == null)
-                        return null;
-                    return new ForeignKeyConstraint
-                        (
-                        compountType,
-                        name,
-                        constraint,
-                        rc.DELETE_RULE,
-                        rc.MATCH_OPTION,
-                        rc.UPDATE_RULE,
-                        ccu
-                        );
-                default:
-                    NotImplementedMethod(name, type);
+                var fk = _sqlSysViews.foreign_keys.Single(o => o.name == name);
+                var ccu = _sqlSysViews
+                    .foreign_key_columns
+                    .Where(o => o.Constraint.name == name)
+                    .Select(c => c.ConstraintColumn.name)
+                    .ToArray();
+                Tracer.Assert(ccu.Length > 0);
+                var constraint = _constraintCache[fk.name];
+                if(constraint == null)
                     return null;
+                return new ForeignKeyConstraint
+                    (
+                    compountType,
+                    name,
+                    constraint,
+                    fk.delete_referential_action_desc,
+                    fk.update_referential_action_desc,
+                    ccu
+                    );
             }
-        }
-
-        void CheckDomainConstraints(string name)
-        {
-            var any = _sqlInformation.DOMAIN_CONSTRAINTS.Any(i => i.CONSTRAINT_NAME == name);
-            Tracer.Assert(!any);
-        }
-
-        void CheckConstraintTableUsage(string name, string tableName)
-        {
-            Tracer.Assert(_sqlInformation
-                .CONSTRAINT_TABLE_USAGE
-                .Count(i => i.CONSTRAINT_NAME == name && i.TABLE_NAME == tableName)
-                == 1);
-        }
-
-        string[] ConstraintColumns(string name, bool isCheck)
-        {
-            var result = _sqlInformation
-                .CONSTRAINT_COLUMN_USAGE
-                .Where(i => i.CONSTRAINT_NAME == name)
-                .Select(i => i.COLUMN_NAME)
-                .ToArray();
-
-            var keyColumns = _sqlInformation
-                .KEY_COLUMN_USAGE
-                .Where(i => i.CONSTRAINT_NAME == name)
-                .Select(i => new {i.COLUMN_NAME, i.ORDINAL_POSITION})
-                .OrderBy(i => i.ORDINAL_POSITION)
-                .ToArray();
-
-            if(isCheck)
-                Tracer.Assert(keyColumns.Length == 0);
-            else
-                Tracer.Assert(keyColumns.Length == result.Length);
-            Tracer.Assert(!keyColumns.Where((kcui, i) => kcui.ORDINAL_POSITION != i + 1).Any());
-            Tracer.Assert(keyColumns.All(kcui => result.Any(ccui => ccui == kcui.COLUMN_NAME)));
-
-            return result;
-        }
-
-        SQLInformation.REFERENTIAL_CONSTRAINTSClass ReferentialConstraints(string name)
-        {
-            return _sqlInformation
-                .REFERENTIAL_CONSTRAINTS
-                .SingleOrDefault(i => i.CONSTRAINT_NAME == name);
-        }
-
-        SQLInformation.CHECK_CONSTRAINTSClass CheckConstraints(string name)
-        {
-            return _sqlInformation
-                .CHECK_CONSTRAINTS
-                .SingleOrDefault(i => i.CONSTRAINT_NAME == name);
+            if(type == ConstraintType.Check)
+            {
+                return null;
+            }
+            NotImplementedMethod(name, type);
+            return null;
         }
     }
 
     sealed class ForeignKeyConstraint : Constraint
     {
         public readonly string DeleteRule;
-        public readonly string MatchOption;
         public readonly string UpdateRule;
         public readonly string[] ColumnNames;
         public readonly Constraint Target;
 
-        public ForeignKeyConstraint(CompountType type, string name, Constraint target, string deleteRule, string matchOption, string updateRule, string[] columnNames)
+        public ForeignKeyConstraint(CompountType type, string name, Constraint target, string deleteRule, string updateRule, string[] columnNames)
             : base(name, type)
         {
             DeleteRule = deleteRule;
-            MatchOption = matchOption;
             UpdateRule = updateRule;
             ColumnNames = columnNames;
             Target = target;
@@ -301,5 +211,19 @@ namespace Taabus.MetaData
             ColumnNames = columnNames;
             Clause = clause;
         }
+    }
+
+    sealed class ConstraintType : EnumEx
+    {
+        public static readonly ConstraintType Check = new ConstraintType("C ");
+        public static readonly ConstraintType ForeignKey = new ConstraintType("F ");
+        public static readonly ConstraintType PrimaryKey = new ConstraintType("PK");
+        public static readonly ConstraintType UniqueIndex = new ConstraintType("UQ");
+
+        internal string Name;
+        public ConstraintType(string name) { Name = name; }
+
+        public static IEnumerable<ConstraintType> All { get { return AllInstances<ConstraintType>(); } }
+        
     }
 }

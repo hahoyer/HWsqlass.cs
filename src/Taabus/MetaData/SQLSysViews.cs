@@ -23,14 +23,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using hw.Debug;
+using hw.Forms;
 
 namespace Taabus.MetaData
 {
     partial class SQLSysViews
     {
 // ReSharper disable once InconsistentNaming
-        partial class columnsClass
+        partial class all_columnsClass
         {
+            public override string ToString() { return "[" + object_id + ":" + column_id + "]" + name + "(" + TypeName + ")"; }
 
             public string TypeName
             {
@@ -40,17 +43,52 @@ namespace Taabus.MetaData
                     switch(Type.name)
                     {
                         case "decimal":
-                            return result + "(" + precision + ","+ scale+")";
+                            return result + "(" + precision + "," + scale + ")";
                         case "char":
                             return result + "(" + max_length + ")";
                         case "nvarchar":
-                            return result + "(" + (max_length == -1? "max":(max_length/2).ToString())+ ")";
+                            return result + "(" + (max_length == -1 ? "max" : (max_length / 2).ToString()) + ")";
                         case "nchar":
                             return result + "(" + max_length / 2 + ")";
-                            
+
                         default:
                             return result;
                     }
+                }
+            }
+        }
+
+        // ReSharper disable once InconsistentNaming
+        partial class all_objectsClass : DumpableObject
+        {
+            public override string ToString() { return "[" + object_id + "]" + name; }
+
+            public all_columnsClass[] Columns
+            {
+                get
+                {
+                    return _parent
+                        .all_columns
+                        .Where(c => c.Object == this)
+                        .ToArray();
+                }
+            }
+
+            internal ConstraintType Type {get { return ConstraintType.All.SingleOrDefault(c => c.Name == type); }}
+        }
+        // ReSharper disable once InconsistentNaming
+        partial class indexesClass : DumpableObject
+        {
+            public override string ToString() { return "[" + object_id + "." + index_id+ "]" + name; }
+
+            public index_columnsClass[] Columns
+            {
+                get
+                {
+                    return _parent
+                        .index_columns
+                        .Where(c => c.index_id == index_id && c.Object == Object)
+                        .ToArray();
                 }
             }
         }

@@ -79,7 +79,6 @@
     <Compile Include="MetaData\SQLSysViews.cs" />
     <Compile Include="MetaData\SQLSysViews.Generated.cs" />
     <Compile Include="MetaData\Type.cs" />
-    <Compile Include="MetaData\SQLInformation.Generated.cs" />
     <Compile Include="MetaDataGenerator.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

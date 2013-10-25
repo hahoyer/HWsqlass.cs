@@ -301,58 +301,52 @@ for(var index = 0; index < reader.FieldCount; index++){
             
             #line default
             #line hidden
-            this.Write(" { get { return _");
+            this.Write(" \r\n            { \r\n                get \r\n                    { \r\n                " +
+                    "        return _");
             
-            #line 59 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 63 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(relation.Name));
             
             #line default
             #line hidden
-            this.Write("Cache?? (_");
+            this.Write("Cache\r\n                            ?? (_");
             
-            #line 59 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 64 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(relation.Name));
             
             #line default
             #line hidden
             this.Write("Cache= _parent.");
             
-            #line 59 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 64 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(relation.Type));
             
             #line default
             #line hidden
-            this.Write(".Single(t => t.");
+            this.Write(".Single(t => ");
             
-            #line 59 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(relation.Key));
-            
-            #line default
-            #line hidden
-            this.Write("== ");
-            
-            #line 59 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(relation.ForeignKey));
+            #line 64 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(relation.GenerateKeyCompare("t")));
             
             #line default
             #line hidden
-            this.Write(")); } }\r\n\r\n            ");
+            this.Write(")); \r\n                    }\r\n            }\r\n\r\n            ");
             
-            #line 61 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 68 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
 }
             
             #line default
             #line hidden
             this.Write("            \r\n        }\r\n        ");
             
-            #line 64 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 71 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
     } 
             
             #line default
             #line hidden
             this.Write("    }\r\n}\r\n");
             
-            #line 67 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
+            #line 74 "A:\develop\HWsqlass\dev\src\Taabus\MetaDataGenerator.tt"
  // ReSharper disable FieldCanBeMadeReadOnly.Local 
             
             #line default

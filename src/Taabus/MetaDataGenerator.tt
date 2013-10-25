@@ -56,7 +56,14 @@ namespace Taabus.MetaData
 
             <#    foreach(var relation in _relations[name]){ #>
             <#=relation.Type#>Class _<#=relation.Name#>Cache;
-            public <#=relation.Type#>Class <#=relation.Name#> { get { return _<#=relation.Name#>Cache?? (_<#=relation.Name#>Cache= _parent.<#=relation.Type#>.Single(t => t.<#=relation.Key#>== <#=relation.ForeignKey#>)); } }
+            public <#=relation.Type#>Class <#=relation.Name#> 
+            { 
+                get 
+                    { 
+                        return _<#=relation.Name#>Cache
+                            ?? (_<#=relation.Name#>Cache= _parent.<#=relation.Type#>.Single(t => <#=relation.GenerateKeyCompare("t")#>)); 
+                    }
+            }
 
             <#}#>
             

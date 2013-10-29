@@ -3,18 +3,11 @@
 //     Project Taabus
 //     Copyright (C) 2013 - 2013 Harald Hoyer
 // 
-//     This program is free software: you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation, either version 3 of the License, or
-//     (at your option) any later version.
+//     Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 // 
-//     This program is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 // 
-//     You should have received a copy of the GNU General Public License
-//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
 //     
 //     Comments, bugs and suggestions to hahoyer at yahoo.de
 
@@ -23,8 +16,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using hw.Debug;
 using hw.Forms;
+using hw.Helper;
 using Taabus.MetaData;
 
 namespace Taabus
@@ -35,26 +28,21 @@ namespace Taabus
         internal readonly string[] Columns;
         [Node]
         internal readonly string[] TargetColumns;
-        readonly Func<CompountType, TypeItem> _getType;
-        readonly CompountType _type;
+        readonly ValueCache<TypeItem> _targetTypeCache;
 
-        public ReferenceItem(DataBase parent, ForeignKeyConstraint constraint, Func<CompountType, TypeItem> getType)
-            : base(parent, constraint.Name)
+        public ReferenceItem(DataBase parent, SQLSysViews.foreign_keysClass constraint, Func<SQLSysViews.all_objectsClass, TypeItem> getType)
+            : base(parent, constraint.name)
         {
-            _getType = getType;
-            Columns = constraint.ColumnNames;
-            var target = constraint.Target as KeyConstraint;
-            Tracer.Assert(target != null);
-            Tracer.Assert(target.IsPrimaryKey);
-            _type = target.Type;
-            TargetColumns = target.ColumnNames;
-            Tracer.Assert(Columns.Length == TargetColumns.Length);
+            var columns = constraint.Columns.OrderBy(c => c.constraint_column_id).ToArray();
+            Columns = columns.Select(c => c.ParentColumn.name).ToArray();
+            TargetColumns = columns.Select(c => c.ReferenceColumn.name).ToArray();
+            _targetTypeCache = new ValueCache<TypeItem>(() => getType(constraint.Reference));
         }
 
         [Node]
-        public TypeItem TargetType { get { return _getType(_type); } }
+        public TypeItem TargetType { get { return _targetTypeCache.Value; } }
 
         protected override Item[] GetItems() { return null; }
-        protected override string GetNodeDump() { return "->"+TargetType.Name; }
+        protected override string GetNodeDump() { return "->" + TargetType.Name; }
     }
 }

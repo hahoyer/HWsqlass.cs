@@ -120,6 +120,7 @@ namespace Taabus
                 new[]
                 {
                     "key_constraints",
+                    "Object all_objects object_id",
                     "Parent all_objects parent_object_id>object_id" ,
                     "Schema schemas schema_id",
                     "Index indexes parent_object_id>object_id unique_index_id>index_id"
@@ -127,6 +128,7 @@ namespace Taabus
                 new[]
                 {
                     "foreign_keys",
+                    "Object all_objects object_id",
                     "Parent all_objects parent_object_id>object_id" ,
                     "Reference all_objects referenced_object_id>object_id" ,
                     "Schema schemas schema_id",
@@ -135,12 +137,12 @@ namespace Taabus
                 new[]
                 {
                     "foreign_key_columns",
-                    "Constraint all_objects constraint_object_id>object_id",
+                    "Constraint foreign_keys constraint_object_id>object_id",
                     "ConstraintColumn all_columns Constraint.parent_object_id>object_id constraint_column_id>column_id",
                     "Parent all_objects parent_object_id>object_id" ,
                     "ParentColumn all_columns parent_object_id>object_id parent_column_id>column_id",
                     "Reference all_objects referenced_object_id>object_id" ,
-                    "ReferenceColumn all_columns referenced_object_id>>object_id referenced_column_id>column_id",
+                    "ReferenceColumn all_columns referenced_object_id>object_id referenced_column_id>column_id",
                 },
                 new[]
                 {

@@ -1,26 +1,4 @@
-﻿#region Copyright (C) 2013
-
-//     Project Taabus
-//     Copyright (C) 2013 - 2013 Harald Hoyer
-// 
-//     This program is free software: you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation, either version 3 of the License, or
-//     (at your option) any later version.
-// 
-//     This program is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
-// 
-//     You should have received a copy of the GNU General Public License
-//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//     
-//     Comments, bugs and suggestions to hahoyer at yahoo.de
-
-#endregion
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
@@ -107,18 +85,14 @@ namespace Taabus
         {
             if(IsInDump)
                 return null;
-            var keyConstraint = _information
-                .Constraints
-                .Where(c => c != null && c.Type == type)
-                .OfType<KeyConstraint>()
+            var keyConstraint = SysObject(type)
+                .Indexes
+                .Where(c => c.is_unique == true)
                 .Select
-                (
-                    kc
-                        =>
-                        kc
-                            .ColumnNames
-                            .Select(kccn => type.Members.IndexOf(m => m.Name == kccn).AssertValue())
-                            .ToArray()
+                (kc => kc
+                    .Columns
+                    .Select(kccn => type.Members.IndexOf(m => m.Name == kccn.Column.name).AssertValue())
+                    .ToArray()
                 )
                 .ToArray();
             return keyConstraint;
@@ -128,38 +102,40 @@ namespace Taabus
         {
             if(IsInDump)
                 return null;
-            var constraints = _information
-                .Constraints
-                .Where(c => c != null && c.Type == type);
-            var keyConstraint = constraints
-                .OfType<KeyConstraint>()
-                .Single(kc => kc.IsPrimaryKey);
 
-            if(keyConstraint.ColumnNames.Length != 1)
+            var keyConstraint = SysObject(type)
+                .KeyConstraints
+                .SingleOrDefault(k => k.Object.Type == ObjectType.PrimaryKey);
+            if(keyConstraint == null)
+                return null;
+            if(keyConstraint.Index.Columns.Length != 1)
                 return null;
 
-            var result = type
+            return type
                 .Members
-                .IndexOf(m => m.Name == keyConstraint.ColumnNames[0])
+                .IndexOf(m => m.Name == keyConstraint.Index.Columns[0].Column.name)
                 .AssertValue();
+        }
 
-            return result;
+        SQLSysViews.all_objectsClass SysObject(CompountType type)
+        {
+            return _information
+                .SysObjects
+                .Single(o => o.name == type.Name && o.Schema.name == type.Schema);
         }
 
         ReferenceItem[] GetReferences(CompountType type)
         {
-            return _information
-                .Constraints
-                .Where(c => c != null && c.Type == type)
-                .OfType<ForeignKeyConstraint>()
+            return SysObject(type)
+                .ForeignKeys
                 .Select(c => Item.CreateReference(this, c, FindType))
                 .ToArray();
         }
 
-        TypeItem FindType(CompountType compountType)
+        TypeItem FindType(SQLSysViews.all_objectsClass target)
         {
             return GetTypes()
-                .Single(typeItem => typeItem.Type == compountType);
+                .Single(typeItem => SysObject(typeItem.Type) == target);
         }
 
         T[] IDataProvider.Select<T>(string schema, string name, Func<DbDataRecord, T> func) { return Parent.Select(SelectMetaDataStatement(schema, name), func); }
@@ -176,7 +152,7 @@ namespace Taabus
         internal MetaDataGenerator(string schema, DataBase dataBase, string className, string[][] relations)
         {
             _dataBase = dataBase;
-            _objectNames = relations.Select(r=>r[0]).ToArray();
+            _objectNames = relations.Select(r => r[0]).ToArray();
             _className = className;
             _relations =
                 relations

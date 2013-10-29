@@ -42,7 +42,10 @@ namespace Taabus
                 uniques
                 );
         }
-        public static ReferenceItem CreateReference(DataBase parent, ForeignKeyConstraint constraint, Func<CompountType, TypeItem> getType) { return new ReferenceItem(parent, constraint, getType); }
+        public static ReferenceItem CreateReference(DataBase parent, SQLSysViews.foreign_keysClass constraint, Func<SQLSysViews.all_objectsClass, TypeItem> getType)
+        {
+            return new ReferenceItem(parent, constraint, getType);
+        }
         protected static MemberItem CreateMember(TypeItem parent, Member member) { return new MemberItem(parent, member); }
 
         [DisableDump]

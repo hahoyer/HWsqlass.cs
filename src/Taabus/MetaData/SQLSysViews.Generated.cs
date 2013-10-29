@@ -243,6 +243,16 @@ namespace Taabus.MetaData
             public readonly int? unique_index_id;
             public readonly Boolean? is_system_named;
 
+            all_objectsClass _ObjectCache;
+            public all_objectsClass Object
+            {
+                get
+                {
+                    return _ObjectCache
+                        ?? (_ObjectCache = _parent.all_objects.Single(t => object_id == t.object_id));
+                }
+            }
+
             all_objectsClass _ParentCache;
             public all_objectsClass Parent
             {
@@ -328,6 +338,16 @@ namespace Taabus.MetaData
             public readonly string update_referential_action_desc;
             public readonly Boolean? is_system_named;
 
+            all_objectsClass _ObjectCache;
+            public all_objectsClass Object
+            {
+                get
+                {
+                    return _ObjectCache
+                        ?? (_ObjectCache = _parent.all_objects.Single(t => object_id == t.object_id));
+                }
+            }
+
             all_objectsClass _ParentCache;
             public all_objectsClass Parent
             {
@@ -391,13 +411,13 @@ namespace Taabus.MetaData
             public readonly int? referenced_object_id;
             public readonly int? referenced_column_id;
 
-            all_objectsClass _ConstraintCache;
-            public all_objectsClass Constraint
+            foreign_keysClass _ConstraintCache;
+            public foreign_keysClass Constraint
             {
                 get
                 {
                     return _ConstraintCache
-                        ?? (_ConstraintCache = _parent.all_objects.Single(t => constraint_object_id == t.object_id));
+                        ?? (_ConstraintCache = _parent.foreign_keys.Single(t => constraint_object_id == t.object_id));
                 }
             }
 

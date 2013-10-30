@@ -33,7 +33,7 @@ namespace Taabus
     {
         public static void Main()
         {
-            new Test().Base();
+            new Test().UI();
             return;
             if (Debugger.IsAttached)
                 TestRunner.IsModeErrorFocus = true;

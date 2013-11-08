@@ -66,7 +66,7 @@ namespace Taabus.MetaData
                 }
             }
 
-            internal ObjectType Type { get { return ObjectType.All.SingleOrDefault(c => c.Name == type); } }
+            internal ObjectType Type { get { return ObjectType.All.Single(c => c.Name == type); } }
             [DisableDump]
             internal key_constraintsClass AsKeyConstraint { get { return _parent.key_constraints.Single(k => k.object_id == object_id); } }
             [DisableDump]

@@ -1,28 +1,5 @@
-﻿#region Copyright (C) 2013
-
-//     Project Taabus
-//     Copyright (C) 2013 - 2013 Harald Hoyer
-// 
-//     This program is free software: you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation, either version 3 of the License, or
-//     (at your option) any later version.
-// 
-//     This program is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
-// 
-//     You should have received a copy of the GNU General Public License
-//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//     
-//     Comments, bugs and suggestions to hahoyer at yahoo.de
-
-#endregion
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
@@ -34,15 +11,26 @@ namespace Taabus
     {
         public static SqlConnection ToConnection(this string serverName, string dataBase = null)
         {
-            var connectionString = new DbConnectionStringBuilder();
-            connectionString["Data Source"] = serverName;
-            connectionString["Integrated Security"] = "SSPI";
-            if(dataBase != null)
-                connectionString["Initial Catalog"] = dataBase;
-            connectionString["MultipleActiveResultSets"] = true;
+            return ConnectionString(serverName, dataBase)
+                .ToConnection();
+        }
+
+        internal static SqlConnection ToConnection(this SqlConnectionStringBuilder connectionString)
+        {
             var connection = new SqlConnection(connectionString.ConnectionString);
             connection.Open();
             return connection;
+        }
+
+        static SqlConnectionStringBuilder ConnectionString(string serverName, string dataBase)
+        {
+            return new SqlConnectionStringBuilder
+            {
+                DataSource = serverName,
+                IntegratedSecurity = true,
+                MultipleActiveResultSets = true,
+                InitialCatalog = dataBase
+            };
         }
 
         public static string NullableName(this Type type)
@@ -81,6 +69,16 @@ namespace Taabus
                 result++;
             }
             return null;
+        }
+
+        public static IEnumerable<T> Chain<T>(this T current, Func<T, T> getNext)
+            where T : class
+        {
+            while(current != null)
+            {
+                yield return current;
+                current = getNext(current);
+            }
         }
 
         internal static int BeginMatch(string a, string b)

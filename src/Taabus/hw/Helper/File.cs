@@ -144,6 +144,18 @@ namespace hw.Helper
         public string FullName { get { return FileSystemInfo.FullName; } }
 
         /// <summary>
+        ///     Gets the full path of the directory or file.
+        /// </summary>
+        public string DirectoryName
+        {
+            get
+            {
+                var fullName = FullName;
+                return fullName.Substring(0, fullName.Length - Name.Length);
+            }
+        }
+
+        /// <summary>
         ///     Gets the name of the directory or file without path.
         /// </summary>
         public string Name { get { return FileSystemInfo.Name; } }

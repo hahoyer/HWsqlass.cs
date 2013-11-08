@@ -1,26 +1,4 @@
-﻿#region Copyright (C) 2013
-
-//     Project Taabus
-//     Copyright (C) 2013 - 2013 Harald Hoyer
-// 
-//     This program is free software: you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation, either version 3 of the License, or
-//     (at your option) any later version.
-// 
-//     This program is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
-// 
-//     You should have received a copy of the GNU General Public License
-//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//     
-//     Comments, bugs and suggestions to hahoyer at yahoo.de
-
-#endregion
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
@@ -40,7 +18,7 @@ namespace Taabus
         {
             try
             {
-                var server = new Server("ANNE\\OJB_NET");
+                var server = new Server { DataSource = "ANNE\\OJB_NET" };
                 var dataBase = server
                     .DataBases
                     .Single(db => db.Name == "cwg_adsalesng_devtest");
@@ -61,11 +39,11 @@ namespace Taabus
         }
 
         [Test]
-        public void UI()
+        public void UserInterface()
         {
             try
             {
-                var server = new Server("ANNE\\OJB_NET");
+                var server = new Server { DataSource = "ANNE\\OJB_NET" };
                 var dataBases = server.DataBases;
                 var form = new TreeForm {Target = dataBases};
                 Application.Run(form);
@@ -78,11 +56,26 @@ namespace Taabus
         }
 
         [Test]
+        public void ForceFeedbackUserInterface()
+        {
+            try
+            {
+                var controller = new TaabusController();
+                controller.Run();
+            }
+            catch(Exception exception)
+            {
+                Tracer.AssertionFailed(exception.GetType().PrettyName() + " " + exception.Message);
+                throw;
+            }
+        }
+
+        [Test]
         public void Base()
         {
             try
             {
-                var server = new Server("ANNE\\OJB_NET");
+                var server = new Server { DataSource = "ANNE\\OJB_NET" };
                 var dataBases = server.DataBases;
                 var dataBase = dataBases.Single(db => db.Name == "cwg_adsalesng_devtest");
                 var types = dataBase.Types;
@@ -121,7 +114,7 @@ namespace Taabus
                 {
                     "key_constraints",
                     "Object all_objects object_id",
-                    "Parent all_objects parent_object_id>object_id" ,
+                    "Parent all_objects parent_object_id>object_id",
                     "Schema schemas schema_id",
                     "Index indexes parent_object_id>object_id unique_index_id>index_id"
                 },
@@ -129,8 +122,8 @@ namespace Taabus
                 {
                     "foreign_keys",
                     "Object all_objects object_id",
-                    "Parent all_objects parent_object_id>object_id" ,
-                    "Reference all_objects referenced_object_id>object_id" ,
+                    "Parent all_objects parent_object_id>object_id",
+                    "Reference all_objects referenced_object_id>object_id",
                     "Schema schemas schema_id",
                     "Index indexes referenced_object_id>object_id key_index_id>index_id"
                 },
@@ -139,9 +132,9 @@ namespace Taabus
                     "foreign_key_columns",
                     "Constraint foreign_keys constraint_object_id>object_id",
                     "ConstraintColumn all_columns Constraint.parent_object_id>object_id constraint_column_id>column_id",
-                    "Parent all_objects parent_object_id>object_id" ,
+                    "Parent all_objects parent_object_id>object_id",
                     "ParentColumn all_columns parent_object_id>object_id parent_column_id>column_id",
-                    "Reference all_objects referenced_object_id>object_id" ,
+                    "Reference all_objects referenced_object_id>object_id",
                     "ReferenceColumn all_columns referenced_object_id>object_id referenced_column_id>column_id",
                 },
                 new[]
@@ -160,7 +153,7 @@ namespace Taabus
                 new[] {"types"}
             };
 
-            var server = new Server("ANNE\\OJB_NET");
+            var server = new Server { DataSource = "ANNE\\OJB_NET" };
             var metaDatas = server
                 .DataBases
                 .Select
@@ -206,15 +199,14 @@ JOIN sys.types AS t ON c.user_type_id = t.user_type_id
         {
             try
             {
-                var server = new Server("ANNE\\OJB_NET");
+                var server = new Server { DataSource = "ANNE\\OJB_NET" };
                 var dataBase = server
                     .DataBases
                     .Single(db => db.Name == "cwg_adsalesng_devtest");
 
                 var x = server.Select(ColumnInfoStatement, ColumnInfo.Create);
-
             }
-            catch (Exception exception)
+            catch(Exception exception)
             {
                 Tracer.AssertionFailed("");
                 throw;
@@ -228,7 +220,7 @@ JOIN sys.types AS t ON c.user_type_id = t.user_type_id
             public string ObjectName;
             public string ColumnName;
             public string ObjectType;
-            public string ColumnType;                         
+            public string ColumnType;
             public bool IsNull;
 
             internal static ColumnInfo Create(DbDataRecord arg)

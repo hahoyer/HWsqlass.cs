@@ -199,6 +199,8 @@ namespace Taabus.MetaData
             {
                 get
                 {
+                    if(parent_object_id == 0)
+                        return null;
                     return _ParentCache
                         ?? (_ParentCache = _parent.all_objects.Single(t => parent_object_id == t.object_id));
                 }

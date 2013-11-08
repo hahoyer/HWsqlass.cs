@@ -37,7 +37,7 @@ namespace Taabus
         {
             try
             {
-                var server = new Server("ANNE\\OJB_NET");
+                var server = new Server{DataSource = "ANNE\\OJB_NET"};
                 var dataBase = server
                     .DataBases
                     .Single(db => db.Name == "cwg_adsalesng_devtest");

@@ -20,15 +20,17 @@ namespace Taabus
         readonly ValueCache<TypeItem[]> _typeItemsCache;
         [DisableDump]
         internal readonly Server Parent;
+        readonly string _name;
 
         DataBase(Server parent, string name)
-            : base(name)
         {
             Parent = parent;
+            _name = name;
             _information = new Information(this);
             _typeItemsCache = new ValueCache<TypeItem[]>(GetTypes);
         }
 
+        internal override string Name { get { return _name; } }
         internal TypeItem[] Types
         {
             get
@@ -64,18 +66,15 @@ namespace Taabus
             return _information
                 .CompountTypes
                 .Select
-                (
-                    type
-                        =>
-                        Item
-                            .CreateType
-                            (
-                                this,
-                                type,
-                                GetReferences(type),
-                                GetPrimaryKeyIndex(type),
-                                GetUniques(type)
-                            )
+                (type => Item
+                    .CreateType
+                    (
+                        this,
+                        type,
+                        GetReferences(type),
+                        GetPrimaryKeyIndex(type),
+                        GetUniques(type)
+                    )
                 )
                 .OrderBy(type => type.Name)
                 .ToArray();
@@ -85,6 +84,7 @@ namespace Taabus
         {
             if(IsInDump)
                 return null;
+
             var keyConstraint = SysObject(type)
                 .Indexes
                 .Where(c => c.is_unique == true)

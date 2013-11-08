@@ -9,6 +9,22 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MetroFramework, Version=1.2.0.3, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
+      <HintPath>..\packages\MetroFramework.RunTime.1.2.0.3\lib\net40-Client\MetroFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="MetroFramework.Design">
+      <HintPath>..\packages\MetroFramework.Design.1.2.0.3\lib\net40\MetroFramework.Design.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MetroFramework.Fonts, Version=1.2.0.3, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
+      <HintPath>..\packages\MetroFramework.Fonts.1.2.0.3\lib\net40\MetroFramework.Fonts.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.ConnectionUI">
+      <HintPath>..\packages\DataConnectionDialog.1.2\Lib\Microsoft.Data.ConnectionUI.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.ConnectionUI.Dialog">
+      <HintPath>..\packages\DataConnectionDialog.1.2\Lib\Microsoft.Data.ConnectionUI.Dialog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -23,6 +39,24 @@
     <Compile Include="DBExtension.cs" />
     <Compile Include="ExpressionQuery.cs" />
     <Compile Include="Field.cs" />
+    <Compile Include="Generator.cs" />
+    <Compile Include="hw\Forms\Extender.cs" />
+    <Compile Include="hw\Forms\IAdditionalNodeInfoProvider.cs" />
+    <Compile Include="hw\Forms\IIconKeyProvider.cs" />
+    <Compile Include="hw\Forms\ITreeNodeSupport.cs" />
+    <Compile Include="hw\Forms\NodeAttribute.cs" />
+    <Compile Include="hw\Forms\PositionConfig.cs" />
+    <Compile Include="hw\Forms\SmartNodeAttribute.cs" />
+    <Compile Include="hw\Forms\TreeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="hw\Forms\TreeForm.Designer.cs" />
+    <Compile Include="Project.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="hw\Debug\DisableDumpAttribute.cs" />
     <Compile Include="hw\Debug\Dumpable.cs" />
     <Compile Include="hw\Debug\DumpableObject.cs" />
@@ -36,17 +70,6 @@
     <Compile Include="hw\Debug\EnableDumpWithExceptionPredicateAttribute.cs" />
     <Compile Include="hw\Debug\Profiler.cs" />
     <Compile Include="hw\Debug\Tracer.cs" />
-    <Compile Include="hw\Forms\Extender.cs" />
-    <Compile Include="hw\Forms\IAdditionalNodeInfoProvider.cs" />
-    <Compile Include="hw\Forms\IIconKeyProvider.cs" />
-    <Compile Include="hw\Forms\ITreeNodeSupport.cs" />
-    <Compile Include="hw\Forms\NodeAttribute.cs" />
-    <Compile Include="hw\Forms\PositionConfig.cs" />
-    <Compile Include="hw\Forms\SmartNodeAttribute.cs" />
-    <Compile Include="hw\Forms\TreeForm.cs" />
-    <Compile Include="hw\Forms\TreeForm.Designer.cs">
-      <DependentUpon>TreeForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="hw\Helper\AdoExtension.cs" />
     <Compile Include="hw\Helper\Box.cs" />
     <Compile Include="hw\Helper\DateTimeExtender.cs" />
@@ -91,6 +114,8 @@
     <Compile Include="QueryProvider.cs" />
     <Compile Include="ReferenceItem.cs" />
     <Compile Include="Server.cs" />
+    <Compile Include="TaabusModel.cs" />
+    <Compile Include="TaabusProject.cs" />
     <Compile Include="TableItem.cs" />
     <Compile Include="Test.cs" />
     <Compile Include="UserInterface\ServerForm.cs">
@@ -102,6 +127,7 @@
     <Compile Include="UserInterface\Images.Designer.cs">
       <DependentUpon>Images.cs</DependentUpon>
     </Compile>
+    <Compile Include="UserInterface\UserInteraction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MetaDataGenerator.tt">
@@ -109,17 +135,29 @@
       <LastGenOutput>MetaDataGenerator.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
+    <None Include="sys.targets" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="hw\Forms\TreeForm.resx">
-      <DependentUpon>TreeForm.cs</DependentUpon>
+    <EmbeddedResource Include="hw\Forms\TreeForm.resx" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="UserInterface\Images.resx">
       <DependentUpon>Images.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="MetroFramework.txt" />
+    <Content Include="Resources\appbar.folder.open.png" />
+    <None Include="Resources\appbar.settings.png" />
+    <None Include="Resources\appbar.delete.png" />
+    <None Include="Resources\appbar.edit.png" />
+    <None Include="Resources\appbar.add.png" />
   </ItemGroup>
   <Import Project="sys.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

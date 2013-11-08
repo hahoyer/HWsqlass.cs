@@ -1,26 +1,4 @@
-﻿#region Copyright (C) 2013
-
-//     Project Taabus
-//     Copyright (C) 2013 - 2013 Harald Hoyer
-// 
-//     This program is free software: you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation, either version 3 of the License, or
-//     (at your option) any later version.
-// 
-//     This program is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
-// 
-//     You should have received a copy of the GNU General Public License
-//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//     
-//     Comments, bugs and suggestions to hahoyer at yahoo.de
-
-#endregion
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
@@ -40,15 +18,19 @@ namespace Taabus
         [DisableDump]
         internal readonly TypeQuery Data;
         [Node]
+        [DisableDump]
         internal readonly ReferenceItem[] References;
+
         internal readonly int? KeyIndex;
         internal readonly int[][] Uniques;
 
         readonly ValueCache<MemberItem[]> _membersCache;
+        readonly ValueCache<string[]> _foreignKeysCache;
 
         public TypeItem(DataBase parent, CompountType type, ReferenceItem[] references, int? keyIndex, int[][] uniques)
             : base(parent, type.Name)
         {
+            _foreignKeysCache = new ValueCache<string[]>(GetForeignKeys);
             _membersCache = new ValueCache<MemberItem[]>(GetMembers);
             Type = type;
             References = references;
@@ -57,9 +39,23 @@ namespace Taabus
             Data = new TypeQuery(parent.Parent, Parent.Name + "." + Type.FullName);
         }
 
-        [Node]
         [EnableDumpExcept(null)]
         internal MemberItem[] Members { get { return _membersCache.Value; } }
+
+        [DisableDump]
+        internal string[] ForeignKeys { get { return _foreignKeysCache.Value; } }
+
+        string[] GetForeignKeys()
+        {
+            return References
+                .SelectMany(r => r.Columns)
+                .Distinct()
+                .ToArray();
+        }
+
+        [Node]
+        [DisableDump]
+        internal MemberItem[] Attributes { get { return Members.Where(item => !ForeignKeys.Contains(item.Name)).ToArray(); } }
 
         [DisableDump]
         public IEnumerable<Field> Fields
@@ -95,7 +91,6 @@ namespace Taabus
                 return Data.Where(r => r.Contains(fields, value));
             return new DataRecord[0];
         }
-
     }
 
     sealed class TypeQuery : QueryBase

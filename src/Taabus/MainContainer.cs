@@ -31,9 +31,10 @@ namespace Taabus
 {
     static class MainContainer
     {
+        [STAThread]
         public static void Main()
         {
-            new Test().UI();
+            new Test().ForceFeedbackUserInterface();
             return;
             if (Debugger.IsAttached)
                 TestRunner.IsModeErrorFocus = true;

@@ -71,4 +71,3 @@ namespace Taabus.MetaData
         <#    } #>
     }
 }
-<# // ReSharper disable FieldCanBeMadeReadOnly.Local #>

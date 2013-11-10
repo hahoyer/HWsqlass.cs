@@ -19,7 +19,7 @@ namespace Taabus
 
         string _connectionString;
 
-        internal Server()
+        public Server()
         {
             _sqlConnectionStringBuilderCache = new ValueCache<SqlConnectionStringBuilder>(() => new SqlConnectionStringBuilder(_connectionString));
             _dataBasesCache = new ValueCache<DataBase[]>(GetDataBases);

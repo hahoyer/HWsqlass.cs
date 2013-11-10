@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using hw.Debug;
 using hw.Forms;
@@ -23,6 +24,7 @@ namespace Taabus
         readonly TreeView _tree = new TreeView();
         readonly UserInteraction[] _functions;
 
+        string _fileName;
         Project _data;
 
         public TaabusController()
@@ -64,18 +66,26 @@ namespace Taabus
 
         string FileName
         {
-            get { return _data == null ? null : _data.FileName; }
+            get { return _fileName; }
             set
             {
-                var fileHandle = LastFileNameFileName.FileHandle();
-                _data = value == null ? null : new Project(value);
-                ReConnect();
-                if(value != null)
-                    fileHandle.String = value;
-                else if(fileHandle.Exists)
-                    fileHandle.Delete();
-                _mainForm.Text = Title;
+                if(_fileName == value)
+                    return;
+                _fileName = value;
+                OnFileNameChanged();
             }
+        }
+
+        void OnFileNameChanged()
+        {
+            var fileHandle = LastFileNameFileName.FileHandle();
+            _data = _fileName == null ? null : Project.CreateFromCSharpFile(_fileName);
+            ReConnect();
+            if(_fileName != null)
+                fileHandle.String = _fileName;
+            else if(fileHandle.Exists)
+                fileHandle.Delete();
+            _mainForm.Text = Title;
         }
 
         string LastFileNameFileName { get { return _mainForm.Name + ".lastFile"; } }
@@ -106,8 +116,7 @@ namespace Taabus
         void OnNew()
         {
             var server = new Server();
-            var selectedNode = _tree.SelectedNode;
-            var current = selectedNode == null ? null : (Server) selectedNode.Chain(x => x.Parent).Last().Tag;
+            var current = SelectedServer;
             var position = _data.Servers.IndexOf(s => s == current) ?? _data.Servers.Count();
             _data.Servers = _data
                 .Servers
@@ -119,19 +128,38 @@ namespace Taabus
             _tree.SelectedNode = _tree.Nodes[position];
             OnEdit();
         }
-        void ReConnect() { _tree.Connect(_data); }
+
+        void ReConnect()
+        {
+            _tree.Connect(_data);
+            if(_data!=null)
+                _data.SaveAsCSharpFile(_fileName);
+        }
 
         void OnEdit()
         {
-            var server = (Server) _tree.SelectedNode.Chain(x => x.Parent).Last().Tag;
-            var dcd = new DataConnectionDialog();
-            dcd.DataSources.Add(DataSource.SqlDataSource);
-            dcd.ConnectionString = server.ConnectionString;
-            DataConnectionDialog.Show(dcd);
-            server.ConnectionString = dcd.ConnectionString;
+            var server = SelectedServer;
+            var dialog = new DataConnectionDialog();
+            dialog.DataSources.Add(DataSource.SqlDataSource);
+            dialog.ConnectionString = server.ConnectionString;
+            DataConnectionDialog.Show(dialog);
+            server.ConnectionString = dialog.ConnectionString;
             ReConnect();
         }
-        static void OnRemove() { }
+
+        Server SelectedServer
+        {
+            get
+            {
+                var selectedNode = _tree.SelectedNode;
+                if(selectedNode == null)
+                    return null;
+                return (Server) selectedNode.Chain(x => x.Parent).Last().Tag;
+            }
+        }
+
+        void OnRemove() { }
+
         static void OnConfiguration() { }
 
         internal void Run()

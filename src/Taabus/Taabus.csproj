@@ -40,6 +40,24 @@
     <Compile Include="ExpressionQuery.cs" />
     <Compile Include="Field.cs" />
     <Compile Include="Generator.cs" />
+    <Compile Include="Generator.Generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Generator.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GeneratorExtension.cs" />
+    <Compile Include="hw\Debug\DisableDumpAttribute.cs" />
+    <Compile Include="hw\Debug\Dumpable.cs" />
+    <Compile Include="hw\Debug\DumpAttribute.cs" />
+    <Compile Include="hw\Debug\DumpClassAttribute.cs" />
+    <Compile Include="hw\Debug\DumpDataClassAttribute.cs" />
+    <Compile Include="hw\Debug\DumpEnabledAttribute.cs" />
+    <Compile Include="hw\Debug\DumpToStringAttribute.cs" />
+    <Compile Include="hw\Debug\EnableDumpAttribute.cs" />
+    <Compile Include="hw\Debug\EnableDumpExceptAttribute.cs" />
+    <Compile Include="hw\Debug\EnableDumpWithExceptionPredicateAttribute.cs" />
+    <Compile Include="hw\Debug\Profiler.cs" />
+    <Compile Include="hw\Debug\Tracer.cs" />
     <Compile Include="hw\Forms\Extender.cs" />
     <Compile Include="hw\Forms\IAdditionalNodeInfoProvider.cs" />
     <Compile Include="hw\Forms\IIconKeyProvider.cs" />
@@ -51,32 +69,10 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="hw\Forms\TreeForm.Designer.cs" />
-    <Compile Include="Project.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="hw\Debug\DisableDumpAttribute.cs" />
-    <Compile Include="hw\Debug\Dumpable.cs" />
-    <Compile Include="hw\Debug\DumpableObject.cs" />
-    <Compile Include="hw\Debug\DumpAttribute.cs" />
-    <Compile Include="hw\Debug\DumpClassAttribute.cs" />
-    <Compile Include="hw\Debug\DumpDataClassAttribute.cs" />
-    <Compile Include="hw\Debug\DumpEnabledAttribute.cs" />
-    <Compile Include="hw\Debug\DumpToStringAttribute.cs" />
-    <Compile Include="hw\Debug\EnableDumpAttribute.cs" />
-    <Compile Include="hw\Debug\EnableDumpExceptAttribute.cs" />
-    <Compile Include="hw\Debug\EnableDumpWithExceptionPredicateAttribute.cs" />
-    <Compile Include="hw\Debug\Profiler.cs" />
-    <Compile Include="hw\Debug\Tracer.cs" />
-    <Compile Include="hw\Helper\AdoExtension.cs" />
     <Compile Include="hw\Helper\Box.cs" />
     <Compile Include="hw\Helper\DateTimeExtender.cs" />
     <Compile Include="hw\Helper\EnumEx.cs" />
-    <Compile Include="hw\Helper\File.cs" />
     <Compile Include="hw\Helper\FunctionCache.cs" />
-    <Compile Include="hw\Helper\IReaderInitialize.cs" />
     <Compile Include="hw\Helper\ListExtender.cs" />
     <Compile Include="hw\Helper\LongExtender.cs" />
     <Compile Include="hw\Helper\ReflectionExtender.cs" />
@@ -87,6 +83,17 @@
     <Compile Include="hw\Helper\ValueCache.cs" />
     <Compile Include="hw\JetBrainsAnnotations.cs" />
     <Compile Include="hw\UnitTest\CategoryAttribute.cs" />
+    <Compile Include="MetaDataGenerator.cs" />
+    <Compile Include="Project.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="hw\Debug\DumpableObject.cs" />
+    <Compile Include="hw\Helper\AdoExtension.cs" />
+    <Compile Include="hw\Helper\File.cs" />
+    <Compile Include="hw\Helper\IReaderInitialize.cs" />
     <Compile Include="hw\UnitTest\DependantAttribute.cs" />
     <Compile Include="hw\UnitTest\TestExtender.cs" />
     <Compile Include="hw\UnitTest\TestMethod.cs" />
@@ -102,7 +109,7 @@
     <Compile Include="MetaData\SQLSysViews.cs" />
     <Compile Include="MetaData\SQLSysViews.Generated.cs" />
     <Compile Include="MetaData\Type.cs" />
-    <Compile Include="MetaDataGenerator.cs">
+    <Compile Include="MetaDataGenerator.Generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>MetaDataGenerator.tt</DependentUpon>
@@ -130,9 +137,13 @@
     <Compile Include="UserInterface\UserInteraction.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Generator.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>Generator.Generated.cs</LastGenOutput>
+    </None>
     <None Include="MetaDataGenerator.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>MetaDataGenerator.cs</LastGenOutput>
+      <LastGenOutput>MetaDataGenerator.Generated.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
     <None Include="sys.targets" />

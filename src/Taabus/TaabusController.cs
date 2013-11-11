@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Reflection;
 using System.Windows.Forms;
 using hw.Debug;
 using hw.Forms;
@@ -132,7 +131,7 @@ namespace Taabus
         void ReConnect()
         {
             _tree.Connect(_data);
-            if(_data!=null)
+            if(_data != null)
                 _data.SaveAsCSharpFile(_fileName);
         }
 

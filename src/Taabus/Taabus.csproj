@@ -36,7 +36,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataBase.cs" />
-    <Compile Include="DBExtension.cs" />
     <Compile Include="ExpressionQuery.cs" />
     <Compile Include="Field.cs" />
     <Compile Include="Generator.cs" />
@@ -48,6 +47,7 @@
     <Compile Include="GeneratorExtension.cs" />
     <Compile Include="hw\Debug\DisableDumpAttribute.cs" />
     <Compile Include="hw\Debug\Dumpable.cs" />
+    <Compile Include="hw\Debug\DumpableObject.cs" />
     <Compile Include="hw\Debug\DumpAttribute.cs" />
     <Compile Include="hw\Debug\DumpClassAttribute.cs" />
     <Compile Include="hw\Debug\DumpDataClassAttribute.cs" />
@@ -69,10 +69,13 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="hw\Forms\TreeForm.Designer.cs" />
+    <Compile Include="hw\Helper\AdoExtension.cs" />
     <Compile Include="hw\Helper\Box.cs" />
     <Compile Include="hw\Helper\DateTimeExtender.cs" />
     <Compile Include="hw\Helper\EnumEx.cs" />
+    <Compile Include="hw\Helper\File.cs" />
     <Compile Include="hw\Helper\FunctionCache.cs" />
+    <Compile Include="hw\Helper\IReaderInitialize.cs" />
     <Compile Include="hw\Helper\ListExtender.cs" />
     <Compile Include="hw\Helper\LongExtender.cs" />
     <Compile Include="hw\Helper\ReflectionExtender.cs" />
@@ -90,10 +93,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="hw\Debug\DumpableObject.cs" />
-    <Compile Include="hw\Helper\AdoExtension.cs" />
-    <Compile Include="hw\Helper\File.cs" />
-    <Compile Include="hw\Helper\IReaderInitialize.cs" />
     <Compile Include="hw\UnitTest\DependantAttribute.cs" />
     <Compile Include="hw\UnitTest\TestExtender.cs" />
     <Compile Include="hw\UnitTest\TestMethod.cs" />
@@ -121,7 +120,7 @@
     <Compile Include="QueryProvider.cs" />
     <Compile Include="ReferenceItem.cs" />
     <Compile Include="Server.cs" />
-    <Compile Include="TaabusModel.cs" />
+    <Compile Include="TaabusController.cs" />
     <Compile Include="TaabusProject.cs" />
     <Compile Include="TableItem.cs" />
     <Compile Include="Test.cs" />

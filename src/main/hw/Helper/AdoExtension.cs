@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Data.SqlClient;
+using System.Data.SqlTypes;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace hw.Helper
 {
-    public static class AdoExtensionS
+    public static class AdoExtension
     {
         public static DataTable GetSchemaTable(this DbConnection connection, string text)
         {
@@ -65,5 +68,33 @@ namespace hw.Helper
                 result[i] = reader.GetName(i);
             return result;
         }
+
+        public static DateTime EnsureSqlDateTime(this DateTime dateTime) { return new SqlDateTime(dateTime).Value; }
+
+        public static SqlConnection ToConnection(this string serverName, string dataBase = null)
+        {
+            return ConnectionString(serverName, dataBase)
+                .ToConnection();
+        }
+
+        internal static SqlConnection ToConnection(this SqlConnectionStringBuilder connectionString)
+        {
+            var connection = new SqlConnection(connectionString.ConnectionString);
+            connection.Open();
+            return connection;
+        }
+
+        static SqlConnectionStringBuilder ConnectionString(string serverName, string dataBase)
+        {
+            return new SqlConnectionStringBuilder
+            {
+                DataSource = serverName,
+                IntegratedSecurity = true,
+                MultipleActiveResultSets = true,
+                InitialCatalog = dataBase
+            };
+        }
+
+        public static string SQLFormat(this string data) { return "'" + data.Replace("'", "''") + "'"; }
     }
 }

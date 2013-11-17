@@ -9,18 +9,6 @@ namespace Taabus
 {
     abstract class Item : NamedObject
     {
-        public static TypeItem CreateType(DataBase parent, CompountType type, ReferenceItem[] references, int? keyIndex, int[][] uniques)
-        {
-            return new TypeItem
-                (
-                parent,
-                type,
-                references,
-                keyIndex,
-                uniques
-                );
-        }
-        public static ReferenceItem CreateReference(DataBase parent, SQLSysViews.foreign_keysClass constraint, Func<SQLSysViews.all_objectsClass, TypeItem> getType) { return new ReferenceItem(parent, constraint, getType); }
         protected static MemberItem CreateMember(TypeItem parent, Member member) { return new MemberItem(parent, member); }
 
         [DisableDump]
@@ -40,6 +28,6 @@ namespace Taabus
 
         protected abstract Item[] GetItems();
 
-        internal override string Name { get { return _name; } }
+        public override string Name { get { return _name; } }
     }
 }

@@ -36,7 +36,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataBase.cs" />
+    <Compile Include="ExpansionDescription.cs" />
     <Compile Include="ExpressionQuery.cs" />
+    <Compile Include="Extension.cs" />
     <Compile Include="Field.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="Generator.Generated.cs">

@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using hw.Debug;
+using hw.Forms;
 
 namespace Taabus
 {
-    public abstract class NamedObject : DumpableObject
+    public abstract class NamedObject : DumpableObject, INodeNameProvider, IAdditionalNodeInfoProvider
     {
         [DisableDump]
-        internal abstract string Name { get; }
+        public abstract string Name { get; }
 
-        protected override string GetNodeDump() { return Name; }
+        string INodeNameProvider.Value(string name) { return Name; }
+        string IAdditionalNodeInfoProvider.AdditionalNodeInfo { get { return Name; } }
     }
 }

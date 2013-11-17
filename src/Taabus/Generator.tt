@@ -11,7 +11,7 @@ using Taabus;
 
 public static class TaabusProject
 {
-    public static Project Data()
+    public static Project Project()
     {
         return new Project
         {
@@ -23,4 +23,39 @@ public static class TaabusProject
             }
         };
     }
+    public static ExpansionDescription[] ExpansionDescriptions()
+    {
+        return <#    Create(_expansionDescriptions); #>;
+    }
+
+    public static string[] Selection()
+    {
+        return new string[]{<#= _selection.Select(s=>s.Quote()).Stringify(",\n") #>};
+    }
 }
+<#+                                                                                                                  
+
+void Create(ExpansionDescription[] expansionDescriptions)
+{
+    #>
+    new ExpansionDescription[]
+    {
+    <#+
+    foreach (var expansionDescription in expansionDescriptions)
+    {
+    #>
+        new ExpansionDescription
+        {
+            Id = <#= expansionDescription.Id.Quote() #>,
+            IsExpanded = <#= expansionDescription.IsExpanded?"true":"false" #>,
+            Nodes = <#+        Create(expansionDescription.Nodes); #>,
+        }
+    <#+
+    }
+    #>
+    }
+    <#+
+}
+
+#>
+

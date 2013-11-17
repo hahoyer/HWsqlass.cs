@@ -4,9 +4,17 @@ using System.Linq;
 
 namespace Taabus
 {
-    public partial class Generator
+    partial class Generator
     {
         readonly Project _project;
-        public Generator(Project project) { _project = project; }
+        readonly ExpansionDescription[] _expansionDescriptions;
+        readonly string[] _selection;
+
+        internal Generator(Project project, ExpansionDescription[] expansionDescriptions, string[] selection)
+        {
+            _project = project;
+            _expansionDescriptions = expansionDescriptions;
+            _selection = selection;
+        }
     }
 }

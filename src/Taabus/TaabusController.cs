@@ -24,7 +24,7 @@ namespace Taabus
         readonly UserInteraction[] _functions;
 
         string _fileName;
-        Project _data;
+        Project _project;
 
         public TaabusController()
         {
@@ -57,10 +57,29 @@ namespace Taabus
             _mainForm.Name = "Taabus.MainForm";
             _mainForm.Controls.Add(_toolbar);
             _mainForm.Controls.Add(_tree);
-            _mainForm.ResumeLayout();
             _mainForm.InstallPositionConfig();
+            _mainForm.Load += (s, e) => OnLoad();
+            _mainForm.Closed += (s, e) => OnClosed();
+            _mainForm.ResumeLayout();
+        }
 
-            FileName = LastFileNameFileName.FileHandle().String;
+        File LastFileNameFileHandle { get { return LastFileNameFileName.FileHandle(); } }
+        string LastFileNameFileName { get { return _mainForm.Name + ".lastFile"; } }
+        NamedObject SelectedItem { get { return (NamedObject) _tree.SelectedNode.Tag; } }
+        ExpansionDescription[] ExpandedNodes { get { return ScanNodes(_tree.Nodes); } set { ScanNodes(_tree.Nodes, value); } }
+
+        string[] SelectedPath
+        {
+            get
+            {
+                return _tree
+                    .SelectedNode
+                    .Chain(n => n.Parent)
+                    .Reverse()
+                    .Select(n => n.Name)
+                    .ToArray();
+            }
+            set { _tree.SelectedNode = PathWalk(value, _tree.Nodes, 0); }
         }
 
         string FileName
@@ -75,24 +94,85 @@ namespace Taabus
             }
         }
 
-        void OnFileNameChanged()
+        Server SelectedServer
         {
-            var fileHandle = LastFileNameFileName.FileHandle();
-            _data = _fileName == null ? null : Project.CreateFromCSharpFile(_fileName);
-            ReConnect();
-            if(_fileName != null)
-                fileHandle.String = _fileName;
-            else if(fileHandle.Exists)
-                fileHandle.Delete();
-            _mainForm.Text = Title;
+            get
+            {
+                var selectedNode = _tree.SelectedNode;
+                if(selectedNode == null)
+                    return null;
+                return (Server) selectedNode.Chain(x => x.Parent).Last().Tag;
+            }
+            set { _tree.SelectedNode = _tree.Nodes._().First(n => n.Tag == value); }
         }
 
-        string LastFileNameFileName { get { return _mainForm.Name + ".lastFile"; } }
+        int SelectedServerPosition
+        {
+            get
+            {
+                var current = SelectedServer;
+                return _project.Servers.IndexOf(s => s == current) ?? _project.Servers.Count();
+            }
+        }
 
-        [DisableDump]
-        NamedObject SelectedItem { get { return (NamedObject) _tree.SelectedNode.Tag; } }
+        Type ProjectInstanceFromFile
+        {
+            get
+            {
+                if (_fileName == null)
+                    return null;
+                return _fileName
+                    .CreateAssemblyFromFile()
+                    .GetType(typeof(TaabusProject).Name);
+            }
+        }
 
-        internal string Title { get { return _data == null ? "<no file>" : _data.Name; } }
+        void OnLoad()
+        {
+            FileName = LastFileNameFileName.FileHandle().String;
+
+            if (FileName == null)
+                OnOpen();
+
+            if (FileName == null)
+                _mainForm.Close();
+        }
+
+        void OnFileNameChanged()
+        {
+            var type = ProjectInstanceFromFile;
+            
+            if (type == null)
+                _project = null;
+            else
+            {
+                _project = type.Invoke<Project>("Project");
+                _project.ProjectName = _fileName.FileHandle().Name;
+            }
+
+            _tree.Connect(_project);
+            if(type != null)
+            {
+                ExpandedNodes = type.Invoke<ExpansionDescription[]>("ExpansionDescriptions");
+                _tree.TopNode = _tree.Nodes._().FirstOrDefault();
+                SelectedPath = type.Invoke<string[]>("Selection") ?? new string[0];
+                _tree.SelectedNode.EnsureVisible();
+            }
+            
+            SetLastFileNameConfig();
+            _mainForm.Text = _project == null ? "<no file>" : _project.Name;
+        }
+
+        void OnChange(Server server)
+        {
+            var expandedNodes = ExpandedNodes;
+            _tree.Connect(_project);
+            ExpandedNodes = expandedNodes;
+            SelectedServer = server;
+            SaveFile();
+        }
+
+        void OnClosed() { SaveFile(); }
 
         void OnOpen()
         {
@@ -112,67 +192,116 @@ namespace Taabus
             FileName = d.FileName;
         }
 
-        void OnNew()
-        {
-            var server = new Server();
-            var current = SelectedServer;
-            var position = _data.Servers.IndexOf(s => s == current) ?? _data.Servers.Count();
-            _data.Servers = _data
-                .Servers
-                .Take(position)
-                .Concat(new[] {server})
-                .Concat(_data.Servers.Skip(position))
-                .ToArray();
-            ReConnect();
-            _tree.SelectedNode = _tree.Nodes[position];
-            OnEdit();
-        }
+        void OnNew() { EditServer(null); }
+        void OnEdit() { EditServer(SelectedServer); }
 
-        void ReConnect()
-        {
-            _tree.Connect(_data);
-            if(_data != null)
-                _data.SaveAsCSharpFile(_fileName);
-        }
-
-        void OnEdit()
+        void OnRemove()
         {
             var server = SelectedServer;
-            var dialog = new DataConnectionDialog();
-            dialog.DataSources.Add(DataSource.SqlDataSource);
-            dialog.ConnectionString = server.ConnectionString;
-            DataConnectionDialog.Show(dialog);
-            server.ConnectionString = dialog.ConnectionString;
-            ReConnect();
+            var position = SelectedServerPosition;
+            _project.Servers = _project.Servers.Where(s => s != server).ToArray();
+            OnChange(_project.Servers.Skip(position).FirstOrDefault());
         }
-
-        Server SelectedServer
-        {
-            get
-            {
-                var selectedNode = _tree.SelectedNode;
-                if(selectedNode == null)
-                    return null;
-                return (Server) selectedNode.Chain(x => x.Parent).Last().Tag;
-            }
-        }
-
-        void OnRemove() { }
 
         static void OnConfiguration() { }
 
-        internal void Run()
-        {
-            if(FileName == null)
-                OnOpen();
-            if(FileName != null)
-                Application.Run(_mainForm);
-        }
+        internal void Run() { Application.Run(_mainForm); }
 
         static void OnAfterSelect(IEnumerable<UserInteraction> functions)
         {
             foreach(var function in functions)
                 function.Refresh();
         }
+
+        void SetLastFileNameConfig()
+        {
+            if (_fileName != null)
+                LastFileNameFileHandle.String = _fileName;
+            else if (LastFileNameFileHandle.Exists)
+                LastFileNameFileHandle.Delete();
+        }
+
+        void InsertServer(Server server)
+        {
+            var position = SelectedServerPosition;
+            _project.Servers = _project
+                .Servers
+                .Take(position)
+                .Concat(new[] { server })
+                .Concat(_project.Servers.Skip(position))
+                .ToArray();
+        }
+
+        void SaveFile()
+        {
+            _fileName
+                .FileHandle()
+                .String
+                = new Generator(_project, ExpandedNodes, SelectedPath)
+                    .TransformText();
+        }
+
+        void EditServer(Server server)
+        {
+            var useServer = server ?? new Server();
+            var dialog = new DataConnectionDialog();
+            dialog.DataSources.Add(DataSource.SqlDataSource);
+            dialog.ConnectionString = useServer.ConnectionString;
+            if (DataConnectionDialog.Show(dialog) != DialogResult.OK)
+                return;
+            if (server == null)
+                InsertServer(useServer);
+            useServer.ConnectionString = dialog.ConnectionString;
+            OnChange(useServer);
+        }
+
+        void ScanNodes(TreeNodeCollection treeNodes, ExpansionDescription[] value)
+        {
+            foreach (var description in value)
+            {
+                var node = treeNodes[description.Id];
+                if (node != null)
+                {
+                    var nodes = node.Nodes;
+                    if (description.IsExpanded)
+                    {
+                        nodes.BeforeExpand();
+                        node.Expand();
+                        ScanNodes(nodes, description.Nodes);
+                    }
+                    else
+                        ScanClosedNodes(nodes, description.Nodes);
+                }
+            }
+        }
+
+        void ScanClosedNodes(TreeNodeCollection nodes, ExpansionDescription[] expansionDescriptions) { NotImplementedMethod(nodes, expansionDescriptions); }
+
+        static ExpansionDescription[] ScanNodes(TreeNodeCollection treeNodes)
+        {
+            return
+                treeNodes
+                    .Cast<TreeNode>()
+                    .Select(rootNode =>
+                        new ExpansionDescription
+                        {
+                            Id = rootNode.Tag is LazyNode ? null : rootNode.Name,
+                            IsExpanded = rootNode.IsExpanded,
+                            Nodes = ScanNodes(rootNode.Nodes)
+                        })
+                    .Where(r => r.IsExpanded || r.Nodes.Any())
+                    .ToArray();
+        }
+
+        static TreeNode PathWalk(string[] value, TreeNodeCollection nodes, int index)
+        {
+            if (index >= value.Length)
+                return null;
+            var node = nodes[value[index]];
+            if (node == null)
+                return null;
+            return PathWalk(value, node.Nodes, index + 1) ?? node;
+        }
+
     }
 }

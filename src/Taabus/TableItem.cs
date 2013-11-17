@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Windows.Forms;
 using hw.Debug;
 using hw.Forms;
 using hw.Helper;
@@ -11,39 +12,51 @@ using Taabus.MetaData;
 
 namespace Taabus
 {
-    sealed class TypeItem : Item
+    sealed class TypeItem : Item, ITreeNodeSupport, ITreeNodeProbeSupport
     {
         [DisableDump]
         internal readonly CompountType Type;
         [DisableDump]
         internal readonly TypeQuery Data;
-        [Node]
-        [DisableDump]
-        internal readonly ReferenceItem[] References;
 
-        internal readonly int? KeyIndex;
-        internal readonly int[][] Uniques;
+        readonly ValueCache<int?> _keyIndexCache;
+        readonly ValueCache<int[][]> _uniquesCache;
 
         readonly ValueCache<MemberItem[]> _membersCache;
         readonly ValueCache<string[]> _foreignKeysCache;
+        readonly ValueCache<ReferenceItem[]> _referencesCache;
 
-        public TypeItem(DataBase parent, CompountType type, ReferenceItem[] references, int? keyIndex, int[][] uniques)
+        public TypeItem(DataBase parent, CompountType type)
             : base(parent, type.Name)
         {
+            Type = type;
             _foreignKeysCache = new ValueCache<string[]>(GetForeignKeys);
             _membersCache = new ValueCache<MemberItem[]>(GetMembers);
-            Type = type;
-            References = references;
-            KeyIndex = keyIndex;
-            Uniques = uniques;
+            _referencesCache = new ValueCache<ReferenceItem[]>(() => parent.GetReferences(type));
+            _keyIndexCache = new ValueCache<int?>(() => parent.GetPrimaryKeyIndex(type));
+            _uniquesCache = new ValueCache<int[][]>(() => parent.GetUniques(type));
             Data = new TypeQuery(parent.Parent, Parent.Name + "." + Type.FullName);
         }
+
+        IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes()
+        {
+            foreach(var item in References)
+                yield return item.CreateNode();
+            foreach(var item in Attributes)
+                yield return item.CreateNode();
+        }
+
+        bool ITreeNodeProbeSupport.IsEmpty { get { return false; } }
 
         [EnableDumpExcept(null)]
         internal MemberItem[] Members { get { return _membersCache.Value; } }
 
         [DisableDump]
         internal string[] ForeignKeys { get { return _foreignKeysCache.Value; } }
+
+        [Node]
+        [DisableDump]
+        internal ReferenceItem[] References { get { return _referencesCache.Value; } }
 
         string[] GetForeignKeys()
         {
@@ -71,6 +84,10 @@ namespace Taabus
                 });
             }
         }
+
+        public int? KeyIndex { get { return _keyIndexCache.Value; } }
+
+        public int[][] Uniques { get { return _uniquesCache.Value; } }
 
         protected override Item[] GetItems() { return GetMembers().Cast<Item>().ToArray(); }
 

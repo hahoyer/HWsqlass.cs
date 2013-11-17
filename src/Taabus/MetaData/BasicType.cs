@@ -24,10 +24,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using hw.Debug;
+using hw.Forms;
 
 namespace Taabus.MetaData
 {
-    sealed class BasicType : Type
+    sealed class BasicType : Type, IIconKeyProvider
     {
         static readonly HashSet<BasicType> _cache = new HashSet<BasicType>(_comparer);
 
@@ -190,6 +191,24 @@ namespace Taabus.MetaData
             if(IsNullable)
                 result += "?";
             return result;
+        }
+
+        string IIconKeyProvider.IconKey
+        {
+            get
+            {
+                if(IsText)
+                    return "String";
+                if(IsInteger)
+                    return "Number";
+
+                switch(DataType)
+                {
+                    case "bit":
+                        return "Bool";
+                }
+                return null;
+            }
         }
     }
 }

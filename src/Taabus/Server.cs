@@ -10,7 +10,7 @@ using hw.Helper;
 
 namespace Taabus
 {
-    public sealed class Server : NamedObject, ITreeNodeSupport
+    public sealed class Server : NamedObject, ITreeNodeSupport, ITreeNodeProbeSupport, INodeNameProvider
     {
         const string SelectDatabases = "select name from master.sys.databases";
 
@@ -38,10 +38,9 @@ namespace Taabus
             }
         }
 
-        IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes()
-        {
-            return DataBases.CreateNodes();
-        }
+        IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes() { return DataBases.CreateNodes(); }
+        bool ITreeNodeProbeSupport.IsEmpty { get { return DataBases == null || !DataBases.Any(); } }
+        string INodeNameProvider.Value(string name) { return "ConnectionString=" + _connectionString; }
 
         DataBase[] GetDataBases()
         {
@@ -67,7 +66,7 @@ namespace Taabus
         [DisableDump]
         internal string DataSource { get { return _sqlConnectionStringBuilderCache.Value.DataSource; } set { _sqlConnectionStringBuilderCache.Value.DataSource = value; } }
 
-        internal override string Name
+        public override string Name
         {
             get
             {

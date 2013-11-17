@@ -1,26 +1,4 @@
-﻿#region Copyright (C) 2013
-
-//     Project Taabus
-//     Copyright (C) 2013 - 2013 Harald Hoyer
-// 
-//     This program is free software: you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation, either version 3 of the License, or
-//     (at your option) any later version.
-// 
-//     This program is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
-// 
-//     You should have received a copy of the GNU General Public License
-//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//     
-//     Comments, bugs and suggestions to hahoyer at yahoo.de
-
-#endregion
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using hw.Debug;
@@ -63,13 +41,23 @@ namespace Taabus.MetaData
         {
             get
             {
-                return _sqlSysViews
-                    .all_objects
-                    .Where(o => o.Type.IsCompountType && o.Schema.name != "sys")
+                return RawCompountTypes
                     .Select(t => _compountTypeCache[t.name])
                     .ToArray();
             }
         }
+
+        IEnumerable<SQLSysViews.all_objectsClass> RawCompountTypes
+        {
+            get
+            {
+                return _sqlSysViews
+                    .all_objects
+                    .Where(o => o.Type.IsCompountType && o.Schema.name != "sys");
+            }
+        }
+
+        internal bool HasCompountTypes { get { return RawCompountTypes.Any(); } }
 
         internal SQLSysViews.all_columnsClass[] SysColumns { get { return _sqlSysViews.all_columns; } }
         internal SQLSysViews.all_objectsClass[] SysObjects { get { return _sqlSysViews.all_objects; } }
@@ -105,7 +93,7 @@ namespace Taabus.MetaData
         public static readonly ObjectType ForeignKey = new ObjectType("F ");
         public static readonly ObjectType PrimaryKey = new ObjectType("PK");
         public static readonly ObjectType UniqueIndex = new ObjectType("UQ");
-        public static readonly ObjectType InternalTable = new ObjectType("IT",isCompountType:true);
+        public static readonly ObjectType InternalTable = new ObjectType("IT", isCompountType: true);
         public static readonly ObjectType Table = new ObjectType("U ", isCompountType: true);
         public static readonly ObjectType View = new ObjectType("V ", isCompountType: true);
         public static readonly ObjectType SystemBaseTable = new ObjectType("S ", isCompountType: true);

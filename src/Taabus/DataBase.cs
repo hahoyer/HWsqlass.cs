@@ -10,7 +10,7 @@ using Taabus.MetaData;
 
 namespace Taabus
 {
-    public sealed class DataBase : NamedObject, IDataProvider, ITreeNodeSupport
+    public sealed class DataBase : NamedObject, IDataProvider, ITreeNodeSupport, ITreeNodeProbeSupport
     {
         const string MetaDataStatement = "select * from [{0}].[{1}].[{2}]";
 
@@ -30,7 +30,8 @@ namespace Taabus
             _typeItemsCache = new ValueCache<TypeItem[]>(GetTypes);
         }
 
-        internal override string Name { get { return _name; } }
+        public override string Name { get { return _name; } }
+
         internal TypeItem[] Types
         {
             get
@@ -65,22 +66,12 @@ namespace Taabus
         {
             return _information
                 .CompountTypes
-                .Select
-                (type => Item
-                    .CreateType
-                    (
-                        this,
-                        type,
-                        GetReferences(type),
-                        GetPrimaryKeyIndex(type),
-                        GetUniques(type)
-                    )
-                )
+                .Select(type1 => type1.CreateType(this))
                 .OrderBy(type => type.Name)
                 .ToArray();
         }
 
-        int[][] GetUniques(CompountType type)
+        internal int[][] GetUniques(CompountType type)
         {
             if(IsInDump)
                 return null;
@@ -98,7 +89,7 @@ namespace Taabus
             return keyConstraint;
         }
 
-        int? GetPrimaryKeyIndex(CompountType type)
+        internal int? GetPrimaryKeyIndex(CompountType type)
         {
             if(IsInDump)
                 return null;
@@ -124,11 +115,11 @@ namespace Taabus
                 .Single(o => o.name == type.Name && o.Schema.name == type.Schema);
         }
 
-        ReferenceItem[] GetReferences(CompountType type)
+        internal ReferenceItem[] GetReferences(CompountType type)
         {
             return SysObject(type)
                 .ForeignKeys
-                .Select(c => Item.CreateReference(this, c, FindType))
+                .Select(CreateReference)
                 .ToArray();
         }
 
@@ -140,5 +131,21 @@ namespace Taabus
 
         T[] IDataProvider.Select<T>(string schema, string name, Func<DbDataRecord, T> func) { return Parent.Select(SelectMetaDataStatement(schema, name), func); }
         IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes() { return Types.CreateNodes(); }
+ 
+        bool ITreeNodeProbeSupport.IsEmpty
+        {
+            get
+            {
+                if(_typeItemsCache.IsValid)
+                    return !Types.Any();
+                return !_information.HasCompountTypes;
+            }
+        }
+
+        ReferenceItem CreateReference(SQLSysViews.foreign_keysClass constraint)
+        {
+            return
+                new ReferenceItem(this, constraint, FindType);
+        }
     }
 }

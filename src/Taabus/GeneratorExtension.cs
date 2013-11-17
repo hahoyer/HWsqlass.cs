@@ -36,7 +36,7 @@ namespace Taabus
         static string[] GetReferencedAssemblies(string text)
         {
             return text
-                .Split('\n','\r')
+                .Split('\n', '\r')
                 .Select(FindUsing)
                 .Where(l => l != null)
                 .Union(new[] {Assembly.GetCallingAssembly().Location})
@@ -74,7 +74,6 @@ namespace Taabus
 
             Tracer.AssertionFailed("", () => line);
             return null;
-
         }
 
         static void HandleErrors(CompilerErrorCollection cr)

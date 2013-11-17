@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using hw.Debug;
+using hw.Helper;
 
 namespace Taabus.MetaData
 {
@@ -21,21 +22,17 @@ namespace Taabus.MetaData
 
     sealed class CompountType : Type
     {
-        readonly string _name;
-        [DisableDump]
-        internal readonly string Schema;
-        readonly Member[] _members;
+        internal readonly SQLSysViews.all_objectsClass Object;
+        readonly ValueCache<Member[]> _membersCache;
 
-        public CompountType(string name, string schema, Member[] members)
+        public CompountType(SQLSysViews.all_objectsClass @object)
         {
-            _name = name;
-            Schema = schema;
-            _members = members;
+            Object = @object;
+            _membersCache = new ValueCache<Member[]>(()=>Object.Members);
         }
-        protected override string GetName() { return _name; }
-        internal override Member[] Members { get { return _members; } }
-        internal string FullName { get { return Schema + "." + Name; } }
-        internal TypeItem CreateType(DataBase dataBase) { return new TypeItem(dataBase, this); }
+        protected override string GetName() { return Object.name; }
+        internal override Member[] Members { get { return _membersCache.Value; } }
+        internal string FullName { get { return Object.Schema.name + "." + Name; } }
     }
 
     abstract class Constraint : DumpableObject

@@ -63,18 +63,18 @@ public static class TaabusProject
             
             #line default
             #line hidden
-            this.Write("            }\r\n        };\r\n    }\r\n    public static ExpansionDescription[] Expans" +
-                    "ionDescriptions()\r\n    {\r\n        return ");
+            this.Write("            }\r\n        };\r\n    }\r\n\r\n    public static ExpansionDescription[] Expa" +
+                    "nsionDescriptions()\r\n    {\r\n        return ");
             
-            #line 28 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
-    Create(_expansionDescriptions); 
+            #line 29 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
+ Create(_expansionDescriptions); 
             
             #line default
             #line hidden
             this.Write(";\r\n    }\r\n\r\n    public static string[] Selection()\r\n    {\r\n        return new str" +
                     "ing[]{");
             
-            #line 33 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
+            #line 34 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(_selection.Select(s=>s.Quote()).Stringify(",\n")));
             
             #line default
@@ -83,7 +83,7 @@ public static class TaabusProject
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 36 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
+        #line 37 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
                                                                                                                   
 
 void Create(ExpansionDescription[] expansionDescriptions)
@@ -93,71 +93,71 @@ void Create(ExpansionDescription[] expansionDescriptions)
         #line default
         #line hidden
         
-        #line 40 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
-this.Write("    new ExpansionDescription[]\r\n    {\r\n    ");
+        #line 41 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
+this.Write("new ExpansionDescription[]{");
 
         
         #line default
         #line hidden
         
-        #line 43 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
+        #line 41 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
 
     foreach (var expansionDescription in expansionDescriptions)
     {
-    
+        
         
         #line default
         #line hidden
         
-        #line 46 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
+        #line 44 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
 this.Write("        new ExpansionDescription\r\n        {\r\n            Id = ");
 
         
         #line default
         #line hidden
         
-        #line 49 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
+        #line 47 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
 this.Write(this.ToStringHelper.ToStringWithCulture(expansionDescription.Id.Quote()));
 
         
         #line default
         #line hidden
         
-        #line 49 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
+        #line 47 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
 this.Write(",\r\n            IsExpanded = ");
 
         
         #line default
         #line hidden
         
-        #line 50 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
+        #line 48 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
 this.Write(this.ToStringHelper.ToStringWithCulture(expansionDescription.IsExpanded?"true":"false"));
 
         
         #line default
         #line hidden
         
-        #line 50 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
+        #line 48 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
 this.Write(",\r\n            Nodes = ");
 
         
         #line default
         #line hidden
         
-        #line 51 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
-        Create(expansionDescription.Nodes); 
+        #line 49 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
+ Create(expansionDescription.Nodes); 
         
         #line default
         #line hidden
         
-        #line 51 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
-this.Write(",\r\n        }\r\n    ");
+        #line 49 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
+this.Write(",\r\n        }");
 
         
         #line default
         #line hidden
         
-        #line 53 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
+        #line 50 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
 
     }
     
@@ -165,17 +165,16 @@ this.Write(",\r\n        }\r\n    ");
         #line default
         #line hidden
         
-        #line 55 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
-this.Write("    }\r\n    ");
+        #line 52 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
+this.Write("}");
 
         
         #line default
         #line hidden
         
-        #line 57 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
+        #line 52 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
 
 }
-
 
         
         #line default

@@ -11,8 +11,8 @@ namespace Taabus
     {
         internal string ProjectName;
 
-        IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes() { return Servers.CreateNodes(); }
-        bool ITreeNodeProbeSupport.IsEmpty { get { return !Servers.Any(); } }
+        IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes() { return Profiler.Measure(()=>Servers.CreateNodes()); }
+        bool ITreeNodeProbeSupport.IsEmpty { get { return Profiler.Measure(()=>!Servers.Any()); } }
 
         [DisableDump]
         public IEnumerable<Server> Servers { get; set; }

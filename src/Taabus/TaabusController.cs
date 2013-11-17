@@ -154,7 +154,7 @@ namespace Taabus
             if(type != null)
             {
                 ExpandedNodes = type.Invoke<ExpansionDescription[]>("ExpansionDescriptions");
-                _tree.TopNode = _tree.Nodes._().FirstOrDefault();
+                _tree.TopNode = Profiler.Measure(()=>_tree.Nodes._().FirstOrDefault());
                 SelectedPath = type.Invoke<string[]>("Selection") ?? new string[0];
                 _tree.SelectedNode.EnsureVisible();
             }

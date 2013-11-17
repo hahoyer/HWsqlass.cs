@@ -1,33 +1,33 @@
-﻿#region Copyright (C) 2013
-
-//     Project Taabus
-//     Copyright (C) 2013 - 2013 Harald Hoyer
-// 
-//     Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
-//     
-//     Comments, bugs and suggestions to hahoyer at yahoo.de
-
-#endregion
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using hw.Debug;
+using hw.Helper;
 
 namespace Taabus.MetaData
 {
     partial class SQLSysViews
     {
-// ReSharper disable once InconsistentNaming
+        readonly ValueCache<Dictionary<all_objectsClass, all_columnsClass[]>> _columnsCache;
+
+        SQLSysViews() { _columnsCache = new ValueCache<Dictionary<all_objectsClass, all_columnsClass[]>>(CreateColumns); }
+
+        Dictionary<all_objectsClass, all_columnsClass[]> CreateColumns()
+        {
+            return all_columns
+                .GroupBy(column => column.Object)
+                .Select(g => g.ToArray())
+                .ToDictionary(g => g[0].Object);
+        }
+
+        Dictionary<all_objectsClass, all_columnsClass[]> Columns { get { return _columnsCache.Value; } }
+
+        // ReSharper disable once InconsistentNaming
         partial class all_columnsClass : DumpableObject
         {
             protected override string GetNodeDump() { return "[" + object_id + ":" + column_id + "]" + name + "(" + TypeName + ")"; }
 
-            internal string TypeName
+            string TypeName
             {
                 get
                 {
@@ -48,6 +48,8 @@ namespace Taabus.MetaData
                     }
                 }
             }
+
+            internal Member CreateMember() { return new Member(name, BasicType.GetInstance(this)); }
         }
 
         // ReSharper disable once InconsistentNaming
@@ -55,28 +57,37 @@ namespace Taabus.MetaData
         {
             protected override string GetNodeDump() { return "[" + object_id + "]" + name; }
 
-            public all_columnsClass[] Columns
+            [DisableDump]
+            internal all_columnsClass[] Columns { get { return _parent.Columns[this].ToArray(); } }
+
+            internal ObjectType Type { get { return ObjectType.All.Single(c => c.Name == type); } }
+
+            [DisableDump]
+            internal key_constraintsClass AsKeyConstraint { get { return _parent.key_constraints.Single(k => k.object_id == object_id); } }
+
+            [DisableDump]
+            internal foreign_keysClass AsForeignKey { get { return _parent.foreign_keys.Single(k => k.object_id == object_id); } }
+
+            [DisableDump]
+            internal indexesClass[] Indexes { get { return _parent.indexes.Where(k => k.object_id == object_id).ToArray(); } }
+
+            [DisableDump]
+            internal key_constraintsClass[] KeyConstraints { get { return _parent.key_constraints.Where(k => k.Parent == this).ToArray(); } }
+
+            [DisableDump]
+            internal foreign_keysClass[] ForeignKeys { get { return _parent.foreign_keys.Where(k => k.Parent == this).ToArray(); } }
+
+            [DisableDump]
+            internal Member[] Members
             {
                 get
                 {
                     return _parent
-                        .all_columns
-                        .Where(c => c.Object == this)
+                        .Columns[this]
+                        .Select(column => column.CreateMember())
                         .ToArray();
                 }
             }
-
-            internal ObjectType Type { get { return ObjectType.All.Single(c => c.Name == type); } }
-            [DisableDump]
-            internal key_constraintsClass AsKeyConstraint { get { return _parent.key_constraints.Single(k => k.object_id == object_id); } }
-            [DisableDump]
-            internal foreign_keysClass AsForeignKey { get { return _parent.foreign_keys.Single(k => k.object_id == object_id); } }
-            [DisableDump]
-            internal indexesClass[] Indexes { get { return _parent.indexes.Where(k => k.object_id == object_id).ToArray(); } }
-            [DisableDump]
-            internal key_constraintsClass[] KeyConstraints { get { return _parent.key_constraints.Where(k => k.Parent == this).ToArray(); } }
-            [DisableDump]
-            internal foreign_keysClass[] ForeignKeys { get { return _parent.foreign_keys.Where(k => k.Parent == this).ToArray(); } }
         }
 
         // ReSharper disable once InconsistentNaming
@@ -103,11 +114,11 @@ namespace Taabus.MetaData
         }
 
         // ReSharper disable once InconsistentNaming
-        sealed partial class key_constraintsClass:DumpableObject
+        sealed partial class key_constraintsClass : DumpableObject
         {
             protected override string GetNodeDump() { return "[" + object_id + "]" + name; }
-
         }
+
         // ReSharper disable once InconsistentNaming
         partial class foreign_keysClass : DumpableObject
         {

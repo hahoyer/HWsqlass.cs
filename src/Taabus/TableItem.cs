@@ -35,7 +35,7 @@ namespace Taabus
             _referencesCache = new ValueCache<ReferenceItem[]>(() => parent.GetReferences(type));
             _keyIndexCache = new ValueCache<int?>(() => parent.GetPrimaryKeyIndex(type));
             _uniquesCache = new ValueCache<int[][]>(() => parent.GetUniques(type));
-            Data = new TypeQuery(parent.Parent, Parent.Name + "." + Type.FullName);
+            Data = new TypeQuery(parent.Parent, Parent.Name + "." + type.FullName);
         }
 
         IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes()
@@ -68,7 +68,13 @@ namespace Taabus
 
         [Node]
         [DisableDump]
-        internal MemberItem[] Attributes { get { return Members.Where(item => !ForeignKeys.Contains(item.Name)).ToArray(); } }
+        internal MemberItem[] Attributes {
+            get
+            {
+                return Members
+                    .Where(item => !ForeignKeys.Contains(item.Name))
+                    .ToArray();
+            } }
 
         [DisableDump]
         public IEnumerable<Field> Fields

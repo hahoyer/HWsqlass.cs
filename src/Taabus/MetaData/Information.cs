@@ -13,28 +13,8 @@ namespace Taabus.MetaData
 
         public Information(IDataProvider provider)
         {
-            _sqlSysViews = new SQLSysViews(provider);
+            _sqlSysViews = Profiler.Measure(() => new SQLSysViews(provider));
             _compountTypeCache = new FunctionCache<string, CompountType>(GetCompountType);
-
-            Tracer.Assert(IsSimpleScheme);
-        }
-
-        /// <summary>
-        ///     Check if scheme is not required to identify an object, i. e. there are not objects with the same name under
-        ///     different schemes
-        /// </summary>
-        bool IsSimpleScheme
-        {
-            get
-            {
-                if(_sqlSysViews.schemas.Count() == 1)
-                    return true;
-                var groupBy = CompountTypes.GroupBy(t => t.Name).FirstOrDefault(g => g.Count() > 1);
-                if(groupBy == null)
-                    return true;
-                var d = groupBy.ToArray();
-                return false;
-            }
         }
 
         internal CompountType[] CompountTypes
@@ -59,32 +39,13 @@ namespace Taabus.MetaData
 
         internal bool HasCompountTypes { get { return RawCompountTypes.Any(); } }
 
-        internal SQLSysViews.all_columnsClass[] SysColumns { get { return _sqlSysViews.all_columns; } }
-        internal SQLSysViews.all_objectsClass[] SysObjects { get { return _sqlSysViews.all_objects; } }
-
         CompountType GetCompountType(string name)
         {
-            var type = _sqlSysViews
+            var type = Profiler.Measure(() => _sqlSysViews
                 .all_objects
-                .Single(t => t.name == name);
-            return new CompountType
-                (
-                type.name,
-                type.Schema.name,
-                GetMembers(type)
-                );
+                .Single(t => t.name == name));
+            return new CompountType(type);
         }
-
-        Member[] GetMembers(SQLSysViews.all_objectsClass table)
-        {
-            return _sqlSysViews
-                .all_columns
-                .Where(column => column.Object == table && column.Object.Schema == table.Schema)
-                .Select(CreateMember)
-                .ToArray();
-        }
-
-        static Member CreateMember(SQLSysViews.all_columnsClass column) { return new Member(column.name, BasicType.GetInstance(column)); }
     }
 
     sealed class ObjectType : EnumEx
@@ -111,10 +72,10 @@ namespace Taabus.MetaData
         public static readonly ObjectType TableType = new ObjectType("TT");
         public static readonly ObjectType Synonym = new ObjectType("SN");
 
-        internal string Name;
+        internal readonly string Name;
         internal readonly bool IsCompountType;
 
-        public ObjectType(string name, bool isCompountType = false)
+        ObjectType(string name, bool isCompountType = false)
         {
             Name = name;
             IsCompountType = isCompountType;

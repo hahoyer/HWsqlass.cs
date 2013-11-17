@@ -62,6 +62,7 @@ namespace Taabus.UserInterface
             this._data.Images.SetKeyName(19, "Bool");
             this._data.Images.SetKeyName(20, "Size");
             this._data.Images.SetKeyName(21, "CodeError");
+            this._data.Images.SetKeyName(22, "Datetime");
 
         }
 

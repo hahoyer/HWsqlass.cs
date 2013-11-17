@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using hw.Debug;
 using hw.Helper;
 
 namespace Taabus.MetaData
@@ -58,7 +59,7 @@ namespace Taabus.MetaData
 
         public readonly CacheClass Cache;
 
-        public all_columnsClass[] all_columns { get { return Cache.all_columns.Value; } }
+        public all_columnsClass[] all_columns { get { return Profiler.Measure(()=>Cache.all_columns.Value); } }
         public all_objectsClass[] all_objects { get { return Cache.all_objects.Value; } }
         public key_constraintsClass[] key_constraints { get { return Cache.key_constraints.Value; } }
         public foreign_keysClass[] foreign_keys { get { return Cache.foreign_keys.Value; } }
@@ -68,7 +69,10 @@ namespace Taabus.MetaData
         public schemasClass[] schemas { get { return Cache.schemas.Value; } }
         public typesClass[] types { get { return Cache.types.Value; } }
 
-        public SQLSysViews(IDataProvider provider) { Cache = new CacheClass(provider, this); }
+        public SQLSysViews(IDataProvider provider) :this()
+        {
+            Cache = new CacheClass(provider, this);
+        }
 
         public sealed partial class all_columnsClass
         {

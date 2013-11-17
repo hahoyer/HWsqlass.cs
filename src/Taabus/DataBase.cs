@@ -14,7 +14,11 @@ namespace Taabus
     {
         const string MetaDataStatement = "select * from [{0}].[{1}].[{2}]";
 
-        internal static DataBase Create(DbDataRecord record, Server server) { return new DataBase(server, (string) record["name"]); }
+        internal static DataBase Create(DbDataRecord record, Server server)
+        {
+            var name = Profiler.Measure(()=> (string)record["name"]);
+            return Profiler.Measure(()=> new DataBase(server, name));
+        }
 
         readonly Information _information;
         readonly ValueCache<TypeItem[]> _typeItemsCache;
@@ -26,7 +30,7 @@ namespace Taabus
         {
             Parent = parent;
             _name = name;
-            _information = new Information(this);
+            _information = Profiler.Measure(()=> new Information(this));
             _typeItemsCache = new ValueCache<TypeItem[]>(GetTypes);
         }
 
@@ -53,9 +57,6 @@ namespace Taabus
             }
         }
 
-        internal SQLSysViews.all_columnsClass[] SysColumns { get { return _information.SysColumns; } }
-        internal SQLSysViews.all_objectsClass[] SysObjects { get { return _information.SysObjects; } }
-
         internal string SelectMetaDataStatement(string schema, string name)
         {
             return MetaDataStatement
@@ -66,7 +67,7 @@ namespace Taabus
         {
             return _information
                 .CompountTypes
-                .Select(type1 => type1.CreateType(this))
+                .Select(CreateType)
                 .OrderBy(type => type.Name)
                 .ToArray();
         }
@@ -76,7 +77,7 @@ namespace Taabus
             if(IsInDump)
                 return null;
 
-            var keyConstraint = SysObject(type)
+            var keyConstraint = type.Object
                 .Indexes
                 .Where(c => c.is_unique == true)
                 .Select
@@ -94,7 +95,7 @@ namespace Taabus
             if(IsInDump)
                 return null;
 
-            var keyConstraint = SysObject(type)
+            var keyConstraint = type.Object
                 .KeyConstraints
                 .SingleOrDefault(k => k.Object.Type == ObjectType.PrimaryKey);
             if(keyConstraint == null)
@@ -108,16 +109,9 @@ namespace Taabus
                 .AssertValue();
         }
 
-        SQLSysViews.all_objectsClass SysObject(CompountType type)
-        {
-            return _information
-                .SysObjects
-                .Single(o => o.name == type.Name && o.Schema.name == type.Schema);
-        }
-
         internal ReferenceItem[] GetReferences(CompountType type)
         {
-            return SysObject(type)
+            return type.Object
                 .ForeignKeys
                 .Select(CreateReference)
                 .ToArray();
@@ -126,7 +120,7 @@ namespace Taabus
         TypeItem FindType(SQLSysViews.all_objectsClass target)
         {
             return GetTypes()
-                .Single(typeItem => SysObject(typeItem.Type) == target);
+                .Single(typeItem => typeItem.Type.Object == target);
         }
 
         T[] IDataProvider.Select<T>(string schema, string name, Func<DbDataRecord, T> func) { return Parent.Select(SelectMetaDataStatement(schema, name), func); }
@@ -147,5 +141,7 @@ namespace Taabus
             return
                 new ReferenceItem(this, constraint, FindType);
         }
+
+        TypeItem CreateType(CompountType compountType) { return Profiler.Measure(()=>new TypeItem(this, compountType)); }
     }
 }

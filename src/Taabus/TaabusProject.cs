@@ -15,36 +15,26 @@ public static class TaabusProject
             }
         };
     }
+
     public static ExpansionDescription[] ExpansionDescriptions()
     {
-        return     new ExpansionDescription[]
-    {
-            new ExpansionDescription
+        return new ExpansionDescription[]{        new ExpansionDescription
         {
             Id = "ConnectionString=Data Source=ANNE\\OJB_NET;Integrated Security=True",
             IsExpanded = true,
-            Nodes =     new ExpansionDescription[]
-    {
-            new ExpansionDescription
+            Nodes = new ExpansionDescription[]{        new ExpansionDescription
         {
             Id = "cwg_adsalesng_devtest",
             IsExpanded = true,
-            Nodes =     new ExpansionDescription[]
-    {
-        }
-    ,
-        }
-        }
-    ,
-        }
-        }
-    ;
+            Nodes = new ExpansionDescription[]{},
+        }},
+        }};
     }
 
     public static string[] Selection()
     {
         return new string[]{"ConnectionString=Data Source=ANNE\\OJB_NET;Integrated Security=True",
 "cwg_adsalesng_devtest",
-"as_AchPeriodJournalStatus"};
+"as_AchPeriodJournal"};
     }
 }

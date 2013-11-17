@@ -206,6 +206,11 @@ namespace Taabus.MetaData
                 {
                     case "bit":
                         return "Bool";
+                    case "smalldatetime":
+                    case "datetime":
+                    case "datetime2":
+                    case "datetimeoffset":
+                        return "Datetime";
                 }
                 return null;
             }

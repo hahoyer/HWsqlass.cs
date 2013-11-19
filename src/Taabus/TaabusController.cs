@@ -156,7 +156,8 @@ namespace Taabus
                 ExpandedNodes = type.Invoke<ExpansionDescription[]>("ExpansionDescriptions");
                 _tree.TopNode = Profiler.Measure(()=>_tree.Nodes._().FirstOrDefault());
                 SelectedPath = type.Invoke<string[]>("Selection") ?? new string[0];
-                _tree.SelectedNode.EnsureVisible();
+                if(_tree.SelectedNode != null)
+                    _tree.SelectedNode.EnsureVisible();
             }
             
             SetLastFileNameConfig();
@@ -189,6 +190,9 @@ namespace Taabus
 
             if(d.ShowDialog() != DialogResult.OK)
                 return;
+            var newFile = d.FileName.FileHandle();
+            if(!newFile.Exists)
+                newFile.String = new Generator().TransformText();
             FileName = d.FileName;
         }
 

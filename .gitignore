@@ -8,3 +8,5 @@ _ReSharper.*
 obj/
 
 /src/Clock2/bin/Debug/*
+
+*.taabus

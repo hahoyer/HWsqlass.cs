@@ -10,7 +10,7 @@ using hw.Helper;
 
 namespace Taabus
 {
-    public sealed class Server : NamedObject, ITreeNodeSupport, ITreeNodeProbeSupport, INodeNameProvider
+    public sealed class Server : NamedObject, ITreeNodeSupport, ITreeNodeProbeSupport, INodeNameProvider , IIconKeyProvider
     {
         const string SelectDatabases = "select name from master.sys.databases";
 
@@ -41,6 +41,7 @@ namespace Taabus
         IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes() { return DataBases.CreateNodes(); }
         bool ITreeNodeProbeSupport.IsEmpty { get { return DataBases == null || !DataBases.Any(); } }
         string INodeNameProvider.Value(string name) { return "ConnectionString=" + _connectionString; }
+        string IIconKeyProvider.IconKey { get { return "Server"; } }
 
         DataBase[] GetDataBases()
         {

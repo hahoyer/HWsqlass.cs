@@ -26,7 +26,17 @@ public static class TaabusProject
         {
             Id = "cwg_adsalesng_devtest",
             IsExpanded = true,
+            Nodes = new ExpansionDescription[]{        new ExpansionDescription
+        {
+            Id = "as_AchPeriodJournal",
+            IsExpanded = true,
+            Nodes = new ExpansionDescription[]{        new ExpansionDescription
+        {
+            Id = "as_AchPeriodJournal3_fk",
+            IsExpanded = true,
             Nodes = new ExpansionDescription[]{},
+        }},
+        }},
         }},
         }};
     }
@@ -35,6 +45,7 @@ public static class TaabusProject
     {
         return new string[]{"ConnectionString=Data Source=ANNE\\OJB_NET;Integrated Security=True",
 "cwg_adsalesng_devtest",
-"as_AchPeriodJournal"};
+"as_AchPeriodJournal",
+"AchPeriodJournalId"};
     }
 }

@@ -12,7 +12,7 @@ using Taabus.MetaData;
 
 namespace Taabus
 {
-    sealed class TypeItem : Item, ITreeNodeSupport, ITreeNodeProbeSupport
+    sealed class TypeItem : Item, ITreeNodeSupport, ITreeNodeProbeSupport, IIconKeyProvider
     {
         [DisableDump]
         internal readonly CompountType Type;
@@ -47,6 +47,7 @@ namespace Taabus
         }
 
         bool ITreeNodeProbeSupport.IsEmpty { get { return false; } }
+        string IIconKeyProvider.IconKey { get { return "Table"; } }
 
         [EnableDumpExcept(null)]
         internal MemberItem[] Members { get { return _membersCache.Value; } }

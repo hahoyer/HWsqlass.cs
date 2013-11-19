@@ -10,7 +10,7 @@ using Taabus.MetaData;
 
 namespace Taabus
 {
-    public sealed class DataBase : NamedObject, IDataProvider, ITreeNodeSupport, ITreeNodeProbeSupport
+    public sealed class DataBase : NamedObject, IDataProvider, ITreeNodeSupport, ITreeNodeProbeSupport, IIconKeyProvider
     {
         const string MetaDataStatement = "select * from [{0}].[{1}].[{2}]";
 
@@ -125,6 +125,7 @@ namespace Taabus
 
         T[] IDataProvider.Select<T>(string schema, string name, Func<DbDataRecord, T> func) { return Parent.Select(SelectMetaDataStatement(schema, name), func); }
         IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes() { return Types.CreateNodes(); }
+        string IIconKeyProvider.IconKey { get { return "Database"; } }
  
         bool ITreeNodeProbeSupport.IsEmpty
         {

@@ -43,9 +43,6 @@ public static class TaabusProject
 
     public static string[] Selection()
     {
-        return new string[]{"ConnectionString=Data Source=ANNE\\OJB_NET;Integrated Security=True",
-"cwg_adsalesng_devtest",
-"as_AchPeriodJournal",
-"AchPeriodJournalId"};
+        return new string[]{"ConnectionString=Data Source=ANNE\\OJB_NET;Integrated Security=True"};
     }
 }

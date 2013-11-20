@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using hw.Debug;
 using hw.Forms;
 using hw.Helper;
+using MetroFramework.Drawing;
 using MetroFramework.Forms;
 using Microsoft.Data.ConnectionUI;
 using Taabus.Properties;
@@ -55,6 +56,7 @@ namespace Taabus
 
             _mainForm.SuspendLayout();
             _mainForm.Name = "Taabus.MainForm";
+            _mainForm.  ShadowType = MetroForm.MetroFormShadowType.DropShadow;
             _mainForm.Controls.Add(_toolbar);
             _mainForm.Controls.Add(_tree);
             _mainForm.InstallPositionConfig();

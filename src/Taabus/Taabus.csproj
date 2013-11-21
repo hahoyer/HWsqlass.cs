@@ -90,6 +90,7 @@
     <Compile Include="hw\UnitTest\CategoryAttribute.cs" />
     <Compile Include="MetaDataGenerator.cs" />
     <Compile Include="Project.cs" />
+    <Compile Include="ProjectExplorerView.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -136,6 +137,7 @@
       <DependentUpon>Images.cs</DependentUpon>
     </Compile>
     <Compile Include="UserInterface\UserInteraction.cs" />
+    <Compile Include="WorkspaceView.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Generator.tt">

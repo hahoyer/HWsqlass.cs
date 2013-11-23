@@ -8,19 +8,28 @@ namespace Taabus.MetaData
 {
     partial class SQLSysViews
     {
-        readonly ValueCache<Dictionary<all_objectsClass, all_columnsClass[]>> _columnsCache;
+        internal readonly FunctionCache<all_objectsClass, all_columnsClass[]> Columns;
+        readonly ValueCache<Dictionary<string, all_objectsClass>> _objectsCache;
+        readonly ValueCache<all_objectsClass[]> _compountTypesCache;
 
-        SQLSysViews() { _columnsCache = new ValueCache<Dictionary<all_objectsClass, all_columnsClass[]>>(CreateColumns); }
-
-        Dictionary<all_objectsClass, all_columnsClass[]> CreateColumns()
+        SQLSysViews()
         {
-            return all_columns
-                .GroupBy(column => column.Object)
-                .Select(g => g.ToArray())
-                .ToDictionary(g => g[0].Object);
+            _compountTypesCache = new ValueCache<all_objectsClass[]>(GetCompountTypes);
+            _objectsCache = new ValueCache<Dictionary<string, all_objectsClass>>(CreateObjects);
+            Columns = new FunctionCache<all_objectsClass, all_columnsClass[]>(CreateColumns);
+        }
+        Dictionary<string, all_objectsClass> CreateObjects() { return all_objects.ToDictionary(o => o.name); }
+
+        all_columnsClass[] CreateColumns(all_objectsClass key) { return Profiler.Measure(()=>all_columns.Where(c => c.object_id == key.object_id).ToArray()); }
+
+        all_objectsClass[] GetCompountTypes()
+        {
+            return all_objects
+                .Where(o => o.Type.IsCompountType && o.Schema.name != "sys")
+                .ToArray();
         }
 
-        Dictionary<all_objectsClass, all_columnsClass[]> Columns { get { return _columnsCache.Value; } }
+        internal all_objectsClass[] CompountTypes { get { return _compountTypesCache.Value; } }
 
         // ReSharper disable once InconsistentNaming
         partial class all_columnsClass : DumpableObject

@@ -29,6 +29,6 @@ namespace Taabus.MetaData
 {
     public interface IDataProvider
     {
-        T[] Select<T>(string schema, string name, Func<DbDataRecord, T> func);
+        IEnumerable<T> Select<T>(string schema, string name, Func<DbDataRecord, T> func);
     }
 }

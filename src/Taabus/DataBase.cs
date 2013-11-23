@@ -16,8 +16,8 @@ namespace Taabus
 
         internal static DataBase Create(DbDataRecord record, Server server)
         {
-            var name = Profiler.Measure(()=> (string)record["name"]);
-            return Profiler.Measure(()=> new DataBase(server, name));
+            var name = Profiler.Measure(() => (string) record["name"]);
+            return Profiler.Measure(() => new DataBase(server, name));
         }
 
         readonly Information _information;
@@ -30,7 +30,7 @@ namespace Taabus
         {
             Parent = parent;
             _name = name;
-            _information = Profiler.Measure(()=> new Information(this));
+            _information = Profiler.Measure(() => new Information(this));
             _typeItemsCache = new ValueCache<TypeItem[]>(GetTypes);
         }
 
@@ -65,30 +65,12 @@ namespace Taabus
 
         TypeItem[] GetTypes()
         {
-            return _information
-                .CompountTypes
-                .Select(CreateType)
-                .OrderBy(type => type.Name)
-                .ToArray();
+            var compountTypes = _information.CompountTypes;
+            var typeItems = Profiler.Measure(() => compountTypes.Select(CreateType));
+            return Profiler.Measure(() => typeItems.OrderBy(type => type.Name).ToArray());
         }
 
-        internal int[][] GetUniques(CompountType type)
-        {
-            if(IsInDump)
-                return null;
-
-            var keyConstraint = type.Object
-                .Indexes
-                .Where(c => c.is_unique == true)
-                .Select
-                (kc => kc
-                    .Columns
-                    .Select(kccn => type.Members.IndexOf(m => m.Name == kccn.Column.name).AssertValue())
-                    .ToArray()
-                )
-                .ToArray();
-            return keyConstraint;
-        }
+        internal int[][] GetUniques(CompountType type) { return IsInDump ? null : type.Uniques; }
 
         internal int? GetPrimaryKeyIndex(CompountType type)
         {
@@ -123,19 +105,16 @@ namespace Taabus
                 .Single(typeItem => typeItem.Type.Object == target);
         }
 
-        T[] IDataProvider.Select<T>(string schema, string name, Func<DbDataRecord, T> func) { return Parent.Select(SelectMetaDataStatement(schema, name), func); }
+        IEnumerable<T> IDataProvider.Select<T>(string schema, string name, Func<DbDataRecord, T> func)
+        {
+            return Parent
+                .Select(SelectMetaDataStatement(schema, name), func);
+        }
+
         IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes() { return Types.CreateNodes(); }
         string IIconKeyProvider.IconKey { get { return "Database"; } }
- 
-        bool ITreeNodeProbeSupport.IsEmpty
-        {
-            get
-            {
-                if(_typeItemsCache.IsValid)
-                    return !Types.Any();
-                return !_information.HasCompountTypes;
-            }
-        }
+
+        bool ITreeNodeProbeSupport.IsEmpty { get { return _typeItemsCache.IsValid && !Types.Any(); } }
 
         ReferenceItem CreateReference(SQLSysViews.foreign_keysClass constraint)
         {
@@ -143,6 +122,6 @@ namespace Taabus
                 new ReferenceItem(this, constraint, FindType);
         }
 
-        TypeItem CreateType(CompountType compountType) { return Profiler.Measure(()=>new TypeItem(this, compountType)); }
+        TypeItem CreateType(CompountType compountType) { return Profiler.Measure(() => new TypeItem(this, compountType)); }
     }
 }

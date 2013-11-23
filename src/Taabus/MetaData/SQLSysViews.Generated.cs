@@ -33,41 +33,41 @@ namespace Taabus.MetaData
     {
         public class CacheClass
         {
-            public readonly ValueCache<all_columnsClass[]> all_columns;
-            public readonly ValueCache<all_objectsClass[]> all_objects;
-            public readonly ValueCache<key_constraintsClass[]> key_constraints;
-            public readonly ValueCache<foreign_keysClass[]> foreign_keys;
-            public readonly ValueCache<foreign_key_columnsClass[]> foreign_key_columns;
-            public readonly ValueCache<indexesClass[]> indexes;
-            public readonly ValueCache<index_columnsClass[]> index_columns;
-            public readonly ValueCache<schemasClass[]> schemas;
-            public readonly ValueCache<typesClass[]> types;
+            public readonly ValueCache<IEnumerable<all_columnsClass>> all_columns;
+            public readonly ValueCache<IEnumerable<all_objectsClass>> all_objects;
+            public readonly ValueCache<IEnumerable<key_constraintsClass>> key_constraints;
+            public readonly ValueCache<IEnumerable<foreign_keysClass>> foreign_keys;
+            public readonly ValueCache<IEnumerable<foreign_key_columnsClass>> foreign_key_columns;
+            public readonly ValueCache<IEnumerable<indexesClass>> indexes;
+            public readonly ValueCache<IEnumerable<index_columnsClass>> index_columns;
+            public readonly ValueCache<IEnumerable<schemasClass>> schemas;
+            public readonly ValueCache<IEnumerable<typesClass>> types;
 
             public CacheClass(IDataProvider provider, SQLSysViews parent)
             {
-                all_columns = new ValueCache<all_columnsClass[]>(() => provider.Select<all_columnsClass>("sys", "all_columns", r => new all_columnsClass(r, parent)));
-                all_objects = new ValueCache<all_objectsClass[]>(() => provider.Select<all_objectsClass>("sys", "all_objects", r => new all_objectsClass(r, parent)));
-                key_constraints = new ValueCache<key_constraintsClass[]>(() => provider.Select<key_constraintsClass>("sys", "key_constraints", r => new key_constraintsClass(r, parent)));
-                foreign_keys = new ValueCache<foreign_keysClass[]>(() => provider.Select<foreign_keysClass>("sys", "foreign_keys", r => new foreign_keysClass(r, parent)));
-                foreign_key_columns = new ValueCache<foreign_key_columnsClass[]>(() => provider.Select<foreign_key_columnsClass>("sys", "foreign_key_columns", r => new foreign_key_columnsClass(r, parent)));
-                indexes = new ValueCache<indexesClass[]>(() => provider.Select<indexesClass>("sys", "indexes", r => new indexesClass(r, parent)));
-                index_columns = new ValueCache<index_columnsClass[]>(() => provider.Select<index_columnsClass>("sys", "index_columns", r => new index_columnsClass(r, parent)));
-                schemas = new ValueCache<schemasClass[]>(() => provider.Select<schemasClass>("sys", "schemas", r => new schemasClass(r, parent)));
-                types = new ValueCache<typesClass[]>(() => provider.Select<typesClass>("sys", "types", r => new typesClass(r, parent)));
+                all_columns = new ValueCache<IEnumerable<all_columnsClass>>(() => provider.Select<all_columnsClass>("sys", "all_columns", r => new all_columnsClass(r, parent)));
+                all_objects = new ValueCache<IEnumerable<all_objectsClass>>(() => provider.Select<all_objectsClass>("sys", "all_objects", r => new all_objectsClass(r, parent)));
+                key_constraints = new ValueCache<IEnumerable<key_constraintsClass>>(() => provider.Select<key_constraintsClass>("sys", "key_constraints", r => new key_constraintsClass(r, parent)));
+                foreign_keys = new ValueCache<IEnumerable<foreign_keysClass>>(() => provider.Select<foreign_keysClass>("sys", "foreign_keys", r => new foreign_keysClass(r, parent)));
+                foreign_key_columns = new ValueCache<IEnumerable<foreign_key_columnsClass>>(() => provider.Select<foreign_key_columnsClass>("sys", "foreign_key_columns", r => new foreign_key_columnsClass(r, parent)));
+                indexes = new ValueCache<IEnumerable<indexesClass>>(() => provider.Select<indexesClass>("sys", "indexes", r => new indexesClass(r, parent)));
+                index_columns = new ValueCache<IEnumerable<index_columnsClass>>(() => provider.Select<index_columnsClass>("sys", "index_columns", r => new index_columnsClass(r, parent)));
+                schemas = new ValueCache<IEnumerable<schemasClass>>(() => provider.Select<schemasClass>("sys", "schemas", r => new schemasClass(r, parent)));
+                types = new ValueCache<IEnumerable<typesClass>>(() => provider.Select<typesClass>("sys", "types", r => new typesClass(r, parent)));
             }
         }
 
         public readonly CacheClass Cache;
 
-        public all_columnsClass[] all_columns { get { return Profiler.Measure(()=>Cache.all_columns.Value); } }
-        public all_objectsClass[] all_objects { get { return Cache.all_objects.Value; } }
-        public key_constraintsClass[] key_constraints { get { return Cache.key_constraints.Value; } }
-        public foreign_keysClass[] foreign_keys { get { return Cache.foreign_keys.Value; } }
-        public foreign_key_columnsClass[] foreign_key_columns { get { return Cache.foreign_key_columns.Value; } }
-        public indexesClass[] indexes { get { return Cache.indexes.Value; } }
-        public index_columnsClass[] index_columns { get { return Cache.index_columns.Value; } }
-        public schemasClass[] schemas { get { return Cache.schemas.Value; } }
-        public typesClass[] types { get { return Cache.types.Value; } }
+        public IEnumerable<all_columnsClass> all_columns { get { return Profiler.Measure(()=>Cache.all_columns.Value); } }
+        public IEnumerable<all_objectsClass> all_objects { get { return Cache.all_objects.Value; } }
+        public IEnumerable<key_constraintsClass> key_constraints { get { return Cache.key_constraints.Value; } }
+        public IEnumerable<foreign_keysClass> foreign_keys { get { return Cache.foreign_keys.Value; } }
+        public IEnumerable<foreign_key_columnsClass> foreign_key_columns { get { return Cache.foreign_key_columns.Value; } }
+        public IEnumerable<indexesClass> indexes { get { return Cache.indexes.Value; } }
+        public IEnumerable<index_columnsClass> index_columns { get { return Cache.index_columns.Value; } }
+        public IEnumerable<schemasClass> schemas { get { return Cache.schemas.Value; } }
+        public IEnumerable<typesClass> types { get { return Cache.types.Value; } }
 
         public SQLSysViews(IDataProvider provider) :this()
         {

@@ -24,7 +24,6 @@ namespace Taabus
         readonly UserInteraction[] _functions;
         readonly Action _closeHandler;
 
-        string _fileName;
         Project _project;
 
         ProjectExplorerView(Action closeHandler)
@@ -71,7 +70,7 @@ namespace Taabus
         string LastFileNameFileName { get { return _frame.Name + ".lastFile"; } }
         ExpansionDescription[] ExpandedNodes { get { return ScanNodes(_tree.Nodes); } set { ScanNodes(_tree.Nodes, value); } }
 
-        static internal void Run(Action closeHandler)
+        internal static void Run(Action closeHandler)
         {
             var form = new ProjectExplorerView(closeHandler);
             Application.Run(form._frame);
@@ -79,13 +78,11 @@ namespace Taabus
 
         string FileName
         {
-            get { return _fileName; }
+            get { return _project == null ? null : _project.FileName; }
             set
             {
-                if(_fileName == value)
-                    return;
-                _fileName = value;
-                OnFileNameChanged();
+                if(FileName != value)
+                    OnFileNameChanged(value);
             }
         }
 
@@ -107,18 +104,6 @@ namespace Taabus
             {
                 var current = SelectedServer;
                 return _project.Servers.IndexOf(s => s == current) ?? _project.Servers.Count();
-            }
-        }
-
-        Type ProjectInstanceFromFile
-        {
-            get
-            {
-                if(_fileName == null)
-                    return null;
-                return _fileName
-                    .CreateAssemblyFromFile()
-                    .GetType(typeof(TaabusProject).Name);
             }
         }
 
@@ -189,26 +174,26 @@ namespace Taabus
 
         void OnClosed()
         {
-            SaveFile();
+            _project.Save(ExpandedNodes, SelectedPath);
             _closeHandler();
         }
 
-        void OnFileNameChanged()
+        void OnFileNameChanged(string fileName)
         {
-            var type = ProjectInstanceFromFile;
+            var type = TaabusController.GetTypeFromFile(fileName);
 
             if(type == null)
                 _project = null;
             else
             {
                 _project = type.Invoke<Project>("Project");
-                _project.ProjectName = _fileName.FileHandle().Name;
+                _project.FileName = fileName.FileHandle().FullName;
             }
 
             _tree.Connect(_project);
             if(type != null)
             {
-                ExpandedNodes = type.Invoke<ExpansionDescription[]>("ExpansionDescriptions");
+                Profiler.Frame(()=>ExpandedNodes = type.Invoke<ExpansionDescription[]>("ExpansionDescriptions"));
                 _tree.TopNode = Profiler.Measure(() => _tree.Nodes._().FirstOrDefault());
                 SelectedPath = type.Invoke<string[]>("Selection") ?? new string[0];
                 if(_tree.SelectedNode != null)
@@ -225,7 +210,7 @@ namespace Taabus
             _tree.Connect(_project);
             ExpandedNodes = expandedNodes;
             SelectedServer = server;
-            SaveFile();
+            _project.Save(ExpandedNodes, SelectedPath);
         }
 
         void EditServer(Server server)
@@ -237,18 +222,9 @@ namespace Taabus
             if(DataConnectionDialog.Show(dialog) != DialogResult.OK)
                 return;
             if(server == null)
-                InsertServer(useServer);
+                _project.InsertServer(useServer, SelectedServerPosition);
             useServer.ConnectionString = dialog.ConnectionString;
             OnChange(useServer);
-        }
-
-        void SaveFile()
-        {
-            _fileName
-                .FileHandle()
-                .String
-                = new Generator(_project, ExpandedNodes, SelectedPath)
-                    .TransformText();
         }
 
         void ScanNodes(TreeNodeCollection treeNodes, ExpansionDescription[] value)
@@ -301,21 +277,10 @@ namespace Taabus
 
         void SetLastFileNameConfig()
         {
-            if(_fileName != null)
-                LastFileNameFileHandle.String = _fileName;
+            if(_project.FileName != null)
+                LastFileNameFileHandle.String = _project.FileName;
             else if(LastFileNameFileHandle.Exists)
                 LastFileNameFileHandle.Delete();
-        }
-
-        void InsertServer(Server server)
-        {
-            var position = SelectedServerPosition;
-            _project.Servers = _project
-                .Servers
-                .Take(position)
-                .Concat(new[] {server})
-                .Concat(_project.Servers.Skip(position))
-                .ToArray();
         }
     }
 }

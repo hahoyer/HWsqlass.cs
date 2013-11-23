@@ -151,7 +151,7 @@ this.Write(",\r\n            Nodes = ");
         #line hidden
         
         #line 49 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
-this.Write(",\r\n        }");
+this.Write(",\r\n        },");
 
         
         #line default

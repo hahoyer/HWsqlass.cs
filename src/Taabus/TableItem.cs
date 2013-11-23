@@ -38,13 +38,23 @@ namespace Taabus
             Data = new TypeQuery(parent.Parent, Parent.Name + "." + type.FullName);
         }
 
-        IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes()
+        IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes() { return CreateNodes(); }
+
+        IEnumerable<TreeNode> CreateNodesYield()
         {
             foreach(var item in References)
                 yield return item.CreateNode();
             foreach(var item in Attributes)
                 yield return item.CreateNode();
         }
+
+        IEnumerable<TreeNode> CreateNodes() { return ReferenceNodes().Concat(AttributeNodes()); }
+        IEnumerable<TreeNode> AttributeNodes()
+        {
+            var memberItems = Profiler.Measure(() => Attributes);
+            return Profiler.Measure(() => memberItems.Select(item => item.CreateNode()).ToArray());
+        }
+        IEnumerable<TreeNode> ReferenceNodes() { return Profiler.Measure(() => References.Select(item => item.CreateNode()).ToArray()); }
 
         bool ITreeNodeProbeSupport.IsEmpty { get { return false; } }
         string IIconKeyProvider.IconKey { get { return "Table"; } }
@@ -69,13 +79,16 @@ namespace Taabus
 
         [Node]
         [DisableDump]
-        internal MemberItem[] Attributes {
+        internal MemberItem[] Attributes
+        {
             get
             {
-                return Members
+                var memberItems = Profiler.Measure(() => Members);
+                return Profiler.Measure(() => memberItems
                     .Where(item => !ForeignKeys.Contains(item.Name))
-                    .ToArray();
-            } }
+                    .ToArray());
+            }
+        }
 
         [DisableDump]
         public IEnumerable<Field> Fields
@@ -100,12 +113,10 @@ namespace Taabus
 
         MemberItem[] GetMembers()
         {
-            var members = Type
-                .Members
-                .ToArray();
-            return members
+            var members = Profiler.Measure(()=>Type.Members.ToArray());
+            return Profiler.Measure(()=>members
                 .Select(metaData => CreateMember(this, metaData))
-                .ToArray();
+                .ToArray());
         }
 
         internal IEnumerable<DataRecord> FindAllText(string value)

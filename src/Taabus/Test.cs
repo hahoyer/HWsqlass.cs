@@ -25,7 +25,7 @@ namespace Taabus
 
                 var query = dataBase
                     .Types
-                    .SelectMany(t => t.FindAllText("Contract").Select(r => new TableRecord {Name = t.Name, Record = r}));
+                    .SelectMany(item => item.FindAllText("Contract").Select(record => new TableRecord {Name = item.Name, Record = record}));
                 var result = query.ToArray();
                 Tracer.FlaggedLine(result.Length + " records found.");
                 Tracer.Assert(result.Any());

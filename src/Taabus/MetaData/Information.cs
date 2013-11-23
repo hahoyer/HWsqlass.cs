@@ -21,29 +21,17 @@ namespace Taabus.MetaData
         {
             get
             {
-                return RawCompountTypes
-                    .Select(t => _compountTypeCache[t.name])
-                    .ToArray();
+                var allObjectsClasses = _sqlSysViews.CompountTypes;
+                var compountTypes = Profiler.Measure(() => allObjectsClasses.Select(t => _compountTypeCache[t.name]));
+                return Profiler.Measure(() => compountTypes.ToArray());
             }
         }
-
-        IEnumerable<SQLSysViews.all_objectsClass> RawCompountTypes
-        {
-            get
-            {
-                return _sqlSysViews
-                    .all_objects
-                    .Where(o => o.Type.IsCompountType && o.Schema.name != "sys");
-            }
-        }
-
-        internal bool HasCompountTypes { get { return RawCompountTypes.Any(); } }
 
         CompountType GetCompountType(string name)
         {
-            var type = Profiler.Measure(() => _sqlSysViews
+            var type = _sqlSysViews
                 .all_objects
-                .Single(t => t.name == name));
+                .Single(t => t.name == name);
             return new CompountType(type);
         }
     }

@@ -17,5 +17,14 @@ namespace Taabus
         }
 
         void Closed() { Application.Exit(); }
+        
+        internal static Type GetTypeFromFile(string fileName)
+        {
+            if(fileName == null)
+                return null;
+            return fileName
+                .CreateAssemblyFromFile()
+                .GetType(typeof(TaabusProject).Name);
+        }
     }
 }

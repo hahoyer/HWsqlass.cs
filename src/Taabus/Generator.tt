@@ -47,7 +47,7 @@ void Create(ExpansionDescription[] expansionDescriptions)
             Id = <#= expansionDescription.Id.Quote() #>,
             IsExpanded = <#= expansionDescription.IsExpanded?"true":"false" #>,
             Nodes = <#+ Create(expansionDescription.Nodes); #>,
-        }<#+
+        },<#+
     }
     #>}<#+
 }

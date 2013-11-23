@@ -20,9 +20,17 @@ namespace hw.Helper
 
         public static DbDataReader ToDataReader(this DbConnection connection, string text)
         {
-            return connection
-                .ToCommand(text)
-                .ExecuteReader();
+            var dbCommand = connection.ToCommand(text);
+            try
+            {
+                return dbCommand.ExecuteReader();
+            }
+            catch (SqlException exception)
+            {
+                if(exception.Number == 916)
+                    return null;
+                throw ;
+            }
         }
 
         public static T[] ToArray<T>(this DbConnection connection, string text)
@@ -54,6 +62,8 @@ namespace hw.Helper
 
         public static T[] SelectFromReader<T>(this DbDataReader reader, Func<DbDataRecord, T> converter)
         {
+            if(reader == null)
+                return new T[0];
             var result = new List<T>();
             var e = reader.GetEnumerator();
             while(e.MoveNext())

@@ -10,6 +10,7 @@ namespace Taabus
     static class Extension
     {
         internal static IEnumerable<TreeNode> _(this TreeNodeCollection value) { return value.Cast<TreeNode>(); }
+        internal static IEnumerable<Control> _(this Control.ControlCollection value) { return value.Cast<Control>(); }
         internal static IEnumerable<TreeNode> SelectHierachical(this TreeView tree)
         {
             return tree

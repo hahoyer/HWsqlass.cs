@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using hw.Debug;
 using hw.Helper;
 
@@ -57,7 +58,19 @@ namespace Taabus
 
         TResult IQueryProvider.Execute<TResult>(Expression expression)
         {
+            var mce = expression as MethodCallExpression;
+            if(mce != null && mce.Arguments.Count == 1) 
+                return Result<TResult>(CreateSQL(mce.Arguments[0]), mce.Method);
+
             NotImplementedMethod(expression);
+            return default(TResult);
+        }
+        
+        TResult Result<TResult>(string objectSql, MethodInfo m)
+        {
+            if(m.Name == "Count" && typeof(TResult) == typeof(int))
+                return Server.Select("select count(*) from {0}".ReplaceArgs(objectSql), r => (TResult) r[0]).Single();
+            NotImplementedMethod(objectSql,m);
             return default(TResult);
         }
 
@@ -116,7 +129,7 @@ namespace Taabus
 
         string CreateWhereLambda(string objectSQL, ParameterExpression parameter, Expression body)
         {
-            return "select * from ({0}) {1} where {2}"
+            return "select * from {0} {1} where {2}"
                 .ReplaceArgs
                 (
                     objectSQL,

@@ -49,5 +49,6 @@ namespace Taabus
     interface IControlledItem
     {
         string Title { get; }
+        long Count{ get; }
     }
 }

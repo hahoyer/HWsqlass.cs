@@ -32,7 +32,7 @@ namespace Taabus.UserInterface
             _menuItemCache = new ValueCache<ToolStripMenuItem>(GetMenuItem);
         }
 
-        internal ToolStripButton Button { get { return _buttonCache.Value; } }
+        internal ToolStripItem Button { get { return _buttonCache.Value; } }
 
         ToolStripButton GetButton()
         {

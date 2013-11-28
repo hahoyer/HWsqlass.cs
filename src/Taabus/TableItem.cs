@@ -39,6 +39,8 @@ namespace Taabus
         }
 
         string IControlledItem.Title { get { return Name; } }
+        long IControlledItem.Count { get { return Data.Count(); } }
+
         IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes() { return CreateNodesYield(); }
         bool ITreeNodeProbeSupport.IsEmpty { get { return false; } }
         string IIconKeyProvider.IconKey { get { return "Table"; } }
@@ -148,7 +150,7 @@ namespace Taabus
         public TypeQuery(Server server, string tableName)
             : base(new QueryProvider(server)) { _tableName = tableName; }
 
-        internal override string CreateSQL() { return "select * from " + _tableName; }
+        internal override string CreateSQL() { return _tableName; }
     }
 
     sealed class DataItem

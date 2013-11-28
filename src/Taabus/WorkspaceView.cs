@@ -23,7 +23,6 @@ namespace Taabus
         readonly ToolStrip _toolbar = new ToolStrip();
         readonly Panel _panel = new Panel();
         readonly UserInteraction[] _functions;
-        readonly UserInteraction[] _itemFunctions;
         readonly ITaabusController _controller;
         IControlledItem _currentItem;
 
@@ -33,11 +32,6 @@ namespace Taabus
             _functions = new[]
             {
                 new UserInteraction("Settings", OnConfiguration, Resources.appbar_settings)
-            };
-
-            _itemFunctions = new[]
-            {
-                new UserInteraction("Count", OnGetCount, text: "get count")
             };
 
             _toolbar.Items.AddRange(_functions.Select(f => f.Button).ToArray());
@@ -62,41 +56,32 @@ namespace Taabus
             _frame.Closed += (s, e) => OnClosed();
             _frame.ResumeLayout();
         }
-        void OnGetCount() {
-            NotImplementedMethod();
-        }
+
 
         void OnClosed() { _controller.OnClosed(); }
 
         internal void Run() { Application.Run(_frame); }
 
         static void OnConfiguration() { }
-        internal void Add(IControlledItem item)
+        internal void Add(IControlledItem item) { _panel.ThreadCallGuard(() => AddCard(item)); }
+
+        void AddCard(IControlledItem item)
         {
-            if(_panel.Controls.Count > 0)
-                NotImplementedMethod(item);
-            _panel.ThreadCallGuard(() => _panel.Controls.Add(CreateCard(item)));
+            var control = CreateCard(item);
+            var rectangle = FindPosition(control.Size, _panel.Controls._().Select(c => new Rectangle(c.Location,c.Size)).ToArray());
+            control.Location = rectangle.Location;
+            _panel.Controls.Add(control);
         }
 
-        Control CreateCard(IControlledItem item)
+        static Rectangle FindPosition(Size size, Rectangle[] regions)
         {
-            var result = new Button
-            {
-                AutoSize = true, 
-                Text = item.Title, 
-                AutoEllipsis = false, 
-                AutoSizeMode = AutoSizeMode.GrowAndShrink, 
-            };
-            result.Click += (s, e) => OnClick(item, result,(MouseEventArgs) e);
-
+            var result = new Rectangle {Size = size};
+            var increment = (int) (size.Height * 1.5);
+            while(regions.Any(r => r.IntersectsWith(result)))
+                result.Y += increment;
             return result;
         }
-        void OnClick(IControlledItem item, Control sender, MouseEventArgs args)
-        {
-            _currentItem = item;
-            var menu = new ContextMenuStrip();
-            menu.Items.AddRange(_itemFunctions.Select(f => f.MenuItem).ToArray());
-            menu.Show(sender, args.X,args.Y);
-        }
+
+        Control CreateCard(IControlledItem item) { return new CardView(this, item); }
     }
 }

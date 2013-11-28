@@ -127,6 +127,9 @@
     <Compile Include="TaabusProject.cs" />
     <Compile Include="TableItem.cs" />
     <Compile Include="Test.cs" />
+    <Compile Include="TreeViewDaD.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UserInterface\ServerForm.cs">
       <SubType>Form</SubType>
     </Compile>

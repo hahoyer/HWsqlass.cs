@@ -12,7 +12,7 @@ using Taabus.MetaData;
 
 namespace Taabus
 {
-    sealed class TypeItem : Item, ITreeNodeSupport, ITreeNodeProbeSupport, IIconKeyProvider
+    sealed class TypeItem : Item, ITreeNodeSupport, ITreeNodeProbeSupport, IIconKeyProvider, IControlledItem
     {
         [DisableDump]
         internal readonly CompountType Type;
@@ -38,24 +38,8 @@ namespace Taabus
             Data = new TypeQuery(parent.Parent, Parent.Name + "." + type.FullName);
         }
 
-        IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes() { return CreateNodes(); }
-
-        IEnumerable<TreeNode> CreateNodesYield()
-        {
-            foreach(var item in References)
-                yield return item.CreateNode();
-            foreach(var item in Attributes)
-                yield return item.CreateNode();
-        }
-
-        IEnumerable<TreeNode> CreateNodes() { return ReferenceNodes().Concat(AttributeNodes()); }
-        IEnumerable<TreeNode> AttributeNodes()
-        {
-            var memberItems = Profiler.Measure(() => Attributes);
-            return Profiler.Measure(() => memberItems.Select(item => item.CreateNode()).ToArray());
-        }
-        IEnumerable<TreeNode> ReferenceNodes() { return Profiler.Measure(() => References.Select(item => item.CreateNode()).ToArray()); }
-
+        string IControlledItem.Title { get { return Name; } }
+        IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes() { return CreateNodesYield(); }
         bool ITreeNodeProbeSupport.IsEmpty { get { return false; } }
         string IIconKeyProvider.IconKey { get { return "Table"; } }
 
@@ -109,14 +93,43 @@ namespace Taabus
 
         public int[][] Uniques { get { return _uniquesCache.Value; } }
 
-        protected override Item[] GetItems() { return GetMembers().Cast<Item>().ToArray(); }
+        IEnumerable<TreeNode> CreateNodes() { return GetReferenceNodes().Concat(GetAttributeNodes()); }
+
+        IEnumerable<TreeNode> CreateNodesYield()
+        {
+            foreach(var item in References)
+                yield return item.CreateNode();
+            foreach(var item in Attributes)
+                yield return item.CreateNode();
+        }
+
+        IEnumerable<TreeNode> GetAttributeNodes()
+        {
+            return Attributes
+                .Select(item => item.CreateNode())
+                .ToArray();
+        }
+
+        IEnumerable<TreeNode> GetReferenceNodes()
+        {
+            return References
+                .Select(item => item.CreateNode())
+                .ToArray();
+        }
+
+        protected override Item[] GetItems()
+        {
+            return GetMembers()
+                .Cast<Item>()
+                .ToArray();
+        }
 
         MemberItem[] GetMembers()
         {
-            var members = Profiler.Measure(()=>Type.Members.ToArray());
-            return Profiler.Measure(()=>members
+            return Type
+                .Members
                 .Select(metaData => CreateMember(this, metaData))
-                .ToArray());
+                .ToArray();
         }
 
         internal IEnumerable<DataRecord> FindAllText(string value)

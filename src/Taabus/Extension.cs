@@ -19,7 +19,7 @@ namespace Taabus
         }
 
         internal static T Invoke<T>(this object target, string method, params object[] args) { return (T) target.GetType().InvokeMember(method, BindingFlags.InvokeMethod, null, target, args); }
-        internal static T Invoke<T>(this Type type, string method, params object[] args) { return ExceptionGuard(()=>(T) type.InvokeMember(method, BindingFlags.InvokeMethod, null, null, args)); }
+        internal static T Invoke<T>(this Type type, string method, params object[] args) { return ExceptionGuard(() => (T) type.InvokeMember(method, BindingFlags.InvokeMethod, null, null, args)); }
 
         internal static T ExceptionGuard<T>(this Func<T> function)
         {
@@ -30,7 +30,23 @@ namespace Taabus
             catch(Exception e)
             {
                 return default(T);
-            };
+            }
+            ;
+        }
+
+        internal static T ThreadCallGuard<T>(this Control control, Func<T> function)
+        {
+            if(control.InvokeRequired)
+                return (T) control.Invoke(function);
+            return function();
+        }
+
+        internal static void ThreadCallGuard(this Control control, Action function)
+        {
+            if(control.InvokeRequired)
+                control.Invoke(function);
+            else
+                function();
         }
     }
 }

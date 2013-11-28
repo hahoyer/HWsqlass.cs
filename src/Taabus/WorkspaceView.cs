@@ -23,14 +23,21 @@ namespace Taabus
         readonly ToolStrip _toolbar = new ToolStrip();
         readonly Panel _panel = new Panel();
         readonly UserInteraction[] _functions;
-        readonly Action _closeHandler;
+        readonly UserInteraction[] _itemFunctions;
+        readonly ITaabusController _controller;
+        IControlledItem _currentItem;
 
-        WorkspaceView(string tag, Action closeHandler)
+        internal WorkspaceView(string tag, ITaabusController controller)
         {
-            _closeHandler = closeHandler;
+            _controller = controller;
             _functions = new[]
             {
                 new UserInteraction("Settings", OnConfiguration, Resources.appbar_settings)
+            };
+
+            _itemFunctions = new[]
+            {
+                new UserInteraction("Count", OnGetCount, text: "get count")
             };
 
             _toolbar.Items.AddRange(_functions.Select(f => f.Button).ToArray());
@@ -55,15 +62,41 @@ namespace Taabus
             _frame.Closed += (s, e) => OnClosed();
             _frame.ResumeLayout();
         }
-
-        void OnClosed() { _closeHandler(); }
-
-        static internal void Run(string tag, Action closeHandler)
-        {
-            var form = new WorkspaceView(tag, closeHandler);
-            Application.Run(form._frame);
+        void OnGetCount() {
+            NotImplementedMethod();
         }
 
+        void OnClosed() { _controller.OnClosed(); }
+
+        internal void Run() { Application.Run(_frame); }
+
         static void OnConfiguration() { }
+        internal void Add(IControlledItem item)
+        {
+            if(_panel.Controls.Count > 0)
+                NotImplementedMethod(item);
+            _panel.ThreadCallGuard(() => _panel.Controls.Add(CreateCard(item)));
+        }
+
+        Control CreateCard(IControlledItem item)
+        {
+            var result = new Button
+            {
+                AutoSize = true, 
+                Text = item.Title, 
+                AutoEllipsis = false, 
+                AutoSizeMode = AutoSizeMode.GrowAndShrink, 
+            };
+            result.Click += (s, e) => OnClick(item, result,(MouseEventArgs) e);
+
+            return result;
+        }
+        void OnClick(IControlledItem item, Control sender, MouseEventArgs args)
+        {
+            _currentItem = item;
+            var menu = new ContextMenuStrip();
+            menu.Items.AddRange(_itemFunctions.Select(f => f.MenuItem).ToArray());
+            menu.Show(sender, args.X,args.Y);
+        }
     }
 }

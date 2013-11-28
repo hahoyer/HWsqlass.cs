@@ -7,17 +7,29 @@ using hw.Debug;
 
 namespace Taabus
 {
-    sealed class TaabusController : DumpableObject
+    sealed class TaabusController : DumpableObject, ITaabusController
     {
+        ProjectExplorerView _explorer;
+        WorkspaceView _workspace;
+
+        void ITaabusController.OnClosed() { Application.ExitThread(); }
+        void ITaabusController.OnActivate(IControlledItem item) { _workspace.Add(item); }
+
         internal void Run()
         {
-            Task.Factory.StartNew(() => ProjectExplorerView.Run(Closed));
-            Task.Factory.StartNew(() => WorkspaceView.Run("main", Closed));
+            Task.Factory.StartNew(() =>
+            {
+                _explorer = new ProjectExplorerView(this);
+                _explorer.Run();
+            });
+            Task.Factory.StartNew(() =>
+            {
+                _workspace = new WorkspaceView("Main", this);
+                _workspace.Run();
+            });
             Application.Run();
         }
 
-        void Closed() { Application.Exit(); }
-        
         internal static Type GetTypeFromFile(string fileName)
         {
             if(fileName == null)
@@ -26,5 +38,16 @@ namespace Taabus
                 .CreateAssemblyFromFile()
                 .GetType(typeof(TaabusProject).Name);
         }
+    }
+
+    interface ITaabusController
+    {
+        void OnClosed();
+        void OnActivate(IControlledItem controlledItem);
+    }
+
+    interface IControlledItem
+    {
+        string Title { get; }
     }
 }

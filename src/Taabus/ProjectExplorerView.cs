@@ -22,13 +22,13 @@ namespace Taabus
         readonly ToolStrip _toolbar = new ToolStrip();
         readonly TreeView _tree = new TreeView();
         readonly UserInteraction[] _functions;
-        readonly Action _closeHandler;
+        readonly ITaabusController _controller;
 
         Project _project;
 
-        ProjectExplorerView(Action closeHandler)
+        internal ProjectExplorerView(ITaabusController controller)
         {
-            _closeHandler = closeHandler;
+            _controller = controller;
             _functions = new[]
             {
                 new UserInteraction("Open", OnOpen, Resources.appbar_folder_open),
@@ -42,7 +42,6 @@ namespace Taabus
             _toolbar.Stretch = true;
 
             _tree.ImageList = Images.Instance;
-            _tree.AfterSelect += (s, e) => OnAfterSelect(_functions);
 
             var cs = _frame.ClientSize;
             var ts = _toolbar.Size;
@@ -60,9 +59,20 @@ namespace Taabus
             _frame.Controls.Add(_toolbar);
             _frame.Controls.Add(_tree);
             _frame.InstallPositionConfig();
+
+            _tree.AfterSelect += (s, e) => OnAfterSelect(_functions);
+            _tree.NodeMouseDoubleClick += (s, e) => Activate(e.Node);
+
             _frame.Load += (s, e) => OnLoad();
             _frame.Closed += (s, e) => OnClosed();
             _frame.ResumeLayout();
+        }
+
+        void Activate(TreeNode node)
+        {
+            var item = node.Tag as IControlledItem;
+            if(item != null)
+                _controller.OnActivate(item);
         }
 
         NamedObject SelectedItem { get { return (NamedObject) _tree.SelectedNode.Tag; } }
@@ -70,11 +80,7 @@ namespace Taabus
         string LastFileNameFileName { get { return _frame.Name + ".lastFile"; } }
         ExpansionDescription[] ExpandedNodes { get { return ScanNodes(_tree.Nodes); } set { ScanNodes(_tree.Nodes, value); } }
 
-        internal static void Run(Action closeHandler)
-        {
-            var form = new ProjectExplorerView(closeHandler);
-            Application.Run(form._frame);
-        }
+        internal void Run() { Application.Run(_frame); }
 
         string FileName
         {
@@ -175,7 +181,7 @@ namespace Taabus
         void OnClosed()
         {
             _project.Save(ExpandedNodes, SelectedPath);
-            _closeHandler();
+            _controller.OnClosed();
         }
 
         void OnFileNameChanged(string fileName)
@@ -193,7 +199,7 @@ namespace Taabus
             _tree.Connect(_project);
             if(type != null)
             {
-                Profiler.Frame(()=>ExpandedNodes = type.Invoke<ExpansionDescription[]>("ExpansionDescriptions"));
+                Profiler.Frame(() => ExpandedNodes = type.Invoke<ExpansionDescription[]>("ExpansionDescriptions"));
                 _tree.TopNode = Profiler.Measure(() => _tree.Nodes._().FirstOrDefault());
                 SelectedPath = type.Invoke<string[]>("Selection") ?? new string[0];
                 if(_tree.SelectedNode != null)
@@ -227,7 +233,7 @@ namespace Taabus
             OnChange(useServer);
         }
 
-        void ScanNodes(TreeNodeCollection treeNodes, ExpansionDescription[] value)
+        static void ScanNodes(TreeNodeCollection treeNodes, ExpansionDescription[] value)
         {
             foreach(var description in value)
             {
@@ -235,19 +241,13 @@ namespace Taabus
                 if(node != null)
                 {
                     var nodes = node.Nodes;
+                    nodes.BeforeExpand();
                     if(description.IsExpanded)
-                    {
-                        nodes.BeforeExpand();
                         node.Expand();
-                        ScanNodes(nodes, description.Nodes);
-                    }
-                    else
-                        ScanClosedNodes(nodes, description.Nodes);
+                    ScanNodes(nodes, description.Nodes);
                 }
             }
         }
-
-        void ScanClosedNodes(TreeNodeCollection nodes, ExpansionDescription[] expansionDescriptions) { NotImplementedMethod(nodes, expansionDescriptions); }
 
         static ExpansionDescription[] ScanNodes(TreeNodeCollection treeNodes)
         {

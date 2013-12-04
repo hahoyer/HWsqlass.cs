@@ -5,6 +5,8 @@ using System.Windows.Forms;
 using hw.Debug;
 using hw.Forms;
 using hw.Helper;
+using Taabus.Data;
+using Taabus.UserInterface;
 
 namespace Taabus
 {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
@@ -10,7 +9,7 @@ using hw.Helper;
 using JetBrains.Annotations;
 using Taabus.MetaData;
 
-namespace Taabus
+namespace Taabus.Data
 {
     sealed class TypeItem : Item, ITreeNodeSupport, ITreeNodeProbeSupport, IIconKeyProvider, IControlledItem
     {

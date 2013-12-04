@@ -1,26 +1,4 @@
-﻿#region Copyright (C) 2013
-
-//     Project Taabus
-//     Copyright (C) 2013 - 2013 Harald Hoyer
-// 
-//     This program is free software: you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation, either version 3 of the License, or
-//     (at your option) any later version.
-// 
-//     This program is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
-// 
-//     You should have received a copy of the GNU General Public License
-//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//     
-//     Comments, bugs and suggestions to hahoyer at yahoo.de
-
-#endregion
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -28,7 +6,7 @@ using System.Reflection;
 using hw.Debug;
 using hw.Helper;
 
-namespace Taabus
+namespace Taabus.Data
 {
     sealed class QueryProvider : DumpableObject, IQueryProvider
     {
@@ -59,18 +37,18 @@ namespace Taabus
         TResult IQueryProvider.Execute<TResult>(Expression expression)
         {
             var mce = expression as MethodCallExpression;
-            if(mce != null && mce.Arguments.Count == 1) 
+            if(mce != null && mce.Arguments.Count == 1)
                 return Result<TResult>(CreateSQL(mce.Arguments[0]), mce.Method);
 
             NotImplementedMethod(expression);
             return default(TResult);
         }
-        
+
         TResult Result<TResult>(string objectSql, MethodInfo m)
         {
             if(m.Name == "Count" && typeof(TResult) == typeof(int))
                 return Server.Select("select count(*) from {0}".ReplaceArgs(objectSql), r => (TResult) r[0]).Single();
-            NotImplementedMethod(objectSql,m);
+            NotImplementedMethod(objectSql, m);
             return default(TResult);
         }
 
@@ -155,7 +133,7 @@ namespace Taabus
         {
             return expression
                 .Eval<IEnumerable<Field>>()
-                .Select(f => name +"."+f.Name)
+                .Select(f => name + "." + f.Name)
                 ;
         }
 

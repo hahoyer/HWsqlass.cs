@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using hw.Helper;
 using MetroFramework.Controls;
-using Taabus.UserInterface;
 
-namespace Taabus
+namespace Taabus.UserInterface
 {
     sealed class CardView : MetroButton
     {
@@ -25,8 +25,7 @@ namespace Taabus
             };
         }
 
-        void OnGetCount() { Text = _item.Title + "(" + _item.Count +")"; }
-
+        void OnGetCount() { Text = _item.Title + " " + _item.Count.Format3Digits(); }
 
         void OnClick(MouseEventArgs args)
         {

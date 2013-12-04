@@ -4,10 +4,13 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@import namespace="hw.Helper" #>
+<#@import namespace="Taabus.UserInterface" #>
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Taabus;
+using Taabus.UserInterface;
+using Taabus.Data;
 
 public static class TaabusProject
 {

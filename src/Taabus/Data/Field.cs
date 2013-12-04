@@ -20,22 +20,25 @@
 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using hw.Debug;
+using Taabus.MetaData;
 
-namespace Taabus
+namespace Taabus       .Data
 {
-    sealed class ExpressionQuery : QueryBase
+    sealed class Field : DumpableObject
     {
-        [EnableDump]
-        readonly Expression _expression;
+        [DisableDump]
+        public DataBase DataBase;
+        public string Name;
+        public BasicType Type;
+        [DisableDump]
+        public CompountType Container;
+    }
 
-        public ExpressionQuery(QueryProvider queryProvider, Expression expression)
-            : base(queryProvider) { _expression = expression; }
-
-        internal override string CreateSQL() { return Provider.CreateSQL(_expression); }
+    class FieldValue
+    {
+        public Field Parent;
+        public object Key;
+        public object Value;
     }
 }

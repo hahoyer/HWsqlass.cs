@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using hw.Forms;
 using hw.Helper;
 using Taabus.MetaData;
 
-namespace Taabus
+namespace Taabus.Data
 {
     sealed class ReferenceItem : Item, IIconKeyProvider, IAdditionalNodeInfoProvider
     {

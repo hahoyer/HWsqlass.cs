@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using hw.Debug;
 
-namespace Taabus
+namespace Taabus.UserInterface
 {
     public sealed class ExpansionDescription
     {

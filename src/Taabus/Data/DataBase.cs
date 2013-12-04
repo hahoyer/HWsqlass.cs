@@ -8,7 +8,7 @@ using hw.Forms;
 using hw.Helper;
 using Taabus.MetaData;
 
-namespace Taabus
+namespace Taabus.Data
 {
     public sealed class DataBase : NamedObject, IDataProvider, ITreeNodeSupport, ITreeNodeProbeSupport, IIconKeyProvider
     {

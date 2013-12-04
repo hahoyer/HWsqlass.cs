@@ -6,81 +6,42 @@ using System.Windows.Forms;
 using hw.Debug;
 using hw.Forms;
 using hw.Helper;
-using MetroFramework.Forms;
 using Microsoft.Data.ConnectionUI;
+using Taabus.Data;
 using Taabus.Properties;
-using Taabus.UserInterface;
 
-namespace Taabus
+namespace Taabus.UserInterface
 {
-    sealed class ProjectExplorerView : DumpableObject
+    sealed class ProjectExplorerView : MainView, IDragDropSource
     {
-        const int FrameSize = 10;
-        const int AppBarSize = 25;
-
-        readonly MetroForm _frame = new MetroForm();
-        readonly ToolStrip _toolbar = new ToolStrip();
         readonly TreeView _tree = new TreeView();
-        readonly UserInteraction[] _functions;
-        readonly ITaabusController _controller;
 
         Project _project;
 
         internal ProjectExplorerView(ITaabusController controller)
+            : base("Explorer", controller)
         {
-            _controller = controller;
-            _functions = new[]
-            {
+            AddFunction(
                 new UserInteraction("Open", OnOpen, Resources.appbar_folder_open),
                 new UserInteraction("New", OnNew, Resources.appbar_add),
                 new UserInteraction("Edit", OnEdit, Resources.appbar_edit, () => SelectedItem is Server),
                 new UserInteraction("Remove", OnRemove, Resources.appbar_delete, () => SelectedItem is Server),
                 new UserInteraction("Settings", OnConfiguration, Resources.appbar_settings)
-            };
-
-            _toolbar.Items.AddRange(_functions.Select(f => f.Button).ToArray());
-            _toolbar.Stretch = true;
+                );
 
             _tree.ImageList = Images.Instance;
+            _tree.AfterSelect += (s, e) => OnAfterSelect(Functions);
+            _tree.DragDrop += OnDragDrop;
+            Client = _tree;
 
-            var cs = _frame.ClientSize;
-            var ts = _toolbar.Size;
-            _toolbar.Location = new Point(cs.Width - ts.Width - FrameSize, AppBarSize);
-            var tl = _toolbar.Location;
-            _tree.Location = new Point(FrameSize, tl.Y + ts.Height);
-            _tree.Size = new Size(cs.Width - 2 * FrameSize, cs.Height - FrameSize - tl.Y - ts.Height);
-
-            _toolbar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            _tree.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-
-            _frame.SuspendLayout();
-            _frame.Name = "Taabus.Explorer";
-            _frame.ShadowType = MetroForm.MetroFormShadowType.DropShadow;
-            _frame.Controls.Add(_toolbar);
-            _frame.Controls.Add(_tree);
-            _frame.InstallPositionConfig();
-
-            _tree.AfterSelect += (s, e) => OnAfterSelect(_functions);
-            _tree.NodeMouseDoubleClick += (s, e) => Activate(e.Node);
-
-            _frame.Load += (s, e) => OnLoad();
-            _frame.Closed += (s, e) => OnClosed();
-            _frame.ResumeLayout();
         }
 
-        void Activate(TreeNode node)
-        {
-            var item = node.Tag as IControlledItem;
-            if(item != null)
-                _controller.OnActivate(item);
-        }
+        void OnDragDrop(object sender, DragEventArgs e) { NotImplementedMethod(sender, e); }
 
         NamedObject SelectedItem { get { return (NamedObject) _tree.SelectedNode.Tag; } }
         File LastFileNameFileHandle { get { return LastFileNameFileName.FileHandle(); } }
-        string LastFileNameFileName { get { return _frame.Name + ".lastFile"; } }
+        string LastFileNameFileName { get { return Name + ".lastFile"; } }
         ExpansionDescription[] ExpandedNodes { get { return ScanNodes(_tree.Nodes); } set { ScanNodes(_tree.Nodes, value); } }
-
-        internal void Run() { Application.Run(_frame); }
 
         string FileName
         {
@@ -127,6 +88,25 @@ namespace Taabus
             set { _tree.SelectedNode = PathWalk(value, _tree.Nodes, 0); }
         }
 
+        internal TreeView DragSource { get { return _tree; } }
+
+        protected override void OnLoad()
+        {
+            FileName = LastFileNameFileHandle.String;
+
+            if (FileName == null)
+                OnOpen();
+
+            if (FileName == null)
+                OnClosed();
+        }
+
+        protected override void OnClosed()
+        {
+            _project.Save(ExpandedNodes, SelectedPath);
+            base.OnClosed();
+        }
+
         void OnOpen()
         {
             var d = new OpenFileDialog
@@ -167,23 +147,6 @@ namespace Taabus
                 function.Refresh();
         }
 
-        void OnLoad()
-        {
-            FileName = LastFileNameFileHandle.String;
-
-            if(FileName == null)
-                OnOpen();
-
-            if(FileName == null)
-                _frame.Close();
-        }
-
-        void OnClosed()
-        {
-            _project.Save(ExpandedNodes, SelectedPath);
-            _controller.OnClosed();
-        }
-
         void OnFileNameChanged(string fileName)
         {
             var type = TaabusController.GetTypeFromFile(fileName);
@@ -207,7 +170,7 @@ namespace Taabus
             }
 
             SetLastFileNameConfig();
-            _frame.Text = _project == null ? "<no file>" : _project.Name;
+            Text = _project == null ? "<no file>" : _project.Name;
         }
 
         void OnChange(Server server)
@@ -282,5 +245,8 @@ namespace Taabus
             else if(LastFileNameFileHandle.Exists)
                 LastFileNameFileHandle.Delete();
         }
+
+        Control IDragDropSource.Control { get { return _tree; } }
+        IDragDropItem IDragDropSource.GetItemAt(Point point) { return _tree.GetNodeAt(point).Tag as IDragDropItem; }
     }
 }

@@ -20,26 +20,19 @@
 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Linq.Expressions;
 using hw.Debug;
-using hw.Forms;
-using Taabus.MetaData;
 
-namespace Taabus
+namespace Taabus.Data
 {
-    sealed class MemberItem : Item, IIconKeyProvider
+    sealed class ExpressionQuery : QueryBase
     {
-        [Node]
-        public readonly BasicType Type;
-        public MemberItem(TypeItem parent, Member metaData)
-            : base(parent.Parent, metaData.Name) { Type = metaData.Type; }
+        [EnableDump]
+        readonly Expression _expression;
 
-        [DisableDump]
-        public Field Field { get { return new Field {Name = Name, Type = Type}; } }
+        public ExpressionQuery(QueryProvider queryProvider, Expression expression)
+            : base(queryProvider) { _expression = expression; }
 
-        protected override Item[] GetItems() { return null; }
-        string IIconKeyProvider.IconKey { get { return Type.GetIconKey(); } }
+        internal override string CreateSQL() { return Provider.CreateSQL(_expression); }
     }
 }

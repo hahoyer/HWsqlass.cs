@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using hw.Debug;
+﻿using hw.Debug;
 using hw.Helper;
 using Taabus.MetaData;
 
-namespace Taabus
+namespace Taabus.Data
 {
     abstract class Item : NamedObject
     {

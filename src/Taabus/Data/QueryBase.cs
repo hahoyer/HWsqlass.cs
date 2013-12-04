@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 using hw.Debug;
 using hw.Helper;
 
-namespace Taabus
+namespace Taabus.Data
 {
     abstract class QueryBase : DumpableObject, IQueryable<DataRecord>
     {

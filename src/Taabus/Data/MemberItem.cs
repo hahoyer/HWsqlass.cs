@@ -20,36 +20,23 @@
 
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
 using hw.Debug;
-using hw.UnitTest;
+using hw.Forms;
+using Taabus.MetaData;
 
-namespace Taabus
+namespace Taabus.Data
 {
-    [TestFixture]
-    public sealed class NewTest
+    sealed class MemberItem : Item, IIconKeyProvider
     {
-        [Test]
-        public void KeySearch()
-        {
-            try
-            {
-                var server = new Server{DataSource = "ANNE\\OJB_NET"};
-                var dataBase = server
-                    .DataBases
-                    .Single(db => db.Name == "cwg_adsalesng_devtest");
+        [Node]
+        public readonly BasicType Type;
+        public MemberItem(TypeItem parent, Member metaData)
+            : base(parent.Parent, metaData.Name) { Type = metaData.Type; }
 
-                Tracer.AssertionFailed("");
-            }
-            catch(Exception exception)
-            {
-                Tracer.AssertionFailed("");
-                throw;
-            }
-        }
+        [DisableDump]
+        public Field Field { get { return new Field {Name = Name, Type = Type}; } }
+
+        protected override Item[] GetItems() { return null; }
+        string IIconKeyProvider.IconKey { get { return Type.GetIconKey(); } }
     }
-
 }

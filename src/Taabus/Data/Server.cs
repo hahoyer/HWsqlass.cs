@@ -8,7 +8,7 @@ using hw.Debug;
 using hw.Forms;
 using hw.Helper;
 
-namespace Taabus
+namespace Taabus.Data
 {
     public sealed class Server : NamedObject, ITreeNodeSupport, ITreeNodeProbeSupport, INodeNameProvider , IIconKeyProvider
     {

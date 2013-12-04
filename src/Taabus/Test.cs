@@ -7,6 +7,7 @@ using hw.Debug;
 using hw.Forms;
 using hw.Helper;
 using hw.UnitTest;
+using Taabus.Data;
 
 namespace Taabus
 {
@@ -195,15 +196,11 @@ JOIN sys.schemas AS s ON o.schema_id = s.schema_id
 JOIN sys.types AS t ON c.user_type_id = t.user_type_id
 ";
         [Test]
-        public void KeySearch()
+        public void ReadColumnInfo()
         {
             try
             {
                 var server = new Server { DataSource = "ANNE\\OJB_NET" };
-                var dataBase = server
-                    .DataBases
-                    .Single(db => db.Name == "cwg_adsalesng_devtest");
-
                 var x = server.Select(ColumnInfoStatement, ColumnInfo.Create);
             }
             catch(Exception exception)
@@ -213,6 +210,24 @@ JOIN sys.types AS t ON c.user_type_id = t.user_type_id
             }
         }
 
+        [Test]
+        public void KeySearch()
+        {
+            try
+            {
+                var server = new Server { DataSource = "ANNE\\OJB_NET" };
+                var dataBase = server
+                    .DataBases
+                    .Single(db => db.Name == "cwg_adsalesng_devtest");
+
+                Tracer.AssertionFailed("");
+            }
+            catch (Exception exception)
+            {
+                Tracer.AssertionFailed("");
+                throw;
+            }
+        }
         sealed class ColumnInfo
         {
             public string Name;

@@ -18,20 +18,20 @@ namespace Taabus.UserInterface
             _parent = parent;
             AutoSize = true;
             Text = item.Title;
-            Click += (s, e) => OnClick((MouseEventArgs) e);
             _itemFunctions = new[]
             {
                 new UserInteraction("Count", OnGetCount, text: "get count")
             };
+            ContextMenuStrip = CreateContextMenu();
         }
 
         void OnGetCount() { Text = _item.Title + " " + _item.Count.Format3Digits(); }
 
-        void OnClick(MouseEventArgs args)
+        ContextMenuStrip CreateContextMenu()
         {
             var menu = new ContextMenuStrip();
             menu.Items.AddRange(_itemFunctions.Select(f => f.MenuItem).ToArray());
-            menu.Show(this, args.X, args.Y);
+            return menu;
         }
     }
 }

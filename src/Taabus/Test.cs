@@ -32,7 +32,7 @@ namespace Taabus
                 Tracer.Assert(result.Any());
                 Tracer.Line(result[0].Dump());
             }
-            catch(Exception exception)
+            catch(Exception)
             {
                 Tracer.AssertionFailed("");
                 throw;
@@ -203,7 +203,7 @@ JOIN sys.types AS t ON c.user_type_id = t.user_type_id
                 var server = new Server { DataSource = "ANNE\\OJB_NET" };
                 var x = server.Select(ColumnInfoStatement, ColumnInfo.Create);
             }
-            catch(Exception exception)
+            catch(Exception)
             {
                 Tracer.AssertionFailed("");
                 throw;
@@ -222,7 +222,7 @@ JOIN sys.types AS t ON c.user_type_id = t.user_type_id
 
                 Tracer.AssertionFailed("");
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 Tracer.AssertionFailed("");
                 throw;

@@ -7,7 +7,7 @@ using Taabus.Properties;
 
 namespace Taabus.UserInterface
 {
-    sealed class WorkspaceView : MainView, IDragDropTarget
+    sealed class WorkspaceView : MainView, DragDropController.ITarget
     {
         readonly Panel _panel = new Panel();
 
@@ -19,14 +19,23 @@ namespace Taabus.UserInterface
         }
 
         static void OnConfiguration() { }
-        internal void Add(IControlledItem item) { _panel.ThreadCallGuard(() => AddCard(item)); }
+        internal void Add(IControlledItem item, Point location) { _panel.ThreadCallGuard(() => AddCard(item, location)); }
 
-        void AddCard(IControlledItem item)
+        void AddCard(IControlledItem item, Point? location = null)
         {
             var control = CreateCard(item);
-            var rectangle = FindPosition(control.Size, _panel.Controls._().Select(c => new Rectangle(c.Location, c.Size)).ToArray());
-            control.Location = rectangle.Location;
+            control.Location = location ?? DefaultLocation(control);
             _panel.Controls.Add(control);
+        }
+
+        Point DefaultLocation(Control control)
+        {
+            var regions = _panel
+                .Controls
+                ._()
+                .Select(c => new Rectangle(c.Location, c.Size))
+                .ToArray();
+            return FindPosition(control.Size, regions).Location;
         }
 
         static Rectangle FindPosition(Size size, Rectangle[] regions)
@@ -40,11 +49,14 @@ namespace Taabus.UserInterface
 
         Control CreateCard(IControlledItem item) { return new CardView(this, item); }
 
-        Control IDragDropTarget.Control { get { return _panel; } }
-        void IDragDropTarget.Drop(IDragDropItem item)
+        Control DragDropController.ITarget.Control { get { return _panel; } }
+
+        void DragDropController.ITarget.Drop(DragDropController.IItem item, Point location) { Add(item as IControlledItem, location); }
+
+        bool Contains(Point point, Region region)
         {
-            var i = item as IControlledItem;
-            Add(i);
+            NotImplementedMethod(point, region);
+            return true;
         }
     }
 }

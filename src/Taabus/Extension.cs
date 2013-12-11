@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -32,7 +33,7 @@ namespace Taabus
             {
                 return function();
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 return default(T);
             }
@@ -62,7 +63,7 @@ namespace Taabus
                 {
                     tcs.SetResult(func());
                 }
-                catch (Exception e)
+                catch(Exception e)
                 {
                     tcs.SetException(e);
                 }
@@ -86,33 +87,60 @@ namespace Taabus
         const int ShiftKey = 4;
         const int AltKey = 32;
         const int ControlKey = 8;
-        static int LeftMouseButton = 1;
-        static int RightMouseButton = 2;
-        static int MiddleMouseButton = 16;
+        const int LeftMouseButton = 1;
+        const int RightMouseButton = 2;
+        const int MiddleMouseButton = 16;
 
-
-        internal static bool SetEffect(this DragEventArgs e, bool isValid, DragDropEffects defaultEffect)
+        internal static bool SetEffect<T>(this DragEventArgs e, Func<T, bool> getIsValid, DragDropEffects defaultEffect)
         {
-            if(!isValid)
-                e.Effect = DragDropEffects.None;
-            else if (e.KeyState.Has(AltKey) && e.AllowedEffect.HasFlag(DragDropEffects.Link))
-                e.Effect = DragDropEffects.Link;
-            else if(e.KeyState.Has(ShiftKey) && e.AllowedEffect.HasFlag(DragDropEffects.Move))
-                e.Effect = DragDropEffects.Move;
-            else if(e.KeyState.Has(ControlKey) && e.AllowedEffect.HasFlag(DragDropEffects.Copy))
-                e.Effect = DragDropEffects.Copy;
-            else if(e.AllowedEffect.HasFlag(defaultEffect))
-                e.Effect = defaultEffect;
-            else
-                e.Effect = DragDropEffects.None;
+            e.Effect = Effect(e, getIsValid, defaultEffect);
             return e.Effect != DragDropEffects.None;
         }
+
+        static DragDropEffects Effect<T>(DragEventArgs e, Func<T, bool> getIsValid, DragDropEffects defaultEffect)
+        {
+            if(e.IsValid(getIsValid))
+            {
+                if(e.KeyState.Has(AltKey) && e.AllowedEffect.HasFlag(DragDropEffects.Link))
+                    return DragDropEffects.Link;
+                if(e.KeyState.Has(ShiftKey) && e.AllowedEffect.HasFlag(DragDropEffects.Move))
+                    return DragDropEffects.Move;
+                if(e.KeyState.Has(ControlKey) && e.AllowedEffect.HasFlag(DragDropEffects.Copy))
+                    return DragDropEffects.Copy;
+                if(e.AllowedEffect.HasFlag(defaultEffect))
+                    return defaultEffect;
+            }
+
+            return DragDropEffects.None;
+        }
+
+        internal static bool IsValid<T>(this DragEventArgs e, Func<T, bool> getIsValid)
+        {
+            return e.Data.GetDataPresent(typeof(T))
+                && getIsValid((T) e.Data.GetData(typeof(T)));
+        }
+
         internal static bool SetEffectCopy(this DragEventArgs e, bool isValid)
         {
             Tracer.Assert(e.AllowedEffect == DragDropEffects.Copy);
 
             e.Effect = isValid && e.KeyState.Has(ControlKey) ? DragDropEffects.Copy : DragDropEffects.None;
             return e.Effect != DragDropEffects.None;
+        }
+
+        internal static Bitmap AsBitmap(this Control c)
+        {
+            var result = new Bitmap(c.Width, c.Height);
+            c.DrawToBitmap(result, new Rectangle(0, 0, c.Width, c.Height));
+            return result;
+        }
+
+        internal static Cursor ToCursor(this Control control, Point? hotSpot = null)
+        {
+            var iconInfo = new CursorUtil.IconInfo(control.AsBitmap());
+            if(hotSpot != null)
+                iconInfo.HotSpot = hotSpot.Value;
+            return iconInfo.Cursor;
         }
     }
 }

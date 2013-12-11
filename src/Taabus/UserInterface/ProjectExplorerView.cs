@@ -12,9 +12,10 @@ using Taabus.Properties;
 
 namespace Taabus.UserInterface
 {
-    sealed class ProjectExplorerView : MainView, IDragDropSource
+    sealed class ProjectExplorerView : MainView, DragDropController.ISource
     {
         readonly TreeView _tree = new TreeView();
+        readonly DragDropController _dragDropController;
 
         Project _project;
 
@@ -33,8 +34,12 @@ namespace Taabus.UserInterface
             _tree.AfterSelect += (s, e) => OnAfterSelect(Functions);
             _tree.DragDrop += OnDragDrop;
             Client = _tree;
-
+            _dragDropController = new DragDropController(this);
         }
+
+        Control DragDropController.ISource.Control { get { return _tree; } }
+        DragDropController.IItem DragDropController.ISource.GetItemAt(Point point) { return _tree.GetNodeAt(point).Tag as DragDropController.IItem; }
+        Size DragDropController.ISource.GetDisplacementAt(Point point) { return new Size(0, 0); }
 
         void OnDragDrop(object sender, DragEventArgs e) { NotImplementedMethod(sender, e); }
 
@@ -70,7 +75,7 @@ namespace Taabus.UserInterface
             get
             {
                 var current = SelectedServer;
-                return _project.Servers.IndexOf(s => s == current) ?? _project.Servers.Count();
+                return _project.Servers.IndexWhere(s => s == current) ?? _project.Servers.Count();
             }
         }
 
@@ -94,10 +99,10 @@ namespace Taabus.UserInterface
         {
             FileName = LastFileNameFileHandle.String;
 
-            if (FileName == null)
+            if(FileName == null)
                 OnOpen();
 
-            if (FileName == null)
+            if(FileName == null)
                 OnClosed();
         }
 
@@ -246,7 +251,6 @@ namespace Taabus.UserInterface
                 LastFileNameFileHandle.Delete();
         }
 
-        Control IDragDropSource.Control { get { return _tree; } }
-        IDragDropItem IDragDropSource.GetItemAt(Point point) { return _tree.GetNodeAt(point).Tag as IDragDropItem; }
+        public void AddDropSite(DragDropController.ITarget target) { _dragDropController.Add(target); }
     }
 }

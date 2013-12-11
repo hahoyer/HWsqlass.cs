@@ -46,7 +46,7 @@ namespace Taabus.MetaData
                 .Select
                 (kc => kc
                     .Columns
-                    .Select(kccn => Members.IndexOf(m => m.Name == kccn.Column.name).AssertValue())
+                    .Select(kccn => Members.IndexWhere(m => m.Name == kccn.Column.name).AssertValue())
                     .ToArray()
                 )
                 .ToArray();

@@ -87,7 +87,7 @@ namespace Taabus.Data
 
             return type
                 .Members
-                .IndexOf(m => m.Name == keyConstraint.Index.Columns[0].Column.name)
+                .IndexWhere(m => m.Name == keyConstraint.Index.Columns[0].Column.name)
                 .AssertValue();
         }
 

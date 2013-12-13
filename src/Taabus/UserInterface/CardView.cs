@@ -23,25 +23,25 @@ namespace Taabus.UserInterface
             Text = item.Title;
             _itemFunctions = new[]
             {
-                new UserInteraction("Count", OnGetCount, text: "get count")
+                new UserInteraction("Count", OnGetCount, text: "count"),
+                new UserInteraction("Table", OnShowTable, text: "table"),
             };
-            
+
             ContextMenuStrip = CreateContextMenu();
-        
+
             _dragDropController = new DragDropController(this)
             {
-                IsMove = true     ,
+                IsMove = true,
                 HasCopy = true
             };
-            
+
             _dragDropController.Add(parent);
         }
+        
 
         Control DragDropController.ISource.Control { get { return this; } }
         DragDropController.IItem DragDropController.ISource.GetItemAt(Point point) { return _item; }
         Size DragDropController.ISource.GetDisplacementAt(Point point) { return new Size(point); }
-        
-        void OnGetCount() { Text = _item.Title + " " + _item.Count.Format3Digits(); }
 
         ContextMenuStrip CreateContextMenu()
         {
@@ -49,5 +49,8 @@ namespace Taabus.UserInterface
             menu.Items.AddRange(_itemFunctions.Select(f => f.MenuItem).ToArray());
             return menu;
         }
+
+        void OnShowTable() { _parent.CallAddTable(_item, new Rectangle(Location,Size)); }
+        void OnGetCount() { Text = _item.Title + " " + _item.Count.Format3Digits(); }
     }
 }

@@ -19,12 +19,23 @@ namespace Taabus.UserInterface
         }
 
         static void OnConfiguration() { }
-        internal void Add(IControlledItem item, Point location) { _panel.ThreadCallGuard(() => AddCard(item, location)); }
+        internal void CallAddCard(IControlledItem item, Point? location = null) { _panel.ThreadCallGuard(() => AddCard(item, location)); }
+        internal void CallAddTable(IControlledItem item, Rectangle itemRectangle) { _panel.ThreadCallGuard(() => AddTable(item, itemRectangle)); }
 
         void AddCard(IControlledItem item, Point? location = null)
         {
-            var control = CreateCard(item);
+            var control = new CardView(this, item);
             control.Location = location ?? DefaultLocation(control);
+            _panel.Controls.Add(control);
+        }
+
+        void AddTable(IControlledItem item, Rectangle itemRectangle)
+        {
+            var control = new TableView(this, item)
+            {
+                Location = new Point(itemRectangle.X, (int) (itemRectangle.Bottom + itemRectangle.Height * 0.5)), 
+                Size = new Size(itemRectangle.Width * 3, itemRectangle.Height * 10)
+            };
             _panel.Controls.Add(control);
         }
 
@@ -47,16 +58,16 @@ namespace Taabus.UserInterface
             return result;
         }
 
-        Control CreateCard(IControlledItem item) { return new CardView(this, item); }
-
         Control DragDropController.ITarget.Control { get { return _panel; } }
 
-        void DragDropController.ITarget.Drop(DragDropController.IItem item, Point location) { Add(item as IControlledItem, location); }
+        void DragDropController.ITarget.Drop(DragDropController.IItem item, Point location) { CallAddCard(item as IControlledItem, location); }
 
         bool Contains(Point point, Region region)
         {
             NotImplementedMethod(point, region);
             return true;
         }
+
     }
+
 }

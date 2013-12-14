@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
@@ -39,6 +40,8 @@ namespace Taabus.Data
 
         string IControlledItem.Title { get { return Name; } }
         long IControlledItem.Count { get { return Data.Count(); } }
+        IEnumerable<IDataColumn> IControlledItem.Columns { get { return Members; } }
+        IEnumerable<DataRecord> IControlledItem.Data { get { return Data; } }
 
         IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes() { return CreateNodesYield(); }
         bool ITreeNodeProbeSupport.IsEmpty { get { return false; } }
@@ -149,7 +152,8 @@ namespace Taabus.Data
         public TypeQuery(Server server, string tableName)
             : base(new QueryProvider(server)) { _tableName = tableName; }
 
-        internal override string CreateSQL() { return _tableName; }
+        protected override string ExecutableStatement { get { return "select * from "+base.ExecutableStatement; } }
+        internal override string SubStatement { get { return _tableName; } }
     }
 
     sealed class DataItem

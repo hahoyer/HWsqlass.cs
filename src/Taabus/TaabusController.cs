@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using hw.Forms;
+using Taabus.Data;
 using Taabus.UserInterface;
 
 namespace Taabus
@@ -70,5 +70,12 @@ namespace Taabus
     {
         string Title { get; }
         long Count { get; }
+        IEnumerable<IDataColumn> Columns { get; }
+        IEnumerable<DataRecord> Data { get; }
+    }
+
+    interface IDataColumn
+    {
+        string Name { get; }
     }
 }

@@ -8,12 +8,11 @@ using MetroFramework.Controls;
 
 namespace Taabus.UserInterface
 {
-    sealed class CardView : MetroButton, DragDropController.ISource
+    sealed class CardView : MetroButton
     {
         readonly UserInteraction[] _itemFunctions;
         readonly IControlledItem _item;
         readonly WorkspaceView _parent;
-        readonly DragDropController _dragDropController;
 
         internal CardView(WorkspaceView parent, IControlledItem item)
         {
@@ -28,21 +27,8 @@ namespace Taabus.UserInterface
             };
 
             ContextMenuStrip = CreateContextMenu();
-
-            _dragDropController = new DragDropController(this)
-            {
-                IsMove = true,
-                HasCopy = true
-            };
-
-            _dragDropController.Add(parent);
         }
         
-
-        Control DragDropController.ISource.Control { get { return this; } }
-        DragDropController.IItem DragDropController.ISource.GetItemAt(Point point) { return _item; }
-        Size DragDropController.ISource.GetDisplacementAt(Point point) { return new Size(point); }
-
         ContextMenuStrip CreateContextMenu()
         {
             var menu = new ContextMenuStrip();

@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using hw.Debug;
+using hw.Forms;
 using hw.Helper;
 
 namespace Taabus.UserInterface
@@ -27,17 +28,8 @@ namespace Taabus.UserInterface
             _source.Control.MouseMove += (s, e) => OnSourceMouseMove(e);
         }
 
-        void Point(MouseEventArgs e)
-        {
-            _sourcePoint = new Point(e.X, e.Y);
-            Tracer.FlaggedLine(_source.GetType().Name + " " + e.X + " " + e.Y);
-        }
-
-        void Point()
-        {
-            _sourcePoint = null;
-            Tracer.FlaggedLine(_source.GetType().Name + " " + "null");
-        }
+        void Point(MouseEventArgs e) { _sourcePoint = new Point(e.X, e.Y); }
+        void Point() { _sourcePoint = null; }
 
         internal void Add(ITarget target)
         {
@@ -63,7 +55,7 @@ namespace Taabus.UserInterface
         {
             get
             {
-                if (_sourcePoint == null)
+                if(_sourcePoint == null)
                     return default(Size);
                 return _source.GetDisplacementAt(_sourcePoint.Value);
             }
@@ -133,16 +125,16 @@ namespace Taabus.UserInterface
 
         TargetPoint FindTargetPoint(object sender, DragEventArgs e)
         {
-            if (!e.SetEffect<int>(id => id == _objectId, DefaultEffects))
+            if(!e.SetEffect<int>(id => id == _objectId, DefaultEffects))
                 return null;
 
-            if ((AllowedEffects & e.Effect) == 0)
+            if((AllowedEffects & e.Effect) == 0)
                 return null;
 
             var target = _targets.Single(t => t.Control == sender);
             return new TargetPoint
             {
-                Displacement = target.Control.PointToClient(new Point(e.X, e.Y)), 
+                Displacement = target.Control.PointToClient(new Point(e.X, e.Y)),
                 Target = target
             };
         }
@@ -150,7 +142,7 @@ namespace Taabus.UserInterface
         void OnTargetDragDrop(object sender, DragEventArgs e)
         {
             var targetPoint = FindTargetPoint(sender, e);
-            if (targetPoint == null)
+            if(targetPoint == null)
                 return;
             Tracer.FlaggedLine(Tracer.Dump(targetPoint.Displacement));
             targetPoint.Target.Drop(Item, targetPoint.Displacement - Displacement);

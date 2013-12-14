@@ -12,12 +12,12 @@ namespace Taabus.Data
     abstract class QueryBase : DumpableObject, IQueryable<DataRecord>
     {
         protected readonly QueryProvider Provider;
-        readonly ValueCache<string> _sqlCache;
+        readonly ValueCache<string> _statementCache;
 
         protected QueryBase(QueryProvider provider)
         {
             Provider = provider;
-            _sqlCache = new ValueCache<string>(CreateSQL);
+            _statementCache = new ValueCache<string>(()=>SubStatement);
         }
 
         IEnumerator<DataRecord> IEnumerable<DataRecord>.GetEnumerator() { return GetEnumerator(); }
@@ -26,7 +26,7 @@ namespace Taabus.Data
         Expression IQueryable.Expression { get { return Expression.Constant(this); } }
         Type IQueryable.ElementType { get { return typeof(DataRecord); } }
         IQueryProvider IQueryable.Provider { get { return Provider; } }
-        public ValueCache<string> SQLCache { get { return _sqlCache; } }
+        public ValueCache<string> StatementCache { get { return _statementCache; } }
 
         IEnumerator<DataRecord> GetEnumerator() { return new Enumerator(this); }
 
@@ -66,9 +66,16 @@ namespace Taabus.Data
             DataRecord Current { get { return new DataRecord((DbDataRecord) _position.Current); } }
         }
 
-        DbDataReader CreateReader() { return Provider.Server.ToDataReader(_sqlCache.Value); }
+        DbDataReader CreateReader()
+        {
+            var statement = ExecutableStatement;
+            Tracer.Assert(statement.StartsWith("select "));
+            return Provider.Server.ToDataReader(statement);
+        }
 
-        internal abstract string CreateSQL();
+        virtual protected string ExecutableStatement { get { return _statementCache.Value; } }
+
+        internal abstract string SubStatement { get; }
     }
 
     [AttributeUsage(AttributeTargets.Method)]

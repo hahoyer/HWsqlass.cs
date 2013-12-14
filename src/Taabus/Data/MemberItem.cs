@@ -26,7 +26,7 @@ using Taabus.MetaData;
 
 namespace Taabus.Data
 {
-    sealed class MemberItem : Item, IIconKeyProvider
+    sealed class MemberItem : Item, IIconKeyProvider, IDataColumn
     {
         [Node]
         public readonly BasicType Type;
@@ -38,5 +38,6 @@ namespace Taabus.Data
 
         protected override Item[] GetItems() { return null; }
         string IIconKeyProvider.IconKey { get { return Type.GetIconKey(); } }
+        string IDataColumn.Name{ get { return Name; } }
     }
 }

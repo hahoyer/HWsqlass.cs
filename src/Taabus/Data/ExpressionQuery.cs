@@ -33,6 +33,6 @@ namespace Taabus.Data
         public ExpressionQuery(QueryProvider queryProvider, Expression expression)
             : base(queryProvider) { _expression = expression; }
 
-        internal override string CreateSQL() { return Provider.CreateSQL(_expression); }
+        internal override string SubStatement { get { return Provider.CreateSQL(_expression); } }
     }
 }

@@ -123,7 +123,7 @@ namespace Taabus.Data
 
             var typeQuery = expression.Value as TypeQuery;
             if(typeQuery != null)
-                return typeQuery.CreateSQL();
+                return typeQuery.SubStatement;
 
             NotImplementedMethod(result, expression);
             return null;

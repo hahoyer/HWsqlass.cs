@@ -38,6 +38,7 @@ namespace Taabus.UserInterface
                 Size = new Size(itemRectangle.Width * 3, itemRectangle.Height * 10)
             };
             _panel.Controls.Add(control);
+            control.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCellsExceptHeader);
         }
 
         Point DefaultLocation(Control control)

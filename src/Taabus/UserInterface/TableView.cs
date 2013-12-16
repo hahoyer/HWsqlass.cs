@@ -1,45 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using hw.Debug;
-using hw.Forms;
-using MetroFramework;
-using MetroFramework.Controls;
-using MetroFramework.Drawing;
+using Taabus.Data;
 
 namespace Taabus.UserInterface
 {
-    sealed class TableView : MetroPanel
+    sealed class TableView : DataGridView
     {
-        static readonly Size _gripSize = new Size(5,5);
-        readonly WorkspaceView _parent;
-        readonly IControlledItem _item;
-
-        readonly TableGridView _grid;
-
-        internal TableView(WorkspaceView parent, IControlledItem item)
+        public TableView(WorkspaceView workspace, IControlledItem item)
         {
-            _parent = parent;
-            _item = item;
+            AllowUserToAddRows = false;
+            AllowUserToDeleteRows = false;
+            RowHeadersVisible = false;
 
-            _grid = new TableGridView(_item);
-            _grid.Anchor = AnchorStyles.Top | AnchorStyles.Left ;
+            Columns.Add(CreateColumn("#"));
+            Columns[0].Frozen = true;
+            Columns.AddRange(item.Columns.Select(CreateColumn).ToArray());
+            Rows.AddRange(item.Data.Select(CreateRow).ToArray());
+        }
 
-            var p = new MetroPanel();
-            p.Location = new Point(_gripSize);
-            p.Size = Size - _gripSize - _gripSize;
-            p.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            p.BorderStyle = MetroBorderStyle.FixedSingle;
+        static DataGridViewTextBoxColumn CreateColumn(string name)
+        {
+            return new DataGridViewTextBoxColumn
+            {
+                Name = name
+            };
+        }
 
-            _grid.Dock = DockStyle.Fill;
-            p.Controls.Add(_grid);
-            p.Name = "TableContainer";
+        static DataGridViewRow CreateRow(DataRecord record, int index)
+        {
+            var result = new DataGridViewRow();
+            result.Cells.Add(CreateCell(index));
+            result.Cells.AddRange(record.Values.Select(CreateCell).ToArray());
+            return result;
+        }
 
-            Controls.Add(p);
-            Name = "TableView";
-            BorderStyle = MetroBorderStyle.FixedSingle;
+        static DataGridViewCell CreateCell(DataItem arg) { return CreateCell(arg.Value); }
+
+        static DataGridViewCell CreateCell(object value)
+        {
+            return new DataGridViewTextBoxCell
+            {
+                Value = value,
+            };
+        }
+
+        static DataGridViewColumn CreateColumn(IDataColumn dataColumn)
+        {
+            var result = CreateColumn(dataColumn.Name);
+            result.Name = dataColumn.Name;
+            return result;
         }
     }
 }

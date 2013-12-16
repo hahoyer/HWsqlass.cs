@@ -143,9 +143,6 @@
     <Compile Include="UserInterface\Images.Designer.cs">
       <DependentUpon>Images.cs</DependentUpon>
     </Compile>
-    <Compile Include="UserInterface\TableGridView.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="UserInterface\TableView.cs">
       <SubType>Component</SubType>
     </Compile>

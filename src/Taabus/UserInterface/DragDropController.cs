@@ -115,13 +115,6 @@ namespace Taabus.UserInterface
                 e.Action = DragAction.Cancel;
         }
 
-        void OnTargetDragOver(object sender, DragEventArgs e)
-        {
-            var targetPoint = FindTargetPoint(sender, e);
-            if(targetPoint == null)
-                return;
-            Tracer.FlaggedLine(Tracer.Dump(targetPoint.Displacement));
-        }
 
         TargetPoint FindTargetPoint(object sender, DragEventArgs e)
         {
@@ -148,6 +141,7 @@ namespace Taabus.UserInterface
             targetPoint.Target.Drop(Item, targetPoint.Displacement - Displacement);
         }
 
+        void OnTargetDragOver(object sender, DragEventArgs e) { FindTargetPoint(sender, e); }
         static void OnTargetDragEnter(DragEventArgs e) { Tracer.FlaggedLine(e.X + " : " + e.Y); }
         static void OnTargetDragLeave(EventArgs e) { Tracer.FlaggedLine(e.GetType().PrettyName()); }
 

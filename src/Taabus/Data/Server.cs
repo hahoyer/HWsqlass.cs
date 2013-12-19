@@ -10,6 +10,7 @@ using hw.Helper;
 
 namespace Taabus.Data
 {
+    [Serializer.Class]
     public sealed class Server : NamedObject, ITreeNodeSupport, ITreeNodeProbeSupport, INodeNameProvider , IIconKeyProvider
     {
         const string SelectDatabases = "select name from master.sys.databases";
@@ -27,6 +28,7 @@ namespace Taabus.Data
 
         internal DataBase[] DataBases { get { return _dataBasesCache.Value; } }
 
+        [Serializer.Member]
         public string ConnectionString
         {
             get { return _connectionString; }

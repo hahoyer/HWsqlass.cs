@@ -1,57 +1,13 @@
 ﻿<#@ template language="C#" #>
-<#@ assembly name="System.Core" #>
-<#@ import namespace="System.Linq" #>
-<#@ import namespace="System.Text" #>
-<#@ import namespace="System.Collections.Generic" #>
 <#@import namespace="hw.Helper" #>
-<#@import namespace="Taabus.UserInterface" #>
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Taabus;
-using Taabus.UserInterface;
-using Taabus.Data;
 
 public static class TaabusProject
 {
-    public static Project Project()
+    public static Taabus.TaabusProject Project()
     {
-        return new Project
-        {
-            Servers = new Server[]
-            {
-<#    foreach (var s in _project.Servers){ #>
-                new Server{ConnectionString = <#= s.ConnectionString.Quote() #>},
-<#    }#>
-            }
-        };
-    }
-
-    public static ExpansionDescription[] ExpansionDescriptions()
-    {
-        return <# Create(_expansionDescriptions); #>;
-    }
-
-    public static string[] Selection()
-    {
-        return new string[]{<#= _selection.Select(s=>s.Quote()).Stringify(",\n") #>};
+        return <#= Serialize().Indent(3) #>;
     }
 }
-<#+                                                                                                                  
-
-void Create(ExpansionDescription[] expansionDescriptions)
-{
-    #>new ExpansionDescription[]{<#+
-    foreach (var expansionDescription in expansionDescriptions)
-    {
-        #>
-        new ExpansionDescription
-        {
-            Id = <#= expansionDescription.Id.Quote() #>,
-            IsExpanded = <#= expansionDescription.IsExpanded?"true":"false" #>,
-            Nodes = <#+ Create(expansionDescription.Nodes); #>,
-        },<#+
-    }
-    #>}<#+
-}
-#>

@@ -10,6 +10,7 @@ using Taabus.UserInterface;
 
 namespace Taabus
 {
+    [Serializer.Class]
     public sealed class Project : NamedObject, ITreeNodeSupport, ITreeNodeProbeSupport, IIconKeyProvider
     {
         internal string FileName;
@@ -19,6 +20,7 @@ namespace Taabus
         string IIconKeyProvider.IconKey { get { return "Folder"; } }
 
         [DisableDump]
+        [Serializer.Member]
         public IEnumerable<Server> Servers = new Server[0];
 
         public override string Name { get { return ProjectName; } }
@@ -26,10 +28,16 @@ namespace Taabus
 
         internal void Save(ExpansionDescription[] expansionDescriptions, string[] selectedPath)
         {
-            FileName.FileHandle().String
-                = new Generator(this, expansionDescriptions, selectedPath).TransformText();
+            var generator = new Generator(new TaabusProject
+            {
+                Project = this, 
+                ExpansionDescriptions = expansionDescriptions, 
+                Selection = selectedPath
+            });
+            var transformText = generator.TransformText();
+            FileName.FileHandle().String = transformText;
         }
-       
+
         internal void InsertServer(Server server, int position)
         {
             Servers = Servers

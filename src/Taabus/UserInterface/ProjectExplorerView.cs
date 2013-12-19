@@ -129,7 +129,7 @@ namespace Taabus.UserInterface
                 return;
             var newFile = d.FileName.FileHandle();
             if(!newFile.Exists)
-                newFile.String = new Generator().TransformText();
+                newFile.String = Generator.CreateEmptyProject();
             FileName = d.FileName;
         }
 
@@ -154,22 +154,22 @@ namespace Taabus.UserInterface
 
         void OnFileNameChanged(string fileName)
         {
-            var type = TaabusController.GetTypeFromFile(fileName);
+            var project = TaabusController.GetTypeFromFile(fileName);
 
-            if(type == null)
+            if(project == null)
                 _project = null;
             else
             {
-                _project = type.Invoke<Project>("Project");
+                _project = project.Project;
                 _project.FileName = fileName.FileHandle().FullName;
             }
 
             _tree.Connect(_project);
-            if(type != null)
+            if(project != null)
             {
-                Profiler.Frame(() => ExpandedNodes = type.Invoke<ExpansionDescription[]>("ExpansionDescriptions"));
+                Profiler.Frame(() => ExpandedNodes = project.ExpansionDescriptions);
                 _tree.TopNode = Profiler.Measure(() => _tree.Nodes._().FirstOrDefault());
-                SelectedPath = type.Invoke<string[]>("Selection") ?? new string[0];
+                SelectedPath = project.Selection ?? new string[0];
                 if(_tree.SelectedNode != null)
                     _tree.SelectedNode.EnsureVisible();
             }

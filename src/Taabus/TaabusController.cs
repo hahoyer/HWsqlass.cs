@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using hw.Helper;
 using Taabus.Data;
 using Taabus.UserInterface;
 
@@ -23,13 +24,14 @@ namespace Taabus
             Application.Run(this);
         }
 
-        internal static Type GetTypeFromFile(string fileName)
+        internal static TaabusProject GetTypeFromFile(string fileName)
         {
             if(fileName == null)
                 return null;
             return fileName
                 .CreateAssemblyFromFile()
-                .GetType(typeof(TaabusProject).Name);
+                .GetType(typeof(TaabusProject).Name)
+                .Invoke<TaabusProject>("Project");
         }
 
         ProjectExplorerView Explorer

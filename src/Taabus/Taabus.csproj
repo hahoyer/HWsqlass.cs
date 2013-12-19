@@ -87,6 +87,7 @@
     <Compile Include="hw\Helper\ValueCache.cs" />
     <Compile Include="hw\JetBrainsAnnotations.cs" />
     <Compile Include="hw\UnitTest\CategoryAttribute.cs" />
+    <Compile Include="Serializer.cs" />
     <Compile Include="UserInterface\CardView.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -3,12 +3,16 @@ using hw.Debug;
 
 namespace Taabus.UserInterface
 {
+    [Serializer.Class]
     public sealed class ExpansionDescription
     {
         string _id;
+        [Serializer.Member]
         public bool IsExpanded;
+        [Serializer.Member]
         public ExpansionDescription[] Nodes;
 
+        [Serializer.Member]
         public string Id
         {
             get { return _id; }

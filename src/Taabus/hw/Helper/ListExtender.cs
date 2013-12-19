@@ -294,7 +294,7 @@ namespace hw.Helper
             }
         }
 
-        internal static bool In(this string a, params string[] b) { return b.Contains(a); }
+        internal static bool In<T>(this T a, params T[] b) { return b.Contains(a); }
 
         internal static IEnumerable<T> SelectHierachical<T>(this T root, Func<T, IEnumerable<T>> getChildren)
         {

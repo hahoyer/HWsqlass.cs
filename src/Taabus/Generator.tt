@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public static class TaabusProject
+public static class V13
 {
-    public static Taabus.TaabusProject Project()
+    public static Taabus.Configuration Data()
     {
         return <#= Serialize().Indent(3) #>;
     }

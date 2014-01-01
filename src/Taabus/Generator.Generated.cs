@@ -7,9 +7,6 @@
 //     the code is regenerated.
 // </auto-generated>
 // ------------------------------------------------------------------------------
-
-using System.CodeDom.Compiler;
-
 namespace Taabus
 {
     using hw.Helper;
@@ -20,7 +17,7 @@ namespace Taabus
     /// </summary>
     
     #line 1 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
-    [GeneratedCode("Microsoft.VisualStudio.TextTemplating", "12.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "12.0.0.0")]
     public partial class Generator : GeneratorBase
     {
 #line hidden
@@ -30,8 +27,8 @@ namespace Taabus
         public virtual string TransformText()
         {
             this.Write("using System;\r\nusing System.Collections.Generic;\r\nusing System.Linq;\r\n\r\npublic st" +
-                    "atic class TaabusProject\r\n{\r\n    public static Taabus.TaabusProject Project()\r\n " +
-                    "   {\r\n        return ");
+                    "atic class V13\r\n{\r\n    public static Taabus.Configuration Data()\r\n    {\r\n       " +
+                    " return ");
             
             #line 11 "A:\develop\HWsqlass\dev\src\Taabus\Generator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Serialize().Indent(3)));

@@ -9,7 +9,7 @@ using MetroFramework.Forms;
 
 namespace Taabus.UserInterface
 {
-    abstract class MainView : DumpableObject
+    public abstract class MainView : DumpableObject
     {
         const int FrameSize = 10;
         const int AppBarSize = 25;
@@ -30,12 +30,12 @@ namespace Taabus.UserInterface
             _frame.ShadowType = MetroForm.MetroFormShadowType.DropShadow;
             _frame.Controls.Add(_toolbar);
             _frame.InstallPositionConfig();
-            _frame.Closed += (s, e) => OnClosed();
-            _frame.Load += (s, e) => OnLoad();
+            _frame.FormClosed += (s, e) => OnClose();
             _frame.ResumeLayout();
         }
+        void OnClose() { _controller.Exit(); }
 
-        protected virtual void OnLoad() {  }
+        internal abstract void Reload();
 
         internal void AddFunction(params UserInteraction[] functions)
         {
@@ -95,6 +95,5 @@ namespace Taabus.UserInterface
 
         internal void Show() { _frame.Show(); }
 
-        protected virtual void OnClosed() { _controller.Exit(); }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using hw.Debug;
 using hw.Forms;
 using hw.Helper;
 using Microsoft.Data.ConnectionUI;
@@ -14,14 +13,15 @@ namespace Taabus.UserInterface
 {
     sealed class ProjectExplorerView : MainView, DragDropController.ISource
     {
+        readonly ITaabusController _controller;
         readonly TreeView _tree = new TreeView();
         readonly DragDropController _dragDropController;
-
         Project _project;
 
         internal ProjectExplorerView(ITaabusController controller)
             : base("Explorer", controller)
         {
+            _controller = controller;
             AddFunction(
                 new UserInteraction("Open", OnOpen, Resources.appbar_folder_open),
                 new UserInteraction("New", OnNew, Resources.appbar_add),
@@ -31,12 +31,13 @@ namespace Taabus.UserInterface
                 );
 
             _tree.ImageList = Images.Instance;
-            _tree.AfterSelect += (s, e) => OnAfterSelect(Functions);
+            _tree.AfterSelect += (s, e) => OnAfterSelect();
             _tree.DragDrop += OnDragDrop;
+            _tree.AfterCollapse += (s, e) => OnCollapse();
+            _tree.AfterExpand += (s, e) => OnExpand();
             Client = _tree;
             _dragDropController = new DragDropController(this);
         }
-
         Control DragDropController.ISource.Control { get { return _tree; } }
         DragDropController.IItem DragDropController.ISource.GetItemAt(Point point) { return _tree.GetNodeAt(point).Tag as DragDropController.IItem; }
         Size DragDropController.ISource.GetDisplacementAt(Point point) { return new Size(0, 0); }
@@ -44,19 +45,7 @@ namespace Taabus.UserInterface
         void OnDragDrop(object sender, DragEventArgs e) { NotImplementedMethod(sender, e); }
 
         NamedObject SelectedItem { get { return (NamedObject) _tree.SelectedNode.Tag; } }
-        File LastFileNameFileHandle { get { return LastFileNameFileName.FileHandle(); } }
-        string LastFileNameFileName { get { return Name + ".lastFile"; } }
         ExpansionDescription[] ExpandedNodes { get { return ScanNodes(_tree.Nodes); } set { ScanNodes(_tree.Nodes, value); } }
-
-        string FileName
-        {
-            get { return _project == null ? null : _project.FileName; }
-            set
-            {
-                if(FileName != value)
-                    OnFileNameChanged(value);
-            }
-        }
 
         Server SelectedServer
         {
@@ -95,44 +84,7 @@ namespace Taabus.UserInterface
 
         internal TreeView DragSource { get { return _tree; } }
 
-        protected override void OnLoad()
-        {
-            FileName = LastFileNameFileHandle.String;
-
-            if(FileName == null)
-                OnOpen();
-
-            if(FileName == null)
-                OnClosed();
-        }
-
-        protected override void OnClosed()
-        {
-            _project.Save(ExpandedNodes, SelectedPath);
-            base.OnClosed();
-        }
-
-        void OnOpen()
-        {
-            var d = new OpenFileDialog
-            {
-                Title = "Taabus project file",
-                RestoreDirectory = true,
-                InitialDirectory = FileName == null ? "." : FileName.FileHandle().DirectoryName,
-                FileName = FileName == null ? null : FileName.FileHandle().Name,
-                Filter = "Taabus files|*.taabus|All files|*.*",
-                CheckFileExists = false,
-                FilterIndex = 2
-            };
-
-            if(d.ShowDialog() != DialogResult.OK)
-                return;
-            var newFile = d.FileName.FileHandle();
-            if(!newFile.Exists)
-                newFile.String = Generator.CreateEmptyProject();
-            FileName = d.FileName;
-        }
-
+        void OnOpen() { _controller.OnOpen(); }
         void OnNew() { EditServer(null); }
         void OnEdit() { EditServer(SelectedServer); }
 
@@ -146,37 +98,15 @@ namespace Taabus.UserInterface
 
         static void OnConfiguration() { }
 
-        static void OnAfterSelect(IEnumerable<UserInteraction> functions)
+        void OnAfterSelect()
         {
-            foreach(var function in functions)
+            foreach(var function in Functions)
                 function.Refresh();
+            _controller.Selection = SelectedPath;
         }
 
-        void OnFileNameChanged(string fileName)
-        {
-            var project = TaabusController.GetTypeFromFile(fileName);
-
-            if(project == null)
-                _project = null;
-            else
-            {
-                _project = project.Project;
-                _project.FileName = fileName.FileHandle().FullName;
-            }
-
-            _tree.Connect(_project);
-            if(project != null)
-            {
-                Profiler.Frame(() => ExpandedNodes = project.ExpansionDescriptions);
-                _tree.TopNode = Profiler.Measure(() => _tree.Nodes._().FirstOrDefault());
-                SelectedPath = project.Selection ?? new string[0];
-                if(_tree.SelectedNode != null)
-                    _tree.SelectedNode.EnsureVisible();
-            }
-
-            SetLastFileNameConfig();
-            Text = _project == null ? "<no file>" : _project.Name;
-        }
+        void OnExpand() { SaveExpansionDescriptions(); }
+        void OnCollapse() { SaveExpansionDescriptions(); }
 
         void OnChange(Server server)
         {
@@ -184,7 +114,7 @@ namespace Taabus.UserInterface
             _tree.Connect(_project);
             ExpandedNodes = expandedNodes;
             SelectedServer = server;
-            _project.Save(ExpandedNodes, SelectedPath);
+            _controller.Servers = _project.Servers.ToArray();
         }
 
         void EditServer(Server server)
@@ -243,14 +173,22 @@ namespace Taabus.UserInterface
             return PathWalk(value, node.Nodes, index + 1) ?? node;
         }
 
-        void SetLastFileNameConfig()
+        public void AddDropSite(DragDropController.ITarget target) { _dragDropController.Add(target); }
+
+        internal override void Reload() { _tree.ThreadCallGuard(InternalReload); }
+
+        void InternalReload()
         {
-            if(_project.FileName != null)
-                LastFileNameFileHandle.String = _project.FileName;
-            else if(LastFileNameFileHandle.Exists)
-                LastFileNameFileHandle.Delete();
+            _project = new Project {Servers = _controller.Servers, ProjectName = _controller.ProjectName};
+            _tree.Connect(_project);
+            ExpandedNodes = _controller.ExpansionDescriptions;
+            _tree.TopNode = _tree.Nodes._().FirstOrDefault();
+            SelectedPath = _controller.Selection ?? new string[0];
+            var selectedNode = _tree.SelectedNode;
+            if(selectedNode != null)
+                selectedNode.EnsureVisible();
         }
 
-        public void AddDropSite(DragDropController.ITarget target) { _dragDropController.Add(target); }
+        void SaveExpansionDescriptions() { _controller.ExpansionDescriptions = ExpandedNodes; }
     }
 }

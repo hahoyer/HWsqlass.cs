@@ -1,71 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
-using hw.Helper;
 using Taabus.Data;
 using Taabus.UserInterface;
 
 namespace Taabus
 {
-    sealed class TaabusController : ApplicationContext, ITaabusController
+    public interface ITaabusController
     {
-        ProjectExplorerView _explorer;
-        WorkspaceView _workspace;
-
-        void ITaabusController.Exit() { ExitThread(); }
-
-        internal void Run()
-        {
-            Explorer = new ProjectExplorerView(this);
-            Workspace = new WorkspaceView("Main", this);
-            Explorer.Show();
-            Workspace.Show();
-            Application.Run(this);
-        }
-
-        internal static TaabusProject GetTypeFromFile(string fileName)
-        {
-            if(fileName == null)
-                return null;
-            return fileName
-                .CreateAssemblyFromFile()
-                .GetType(typeof(TaabusProject).Name)
-                .Invoke<TaabusProject>("Project");
-        }
-
-        ProjectExplorerView Explorer
-        {
-            get { return _explorer; }
-            set
-            {
-                _explorer = value;
-                EnsureDragDropController();
-            }
-        }
-        WorkspaceView Workspace
-        {
-            get { return _workspace; }
-            set
-            {
-                _workspace = value;
-                EnsureDragDropController();
-            }
-        }
-
-        void EnsureDragDropController()
-        {
-            if(_explorer == null)
-                return;
-            if(_workspace == null)
-                return;
-            _explorer.AddDropSite(Workspace);
-        }
+        ExpansionDescription[] ExpansionDescriptions { get; set; }
+        string[] Selection { get; set; }
+        Server[] Servers { get; set; }
+        WorkspaceItem[] WorkspaceItems { get; }
+        string ProjectName { get; }
+        void OnOpen();
+        void Exit();
     }
 
-    interface ITaabusController
+    public class WorkspaceItem : IEquatable<WorkspaceItem>
     {
-        void Exit();
+        bool IEquatable<WorkspaceItem>.Equals(WorkspaceItem other) { return false; }
     }
 
     interface IControlledItem : DragDropController.IItem

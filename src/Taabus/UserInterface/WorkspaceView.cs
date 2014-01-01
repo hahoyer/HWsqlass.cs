@@ -8,47 +8,62 @@ using Taabus.Properties;
 
 namespace Taabus.UserInterface
 {
-    sealed class WorkspaceView : MainView, DragDropController.ITarget
+    public sealed class WorkspaceView : MainView, DragDropController.ITarget
     {
-        readonly Panel _panel = new Panel();
-
+        readonly ITaabusController _controller;
         internal WorkspaceView(string tag, ITaabusController controller)
             : base("Workspace." + tag, controller)
         {
+            _controller = controller;
             AddFunction(new UserInteraction("Settings", OnConfiguration, Resources.appbar_settings));
-            Client = _panel;
+            Client = new Panel();
         }
 
         static void OnConfiguration() { }
-        internal void CallAddCard(IControlledItem item, Point? location = null) { _panel.ThreadCallGuard(() => AddCard(item, location)); }
-        internal void CallAddTable(IControlledItem item, Rectangle itemRectangle) { _panel.ThreadCallGuard(() => AddTable(item, itemRectangle)); }
+        internal void CallAddCard(IControlledItem item, Point? location = null) { Client.ThreadCallGuard(() => AddCard(item, location)); }
+        internal void CallAddTable(IControlledItem item, Rectangle itemRectangle) { Client.ThreadCallGuard(() => AddTable(item, itemRectangle)); }
 
         void AddCard(IControlledItem item, Point? location = null)
         {
             var control = new CardView(this, item);
             control.Location = location ?? DefaultLocation(control);
-            _panel.Controls.Add(control);
+            Client.Controls.Add(control);
         }
 
         void AddTable(IControlledItem item, Rectangle itemRectangle)
         {
             var control = new TableView(this, item)
             {
-                Location = new Point(itemRectangle.X, (int) (itemRectangle.Bottom + itemRectangle.Height * 0.5)), 
+                Location = new Point(itemRectangle.X, (int) (itemRectangle.Bottom + itemRectangle.Height * 0.5)),
                 Size = new Size(itemRectangle.Width * 3, itemRectangle.Height * 10)
             };
-            _panel.Controls.Add(control);
+            Client.Controls.Add(control);
             control.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCellsExceptHeader);
         }
 
         Point DefaultLocation(Control control)
         {
-            var regions = _panel
-                .Controls
-                ._()
+            var regions = Items
                 .Select(c => new Rectangle(c.Location, c.Size))
                 .ToArray();
             return FindPosition(control.Size, regions).Location;
+        }
+
+        internal IEnumerable<Control> Items
+        {
+            get
+            {
+                return Client
+                    .Controls
+                    ._()
+                    .Where(c => c is CardView || c is TableView);
+            }
+            set
+            {
+                var panel = new Panel();
+                panel.Controls.AddRange(value.ToArray());
+                Client = panel;
+            }
         }
 
         static Rectangle FindPosition(Size size, Rectangle[] regions)
@@ -60,7 +75,7 @@ namespace Taabus.UserInterface
             return result;
         }
 
-        Control DragDropController.ITarget.Control { get { return _panel; } }
+        Control DragDropController.ITarget.Control { get { return Client; } }
 
         void DragDropController.ITarget.Drop(DragDropController.IItem item, Point location) { CallAddCard(item as IControlledItem, location); }
 
@@ -70,6 +85,11 @@ namespace Taabus.UserInterface
             return true;
         }
 
+        internal override void Reload() { Items = _controller.WorkspaceItems.Select(CreateItem); }
+        Control CreateItem(WorkspaceItem item)
+        {
+            NotImplementedMethod(item);
+            return null;
+        }
     }
-
 }

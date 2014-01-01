@@ -1,0 +1,20 @@
+﻿<#@ template language="C#" #>
+<#
+    var now = DateTime.Now;
+    var year = now.Year;
+
+    var major = year - 2000;
+    var minor = 0;
+    var build = 0;
+    var revision = (int)(now - new DateTime(year,1,1)).TotalDays;
+#>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+[assembly: AssemblyTitle("Taabus")]
+[assembly: AssemblyDescription("Database table browser")]
+[assembly: AssemblyCompany("HoyerWare")]
+[assembly: AssemblyProduct("Taabus")]
+[assembly: AssemblyCopyright("Copyright ©  2013")]
+[assembly: AssemblyVersion("<#= major #>.<#= minor #>.<#= build #>.<#= revision #>")]

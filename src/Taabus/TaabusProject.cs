@@ -1,84 +1,74 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Taabus;
-using Taabus.Data;
-using Taabus.UserInterface;
 
-public static class TaabusProject
+public static class V13
 {
-    public static Taabus.TaabusProject Project()
+    public static Taabus.Configuration Data()
     {
-        return new Taabus.TaabusProject 
+        return new Taabus.Configuration 
             {
-                Project = new Project {Servers = new Server[] {new Server {ConnectionString = "Data Source=ANNE\\OJB_NET;Integrated Security=true"}}},
-                ExpansionDescriptions = new ExpansionDescription[] 
+                ExpansionDescriptions = new Taabus.UserInterface.ExpansionDescription[] 
                     {
-                        new ExpansionDescription 
+                        new Taabus.UserInterface.ExpansionDescription 
                         {
                             Id = "ConnectionString=Data Source=ANNE\\OJB_NET;Integrated Security=true",
                             IsExpanded = true,
-                            Nodes = new ExpansionDescription[] 
+                            Nodes = new Taabus.UserInterface.ExpansionDescription[] 
                                 {
-                                    new ExpansionDescription 
+                                    new Taabus.UserInterface.ExpansionDescription 
                                     {
                                         Id = "cwg_adsalesng_devtest",
                                         IsExpanded = true,
-                                        Nodes = new ExpansionDescription[] 
+                                        Nodes = new Taabus.UserInterface.ExpansionDescription[] 
                                             {
-                                                new ExpansionDescription 
+                                                new Taabus.UserInterface.ExpansionDescription 
                                                 {
                                                     Id = "as_AccessLevel",
                                                     IsExpanded = true,
-                                                    Nodes = new ExpansionDescription[] {}
+                                                    Nodes = new Taabus.UserInterface.ExpansionDescription[] {}
                                                 },
-                                                new ExpansionDescription 
-                                                {
-                                                    Id = "as_AchievementCalendar",
-                                                    IsExpanded = true,
-                                                    Nodes = new ExpansionDescription[] {}
-                                                },
-                                                new ExpansionDescription 
+                                                new Taabus.UserInterface.ExpansionDescription 
                                                 {
                                                     Id = "as_AchievementLevel",
                                                     IsExpanded = true,
-                                                    Nodes = new ExpansionDescription[] {}
+                                                    Nodes = new Taabus.UserInterface.ExpansionDescription[] {}
                                                 },
-                                                new ExpansionDescription 
+                                                new Taabus.UserInterface.ExpansionDescription 
                                                 {
                                                     Id = "as_AchievementPeriod",
                                                     IsExpanded = true,
-                                                    Nodes = new ExpansionDescription[] {}
+                                                    Nodes = new Taabus.UserInterface.ExpansionDescription[] {}
                                                 },
-                                                new ExpansionDescription 
+                                                new Taabus.UserInterface.ExpansionDescription 
                                                 {
                                                     Id = "as_AchievementTopic",
                                                     IsExpanded = true,
-                                                    Nodes = new ExpansionDescription[] {}
+                                                    Nodes = new Taabus.UserInterface.ExpansionDescription[] {}
                                                 },
-                                                new ExpansionDescription 
+                                                new Taabus.UserInterface.ExpansionDescription 
                                                 {
                                                     Id = "as_AchPeriodDocOrg",
                                                     IsExpanded = true,
-                                                    Nodes = new ExpansionDescription[] {}
+                                                    Nodes = new Taabus.UserInterface.ExpansionDescription[] {}
                                                 },
-                                                new ExpansionDescription 
+                                                new Taabus.UserInterface.ExpansionDescription 
                                                 {
                                                     Id = "as_AchPeriodDocument",
                                                     IsExpanded = true,
-                                                    Nodes = new ExpansionDescription[] {}
+                                                    Nodes = new Taabus.UserInterface.ExpansionDescription[] {}
                                                 },
-                                                new ExpansionDescription 
+                                                new Taabus.UserInterface.ExpansionDescription 
                                                 {
                                                     Id = "as_AchPeriodJournal",
                                                     IsExpanded = true,
-                                                    Nodes = new ExpansionDescription[] 
+                                                    Nodes = new Taabus.UserInterface.ExpansionDescription[] 
                                                         {
-                                                            new ExpansionDescription 
+                                                            new Taabus.UserInterface.ExpansionDescription 
                                                             {
                                                                 Id = "as_AchPeriodJournal3_fk",
                                                                 IsExpanded = true,
-                                                                Nodes = new ExpansionDescription[] {}
+                                                                Nodes = new Taabus.UserInterface.ExpansionDescription[] {}
                                                             }
                                                         }
                                                 }
@@ -87,12 +77,14 @@ public static class TaabusProject
                                 }
                         }
                     },
-                Selection = new String[] 
+                Selection = new System.String[] 
                     {
                         "ConnectionString=Data Source=ANNE\\OJB_NET;Integrated Security=true",
                         "cwg_adsalesng_devtest",
-                        "as_AchPeriodDocument"
-                    }
+                        "as_AccountType"
+                    },
+                Servers = new Taabus.Data.Server[] {new Taabus.Data.Server {ConnectionString = "Data Source=ANNE\\OJB_NET;Integrated Security=true"}},
+                WorkspaceItems = new Taabus.WorkspaceItem[] {}
             };
     }
 }

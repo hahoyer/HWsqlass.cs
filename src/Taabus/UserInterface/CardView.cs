@@ -8,7 +8,7 @@ using MetroFramework.Controls;
 
 namespace Taabus.UserInterface
 {
-    sealed class CardView : MetroButton
+    public sealed class CardView : MetroButton
     {
         readonly UserInteraction[] _itemFunctions;
         readonly IControlledItem _item;

@@ -10,46 +10,46 @@ using JetBrains.Annotations;
 
 namespace Taabus
 {
-    sealed class Serializer : Dumpable
+    class Serializer : Dumpable
     {
-        public string Serialize(object data) { return Serialize(data.GetType(), data); }
-        string Serialize(Type type, object data)
+        public static string Serialize(object data) { return Serialize(data.GetType(), data); }
+        static string Serialize(Type type, object data)
         {
-            var @class = type.GetAttribute<Class>(true);
-            if(@class != null)
-                return @class.SerializeClass(this, type, data);
+            var enable = type.GetAttribute<Enable>(false);
+            if(enable != null)
+                return Serialize(enable, type, data);
 
             var xl = data as IList;
             if(xl != null)
                 return "new " + type.CompleteName() + " " + Serialize(xl).Surround("{", "}");
 
-            if (data is string)
+            if(data is string)
                 return data.ToString().Quote();
 
-            if (data is bool)
-                return ((bool)data) ? "true" : "false";
+            if(data is bool)
+                return ((bool) data) ? "true" : "false";
 
             var xd = data as IDictionary;
             if(xd != null)
-                NotImplementedMethod(type, data);
+                NotImplementedFunction(type, data);
 
             var xc = data as ICollection;
             if(xc != null)
-                NotImplementedMethod(type, data);
+                NotImplementedFunction(type, data);
 
             var co = data as CodeObject;
             if(co != null)
-                NotImplementedMethod(type, data);
+                NotImplementedFunction(type, data);
 
             var xt = data as Type;
             if(xt != null)
-                NotImplementedMethod(type, data);
+                NotImplementedFunction(type, data);
 
-            NotImplementedMethod(type, data);
+            NotImplementedFunction(type, data);
             return null;
         }
 
-        string Serialize(IList data)
+        static string Serialize(IList data)
         {
             return data
                 .Cast<object>()
@@ -57,29 +57,49 @@ namespace Taabus
                 .Stringify(",\n");
         }
 
-        string FormatMember(MemberInfo info, object data)
+        static string Serialize(Enable enable, Type type, object data)
         {
-            var value = info is PropertyInfo ? ((PropertyInfo) info).GetValue(data) : ((FieldInfo) info).GetValue(data);
-            return info.Name
-                + " = "
-                + FormatValue(info, value);
+            var memberData = enable
+                .RelevantMembers(type)
+                .Select(m => enable.Serialize(data, m));
+            var name = type.CompleteName();
+            return "new " + name + " " + memberData.Stringify(",\n").Surround("{", "}");
         }
 
-        string FormatValue(MemberInfo info, object data)
+        static string FormatMember(MemberInfo info, object data)
         {
-            return info
-                .GetAttribute<Member>(true)
-                .AssertNotNull()
-                .Serialize(data, this)
-                .Indent();
+            var value = GetValue(info, data);
+            return info.Name
+                + " = "
+                + FormatValue(value);
         }
+
+        static object GetValue(MemberInfo info, object data)
+        {
+            return info is PropertyInfo
+                ? ((PropertyInfo) info).GetValue(data)
+                : ((FieldInfo) info).GetValue(data);
+        }
+
+        static void SetValue(MemberInfo info, object data, object value)
+        {
+            var propertyInfo = info as PropertyInfo;
+            if(propertyInfo == null)
+                ((FieldInfo) info).SetValue(data, value);
+            else
+                propertyInfo.SetValue(data, value);
+        }
+
+        static string FormatValue(object data) { return Serialize(data).Indent(); }
 
         static bool IsRelevant(MemberInfo info)
         {
-            var a = info.GetAttribute<Member>(true);
-            if(a == null)
-                return false;
+            return IsPossible(info)
+                && info.GetAttribute<Disable>(false) == null;
+        }
 
+        static bool IsPossible(MemberInfo info)
+        {
             var p = info as PropertyInfo;
             if(p != null)
                 return IsRelevant(p);
@@ -95,32 +115,44 @@ namespace Taabus
         static bool IsRelevant(FieldInfo info) { return info.IsPublic; }
 
         [MeansImplicitUse]
-        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-        public class Member : Attribute
+        [AttributeUsage(AttributeTargets.Class | AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
+        public class Enable : Attribute
         {
-            public virtual string Serialize(object data, Serializer serializer) { return serializer.Serialize(data); }
-        }
+            public virtual string Serialize(object data, MemberInfo m) { return FormatMember(m, data); }
 
-        [MeansImplicitUse]
-        [AttributeUsage(AttributeTargets.Class)]
-        public class Class : Attribute
-        {
-            public virtual string SerializeClass(Serializer serializer, Type type, object data)
+            public virtual IEnumerable<MemberInfo> RelevantMembers(Type type)
             {
-                var formattedData = type
-                    .GetMembers()
-                    .Where(IsRelevant)
-                    .Select(m => serializer.FormatMember(m, data))
-                    .Stringify(",\n")
-                    .Surround("{", "}");
-                return "new " + type.CompleteName() + " " + formattedData;
+                return type
+                    .GetMembers(BindingFlags.Instance | BindingFlags.Public)
+                    .Where(IsRelevant);
             }
         }
 
-        internal sealed class MissingClassAttribute : Exception
+        [MeansImplicitUse]
+        [AttributeUsage(AttributeTargets.Class | AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
+        public sealed class Disable : Attribute
+        {}
+
+        public new static bool Equals(object x, object y)
         {
-            public Type Type { get; set; }
-            public MissingClassAttribute(Type type) { Type = type; }
+            if(x == y)
+                return true;
+            var t = x.GetType();
+            if(t != y.GetType())
+                return false;
+            return Serialize(x) == Serialize(y);
+        }
+
+        public static T Clone<T>(T x)
+            where T: new ()
+        {
+            var result = new T();
+            var a = typeof(T).GetAttribute<Enable>(false)
+                .AssertNotNull()
+                .RelevantMembers(typeof(T));
+            foreach(var info in a)
+                SetValue(info, result, GetValue(info, x));
+            return result;
         }
     }
 }

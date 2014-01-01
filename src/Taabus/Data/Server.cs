@@ -10,8 +10,8 @@ using hw.Helper;
 
 namespace Taabus.Data
 {
-    [Serializer.Class]
-    public sealed class Server : NamedObject, ITreeNodeSupport, ITreeNodeProbeSupport, INodeNameProvider , IIconKeyProvider
+    [Serializer.Enable]
+    public sealed class Server : NamedObject, ITreeNodeSupport, ITreeNodeProbeSupport, INodeNameProvider , IIconKeyProvider, IEquatable<Server>
     {
         const string SelectDatabases = "select name from master.sys.databases";
 
@@ -26,9 +26,9 @@ namespace Taabus.Data
             _dataBasesCache = new ValueCache<DataBase[]>(GetDataBases);
         }
 
+        [Serializer.Disable]
         internal DataBase[] DataBases { get { return _dataBasesCache.Value; } }
 
-        [Serializer.Member]
         public string ConnectionString
         {
             get { return _connectionString; }
@@ -39,6 +39,8 @@ namespace Taabus.Data
                 _dataBasesCache.IsValid = false;
             }
         }
+
+        bool IEquatable<Server>.Equals(Server other) { return ConnectionString == other.ConnectionString; }
 
         IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes() { return DataBases.CreateNodes(); }
         bool ITreeNodeProbeSupport.IsEmpty { get { return DataBases == null || !DataBases.Any(); } }
@@ -66,9 +68,10 @@ namespace Taabus.Data
                 .ToDataReader(statement);
         }
 
-        [DisableDump]
+        [DisableDump,Serializer.Disable]
         internal string DataSource { get { return _sqlConnectionStringBuilderCache.Value.DataSource; } set { _sqlConnectionStringBuilderCache.Value.DataSource = value; } }
 
+        [Serializer.Disable]
         public override string Name
         {
             get
@@ -84,5 +87,6 @@ namespace Taabus.Data
                 return builder.UserID + "@" + result;
             }
         }
+        
     }
 }

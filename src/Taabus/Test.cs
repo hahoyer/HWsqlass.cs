@@ -61,7 +61,7 @@ namespace Taabus
         {
             try
             {
-                var controller = new TaabusController();
+                var controller = new Controller();
                 controller.Run();
             }
             catch(Exception exception)

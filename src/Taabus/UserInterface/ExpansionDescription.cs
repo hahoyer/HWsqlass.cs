@@ -1,18 +1,15 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using hw.Debug;
 
 namespace Taabus.UserInterface
 {
-    [Serializer.Class]
-    public sealed class ExpansionDescription
+    [Serializer.Enable]
+    public sealed class ExpansionDescription : IEquatable<ExpansionDescription>
     {
         string _id;
-        [Serializer.Member]
         public bool IsExpanded;
-        [Serializer.Member]
         public ExpansionDescription[] Nodes;
-
-        [Serializer.Member]
         public string Id
         {
             get { return _id; }
@@ -21,6 +18,13 @@ namespace Taabus.UserInterface
                 _id = value;
                 Tracer.Assert(_id == null || _id.Any());
             }
+        }
+
+        bool IEquatable<ExpansionDescription>.Equals(ExpansionDescription other)
+        {
+            return Id == other.Id
+                && IsExpanded == other.IsExpanded
+                && Extension.Equals(Nodes, other.Nodes);
         }
     }
 }

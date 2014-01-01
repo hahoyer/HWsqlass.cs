@@ -24,12 +24,6 @@ public static class V13
                                             {
                                                 new Taabus.UserInterface.ExpansionDescription 
                                                 {
-                                                    Id = "as_AccessLevel",
-                                                    IsExpanded = true,
-                                                    Nodes = new Taabus.UserInterface.ExpansionDescription[] {}
-                                                },
-                                                new Taabus.UserInterface.ExpansionDescription 
-                                                {
                                                     Id = "as_AchievementLevel",
                                                     IsExpanded = true,
                                                     Nodes = new Taabus.UserInterface.ExpansionDescription[] {}
@@ -62,15 +56,21 @@ public static class V13
                                                 {
                                                     Id = "as_AchPeriodJournal",
                                                     IsExpanded = true,
-                                                    Nodes = new Taabus.UserInterface.ExpansionDescription[] 
-                                                        {
-                                                            new Taabus.UserInterface.ExpansionDescription 
-                                                            {
-                                                                Id = "as_AchPeriodJournal3_fk",
-                                                                IsExpanded = true,
-                                                                Nodes = new Taabus.UserInterface.ExpansionDescription[] {}
-                                                            }
-                                                        }
+                                                    Nodes = new Taabus.UserInterface.ExpansionDescription[] {}
+                                                }
+                                            }
+                                    },
+                                    new Taabus.UserInterface.ExpansionDescription 
+                                    {
+                                        Id = "cwg_avaresco_local",
+                                        IsExpanded = false,
+                                        Nodes = new Taabus.UserInterface.ExpansionDescription[] 
+                                            {
+                                                new Taabus.UserInterface.ExpansionDescription 
+                                                {
+                                                    Id = "ApplicationRole",
+                                                    IsExpanded = true,
+                                                    Nodes = new Taabus.UserInterface.ExpansionDescription[] {}
                                                 }
                                             }
                                     }
@@ -80,8 +80,7 @@ public static class V13
                 Selection = new System.String[] 
                     {
                         "ConnectionString=Data Source=ANNE\\OJB_NET;Integrated Security=true",
-                        "cwg_adsalesng_devtest",
-                        "as_AccountType"
+                        "cwg_adsalesng_devtest"
                     },
                 Servers = new Taabus.Data.Server[] {new Taabus.Data.Server {ConnectionString = "Data Source=ANNE\\OJB_NET;Integrated Security=true"}},
                 WorkspaceItems = new Taabus.WorkspaceItem[] {}

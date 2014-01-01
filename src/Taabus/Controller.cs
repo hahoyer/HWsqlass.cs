@@ -54,6 +54,10 @@ namespace Taabus
             if(FileName == null)
                 return;
 
+            var t = new System.Timers.Timer(TimeSpan.FromSeconds(2).TotalMilliseconds){AutoReset = true};
+            t.Elapsed += (s,e)=> CheckForSave();
+            t.Enabled = true;
+
             Application.Run(this);
         }
 
@@ -73,10 +77,12 @@ namespace Taabus
                 SetLastFileNameConfig();
             }
         }
+
         void CheckForSave()
         {
-            if(_configurationCache.IsValid)
-                Configuration.CheckedSave();
+            lock(_configurationCache)
+                if(_configurationCache.IsValid)
+                    Configuration.CheckedSave();
         }
 
         ProjectExplorerView Explorer

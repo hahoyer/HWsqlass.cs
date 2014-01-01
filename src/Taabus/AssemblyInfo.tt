@@ -16,5 +16,5 @@ using System.Reflection;
 [assembly: AssemblyDescription("Database table browser")]
 [assembly: AssemblyCompany("HoyerWare")]
 [assembly: AssemblyProduct("Taabus")]
-[assembly: AssemblyCopyright("Copyright ©  2013")]
+[assembly: AssemblyCopyright("Copyright © Harald Hoyer 2013 - <#= year #>")]
 [assembly: AssemblyVersion("<#= major #>.<#= minor #>.<#= build #>.<#= revision #>")]

@@ -53,6 +53,7 @@
     <Compile Include="Data\ReferenceItem.cs" />
     <Compile Include="Data\Server.cs" />
     <Compile Include="Data\TableItem.cs" />
+    <Compile Include="External\ExpansionDescription.cs" />
     <Compile Include="hw\Debug\DisableDumpAttribute.cs" />
     <Compile Include="hw\Debug\Dumpable.cs" />
     <Compile Include="hw\Debug\DumpableObject.cs" />
@@ -114,7 +115,6 @@
     <Compile Include="Project.cs" />
     <Compile Include="UserInterface\CursorUtil.cs" />
     <Compile Include="UserInterface\DragDropController.cs" />
-    <Compile Include="UserInterface\ExpansionDescription.cs" />
     <Compile Include="UserInterface\MainView.cs" />
     <Compile Include="UserInterface\ProjectExplorerView.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

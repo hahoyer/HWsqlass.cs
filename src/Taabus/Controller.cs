@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using hw.Helper;
 using Taabus.Data;
+using Taabus.External;
 using Taabus.UserInterface;
 
 namespace Taabus
@@ -25,7 +26,7 @@ namespace Taabus
         ExpansionDescription[] ITaabusController.ExpansionDescriptions { get { return Configuration.Data.ExpansionDescriptions; } set { Configuration.Data.ExpansionDescriptions = value; } }
         string[] ITaabusController.Selection { get { return Configuration.Data.Selection; } set { Configuration.Data.Selection = value; } }
         Server[] ITaabusController.Servers { get { return Configuration.Data.Servers; } set { Configuration.Data.Servers = value; } }
-        WorkspaceItem[] ITaabusController.WorkspaceItems { get { return Configuration.Data.WorkspaceItems; } }
+        External.Item[] ITaabusController.Items { get { return Configuration.Data.Items; } set { Configuration.Data.Items = value; } }
 
         string ITaabusController.ProjectName { get { return _fileName.FileHandle().Name; } }
         void ITaabusController.OnOpen() { OnOpen(); }
@@ -43,10 +44,10 @@ namespace Taabus
 
         internal void Run()
         {
-            Explorer = new ProjectExplorerView(this);
-            Workspace = new WorkspaceView("Main", this);
-            Explorer.Show();
-            Workspace.Show();
+            _explorer = new ProjectExplorerView(this);
+            _workspace = new WorkspaceView("Main", this);
+            _explorer.Show();
+            _workspace.Show();
 
             FileName = LastFileNameFileHandle.String;
             if(FileName == null)
@@ -54,10 +55,11 @@ namespace Taabus
             if(FileName == null)
                 return;
 
-            var t = new System.Timers.Timer(TimeSpan.FromSeconds(2).TotalMilliseconds){AutoReset = true};
-            t.Elapsed += (s,e)=> CheckForSave();
+            var t = new System.Timers.Timer(TimeSpan.FromSeconds(2).TotalMilliseconds) {AutoReset = true};
+            t.Elapsed += (s, e) => CheckForSave();
             t.Enabled = true;
 
+            EnsureDragDropController();
             Application.Run(this);
         }
 
@@ -85,33 +87,13 @@ namespace Taabus
                     Configuration.CheckedSave();
         }
 
-        ProjectExplorerView Explorer
-        {
-            get { return _explorer; }
-            set
-            {
-                _explorer = value;
-                EnsureDragDropController();
-            }
-        }
-
-        WorkspaceView Workspace
-        {
-            get { return _workspace; }
-            set
-            {
-                _workspace = value;
-                EnsureDragDropController();
-            }
-        }
-
         void EnsureDragDropController()
         {
             if(_explorer == null)
                 return;
             if(_workspace == null)
                 return;
-            _explorer.AddDropSite(Workspace);
+            _explorer.AddDropSite(_workspace);
         }
 
         static File LastFileNameFileHandle { get { return LastFileNameFileName.FileHandle(); } }

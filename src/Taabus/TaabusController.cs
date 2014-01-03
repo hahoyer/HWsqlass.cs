@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Taabus.Data;
+using Taabus.External;
 using Taabus.UserInterface;
 
 namespace Taabus
@@ -11,15 +12,10 @@ namespace Taabus
         ExpansionDescription[] ExpansionDescriptions { get; set; }
         string[] Selection { get; set; }
         Server[] Servers { get; set; }
-        WorkspaceItem[] WorkspaceItems { get; }
+        External.Item[] Items { get; set; }
         string ProjectName { get; }
         void OnOpen();
         void Exit();
-    }
-
-    public class WorkspaceItem : IEquatable<WorkspaceItem>
-    {
-        bool IEquatable<WorkspaceItem>.Equals(WorkspaceItem other) { return false; }
     }
 
     interface IControlledItem : DragDropController.IItem

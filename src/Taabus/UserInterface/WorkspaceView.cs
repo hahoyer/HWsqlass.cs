@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using hw.Forms;
+using Taabus.External;
 using Taabus.Properties;
 
 namespace Taabus.UserInterface
@@ -27,8 +28,9 @@ namespace Taabus.UserInterface
         {
             var control = new CardView(this, item);
             control.Location = location ?? DefaultLocation(control);
-            Client.Controls.Add(control);
+            AddItem(control);
         }
+
 
         void AddTable(IControlledItem item, Rectangle itemRectangle)
         {
@@ -49,7 +51,7 @@ namespace Taabus.UserInterface
             return FindPosition(control.Size, regions).Location;
         }
 
-        internal IEnumerable<Control> Items
+        IEnumerable<Control> Items
         {
             get
             {
@@ -64,6 +66,41 @@ namespace Taabus.UserInterface
                 panel.Controls.AddRange(value.ToArray());
                 Client = panel;
             }
+        }
+
+        Item[] ExternalItems
+        {
+            get
+            {
+                return Items
+                    .Select(CreateWorkspaceItem)
+                    .ToArray();
+            }
+            set
+            {
+                Items = value
+                    .Select(CreateItem);
+            }
+        }
+
+        void AddItem(Control control)
+        {
+            Client.Controls.Add(control);
+            _controller.Items = ExternalItems;
+        }
+
+        internal override void Reload() { ExternalItems = _controller.Items; }
+
+        Control CreateItem(Item item)
+        {
+            NotImplementedMethod(item);
+            return null;
+        }
+
+        Item CreateWorkspaceItem(Control control)
+        {
+            NotImplementedMethod(control);
+            return null;
         }
 
         static Rectangle FindPosition(Size size, Rectangle[] regions)
@@ -83,13 +120,6 @@ namespace Taabus.UserInterface
         {
             NotImplementedMethod(point, region);
             return true;
-        }
-
-        internal override void Reload() { Items = _controller.WorkspaceItems.Select(CreateItem); }
-        Control CreateItem(WorkspaceItem item)
-        {
-            NotImplementedMethod(item);
-            return null;
         }
     }
 }

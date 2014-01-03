@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Taabus.Data;
+using Taabus.External;
 using Taabus.UserInterface;
 
 namespace Taabus
@@ -12,6 +13,6 @@ namespace Taabus
         public ExpansionDescription[] ExpansionDescriptions;
         public string[] Selection;
         public Server[] Servers;
-        public WorkspaceItem[] WorkspaceItems;
+        public External.Item[] Items;
     }
 }

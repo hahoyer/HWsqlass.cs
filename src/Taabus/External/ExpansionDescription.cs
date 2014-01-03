@@ -2,7 +2,7 @@
 using System.Linq;
 using hw.Debug;
 
-namespace Taabus.UserInterface
+namespace Taabus.External
 {
     [Serializer.Enable]
     public sealed class ExpansionDescription : IEquatable<ExpansionDescription>
@@ -27,4 +27,9 @@ namespace Taabus.UserInterface
                 && Extension.Equals(Nodes, other.Nodes);
         }
     }
+
+    public class Item
+    {
+    }
+
 }

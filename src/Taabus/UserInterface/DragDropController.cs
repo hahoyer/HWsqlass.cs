@@ -113,6 +113,7 @@ namespace Taabus.UserInterface
         {
             if(e.EscapePressed)
                 e.Action = DragAction.Cancel;
+            Tracer.FlaggedLine(e.Action.ToString()); 
         }
 
 

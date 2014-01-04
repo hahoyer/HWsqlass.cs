@@ -24,6 +24,12 @@ public static class V13
                                             {
                                                 new Taabus.External.ExpansionDescription 
                                                 {
+                                                    Id = "as_AccessLevel",
+                                                    IsExpanded = true,
+                                                    Nodes = new Taabus.External.ExpansionDescription[] {}
+                                                },
+                                                new Taabus.External.ExpansionDescription 
+                                                {
                                                     Id = "as_AchPeriodDocOrg",
                                                     IsExpanded = true,
                                                     Nodes = new Taabus.External.ExpansionDescription[] {}
@@ -37,10 +43,29 @@ public static class V13
                     {
                         "ConnectionString=Data Source=ANNE\\OJB_NET;Integrated Security=true",
                         "cwg_adsalesng_devtest",
-                        "as_AchPeriodDocOrg"
+                        "as_AccessLevel"
                     },
                 Servers = new Taabus.Data.Server[] {new Taabus.Data.Server {ConnectionString = "Data Source=ANNE\\OJB_NET;Integrated Security=true"}},
-                Items = new Taabus.External.Item[] { }
+                Items = new Taabus.External.Item[] 
+                    {
+                        new Taabus.External.Item 
+                        {
+                            Type = typeof(Taabus.UserInterface.CardView),
+                            Rectangle = new System.Drawing.Rectangle 
+                                {
+                                    X = 130,
+                                    Y = 105,
+                                    Width = 96,
+                                    Height = 24
+                                },
+                            Data = new Taabus.External.DataItem 
+                                {
+                                    ServerId = "ANNE\\OJB_NET",
+                                    DataBaseId = "cwg_adsalesng_devtest",
+                                    TypeId = "as_AccessLevel"
+                                }
+                        }
+                    }
             };
     }
 }

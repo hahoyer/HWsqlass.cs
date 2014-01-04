@@ -58,7 +58,7 @@ namespace Taabus.UserInterface
                 return Client
                     .Controls
                     ._()
-                    .Where(c => c is CardView || c is TableView);
+                    .Where(c => c is IWorkspaceItem);
             }
             set
             {
@@ -68,39 +68,44 @@ namespace Taabus.UserInterface
             }
         }
 
-        Item[] ExternalItems
+        IEnumerable<Item> ExternalItems
         {
             get
             {
                 return Items
-                    .Select(CreateWorkspaceItem)
-                    .ToArray();
+                    .Select(i => CreateExternalItem(i, ((IWorkspaceItem) i).Item));
             }
-            set
-            {
-                Items = value
-                    .Select(CreateItem);
-            }
+            set { Items = value.Select(CreateWorkSpaceItem); }
         }
 
         void AddItem(Control control)
         {
             Client.Controls.Add(control);
-            _controller.Items = ExternalItems;
+            _controller.Items = ExternalItems.ToArray();
         }
 
         internal override void Reload() { ExternalItems = _controller.Items; }
 
-        Control CreateItem(Item item)
+        Control CreateWorkSpaceItem(Item item)
         {
-            NotImplementedMethod(item);
-            return null;
+            var result = ((Control) Activator.CreateInstance(item.Type, new object[]
+            {
+                this,
+                item.Data.ToControlledItem(_controller)
+            }));
+            result.Location = item.Rectangle.Location;
+            result.Size = item.Rectangle.Size;
+            return result;
         }
 
-        Item CreateWorkspaceItem(Control control)
+        static Item CreateExternalItem(Control control, IControlledItem controlledItem)
         {
-            NotImplementedMethod(control);
-            return null;
+            return new Item
+            {
+                Type = control.GetType(),
+                Rectangle = new Rectangle(control.Location, control.Size),
+                Data = controlledItem.ToDataItem
+            };
         }
 
         static Rectangle FindPosition(Size size, Rectangle[] regions)

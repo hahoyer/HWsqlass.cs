@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
+using hw.Debug;
 using hw.Helper;
 using Taabus.Data;
 using Taabus.External;
@@ -17,7 +20,17 @@ namespace Taabus
         WorkspaceView _workspace;
         string _fileName;
 
-        public Controller() { _configurationCache = new ValueCache<PersistentConfiguration>(GetConfiguration); }
+        public Controller()
+        {
+            Tracer.Dumper.Configuration.Handlers.Force(typeof(Control), methodCheck: IsDumpable);
+            Tracer.Dumper.Configuration.Handlers.Force(typeof(Component), methodCheck: IsDumpable);
+            _configurationCache = new ValueCache<PersistentConfiguration>(GetConfiguration);
+        }
+
+        static bool IsDumpable(MemberInfo memberInfo, object data)
+        {
+            return memberInfo.Name.In("Name", "Title", "Text");
+        }
 
         readonly ValueCache<PersistentConfiguration> _configurationCache;
         PersistentConfiguration Configuration { get { return _configurationCache.Value; } }

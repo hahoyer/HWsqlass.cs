@@ -5,7 +5,7 @@ using hw.Debug;
 namespace Taabus.External
 {
     [Serializer.Enable]
-    public sealed class ExpansionDescription : IEquatable<ExpansionDescription>
+    public sealed class ExpansionDescription
     {
         string _id;
         public bool IsExpanded;
@@ -19,17 +19,5 @@ namespace Taabus.External
                 Tracer.Assert(_id == null || _id.Any());
             }
         }
-
-        bool IEquatable<ExpansionDescription>.Equals(ExpansionDescription other)
-        {
-            return Id == other.Id
-                && IsExpanded == other.IsExpanded
-                && Extension.Equals(Nodes, other.Nodes);
-        }
     }
-
-    public class Item
-    {
-    }
-
 }

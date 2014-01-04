@@ -113,7 +113,7 @@ namespace Taabus.UserInterface
         {
             if(e.EscapePressed)
                 e.Action = DragAction.Cancel;
-            Tracer.FlaggedLine(e.Action.ToString()); 
+            //Tracer.FlaggedLine(e.Action.ToString()); 
         }
 
 
@@ -138,7 +138,7 @@ namespace Taabus.UserInterface
             var targetPoint = FindTargetPoint(sender, e);
             if(targetPoint == null)
                 return;
-            Tracer.FlaggedLine(Tracer.Dump(targetPoint.Displacement));
+            //Tracer.FlaggedLine(Tracer.Dump(targetPoint.Displacement));
             targetPoint.Target.Drop(Item, targetPoint.Displacement - Displacement);
         }
 

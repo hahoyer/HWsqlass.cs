@@ -1,7 +1,8 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using hw.Debug;
@@ -12,12 +13,20 @@ namespace Taabus
 {
     class Serializer : Dumpable
     {
+        static readonly Dictionary<Type, string[]> _relevantMembers = new Dictionary<Type, string[]>
+        {
+            {typeof(Rectangle), new[] {"X", "Y", "Height", "Width"}}
+        };
+
         public static string Serialize(object data) { return Serialize(data.GetType(), data); }
         static string Serialize(Type type, object data)
         {
+            if(data == null)
+                return "null";
+
             var enable = type.GetAttribute<Enable>(false);
             if(enable != null)
-                return Serialize(enable, type, data);
+                return Serialize(type, data, RelevantMembers(type));
 
             var xl = data as IList;
             if(xl != null)
@@ -29,21 +38,15 @@ namespace Taabus
             if(data is bool)
                 return ((bool) data) ? "true" : "false";
 
-            var xd = data as IDictionary;
-            if(xd != null)
-                NotImplementedFunction(type, data);
-
-            var xc = data as ICollection;
-            if(xc != null)
-                NotImplementedFunction(type, data);
-
-            var co = data as CodeObject;
-            if(co != null)
-                NotImplementedFunction(type, data);
-
             var xt = data as Type;
             if(xt != null)
-                NotImplementedFunction(type, data);
+                return "typeof(" + xt.CompleteName() + ")";
+
+            if (type.IsPrimitive)
+                return data.ToString();
+
+            if (_relevantMembers.ContainsKey(type))
+                return Serialize(type, data, RelevantMembers(type, _relevantMembers[type]));
 
             NotImplementedFunction(type, data);
             return null;
@@ -57,11 +60,10 @@ namespace Taabus
                 .Stringify(",\n");
         }
 
-        static string Serialize(Enable enable, Type type, object data)
+        static string Serialize(Type type, object data, IEnumerable<MemberInfo> relevantMembers)
         {
-            var memberData = enable
-                .RelevantMembers(type)
-                .Select(m => enable.Serialize(data, m));
+            var memberData = relevantMembers
+                .Select(m => FormatMember(m, data));
             var name = type.CompleteName();
             return "new " + name + " " + memberData.Stringify(",\n").Surround("{", "}");
         }
@@ -116,17 +118,8 @@ namespace Taabus
 
         [MeansImplicitUse]
         [AttributeUsage(AttributeTargets.Class | AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
-        public class Enable : Attribute
-        {
-            public virtual string Serialize(object data, MemberInfo m) { return FormatMember(m, data); }
-
-            public virtual IEnumerable<MemberInfo> RelevantMembers(Type type)
-            {
-                return type
-                    .GetMembers(BindingFlags.Instance | BindingFlags.Public)
-                    .Where(IsRelevant);
-            }
-        }
+        public sealed class Enable : Attribute
+        {}
 
         [MeansImplicitUse]
         [AttributeUsage(AttributeTargets.Class | AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
@@ -144,15 +137,24 @@ namespace Taabus
         }
 
         public static T Clone<T>(T x)
-            where T: new ()
+            where T : new()
         {
             var result = new T();
-            var a = typeof(T).GetAttribute<Enable>(false)
-                .AssertNotNull()
-                .RelevantMembers(typeof(T));
+            Type type = typeof(T);
+            var a = RelevantMembers(type);
             foreach(var info in a)
                 SetValue(info, result, GetValue(info, x));
             return result;
+        }
+       
+        static IEnumerable<MemberInfo> RelevantMembers(Type type, string[] relevantMemberNames = null)
+        {
+            var result = type
+                .GetMembers(BindingFlags.Instance | BindingFlags.Public)
+                .Where(IsRelevant);
+            if(relevantMemberNames == null)
+                return result;
+            return result.Where(m => relevantMemberNames.Contains(m.Name));
         }
     }
 }

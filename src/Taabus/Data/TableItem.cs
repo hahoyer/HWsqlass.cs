@@ -14,6 +14,7 @@ namespace Taabus.Data
 {
     sealed class TypeItem : Item, ITreeNodeSupport, ITreeNodeProbeSupport, IIconKeyProvider, IControlledItem
     {
+        readonly DataBase _parent;
         [DisableDump]
         internal readonly CompountType Type;
         [DisableDump]
@@ -29,6 +30,7 @@ namespace Taabus.Data
         public TypeItem(DataBase parent, CompountType type)
             : base(parent, type.Name)
         {
+            _parent = parent;
             Type = type;
             _foreignKeysCache = new ValueCache<string[]>(GetForeignKeys);
             _membersCache = new ValueCache<MemberItem[]>(GetMembers);
@@ -42,6 +44,19 @@ namespace Taabus.Data
         long IControlledItem.Count { get { return Data.Count(); } }
         IEnumerable<IDataColumn> IControlledItem.Columns { get { return Members; } }
         IEnumerable<DataRecord> IControlledItem.Data { get { return Data; } }
+
+        External.DataItem IControlledItem.ToDataItem
+        {
+            get
+            {
+                return new External.DataItem
+                {
+                    TypeId = Name,
+                    DataBaseId = _parent.Name,
+                    ServerId = _parent.Parent.Name
+                };
+            }
+        }
 
         IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes() { return CreateNodesYield(); }
         bool ITreeNodeProbeSupport.IsEmpty { get { return false; } }
@@ -152,7 +167,7 @@ namespace Taabus.Data
         public TypeQuery(Server server, string tableName)
             : base(new QueryProvider(server)) { _tableName = tableName; }
 
-        protected override string ExecutableStatement { get { return "select * from "+base.ExecutableStatement; } }
+        protected override string ExecutableStatement { get { return "select * from " + base.ExecutableStatement; } }
         internal override string SubStatement { get { return _tableName; } }
     }
 

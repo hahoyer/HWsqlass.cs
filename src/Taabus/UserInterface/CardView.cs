@@ -8,7 +8,7 @@ using MetroFramework.Controls;
 
 namespace Taabus.UserInterface
 {
-    public sealed class CardView : MetroButton
+    sealed class CardView : MetroButton, IWorkspaceItem
     {
         readonly UserInteraction[] _itemFunctions;
         readonly IControlledItem _item;
@@ -28,7 +28,9 @@ namespace Taabus.UserInterface
 
             ContextMenuStrip = CreateContextMenu();
         }
-        
+
+        IControlledItem IWorkspaceItem.Item { get { return _item; } }
+
         ContextMenuStrip CreateContextMenu()
         {
             var menu = new ContextMenuStrip();
@@ -36,7 +38,7 @@ namespace Taabus.UserInterface
             return menu;
         }
 
-        void OnShowTable() { _parent.CallAddTable(_item, new Rectangle(Location,Size)); }
+        void OnShowTable() { _parent.CallAddTable(_item, new Rectangle(Location, Size)); }
         void OnGetCount() { Text = _item.Title + " " + _item.Count.Format3Digits(); }
     }
 }

@@ -11,7 +11,13 @@ using hw.Helper;
 namespace Taabus.Data
 {
     [Serializer.Enable]
-    public sealed class Server : NamedObject, ITreeNodeSupport, ITreeNodeProbeSupport, INodeNameProvider , IIconKeyProvider, IEquatable<Server>
+    public sealed class Server 
+        : NamedObject
+        , ITreeNodeSupport
+        , ITreeNodeProbeSupport
+        , INodeNameProvider 
+        , IIconKeyProvider
+        , IEquatable<Server>
     {
         const string SelectDatabases = "select name from master.sys.databases";
 

@@ -6,10 +6,13 @@ using Taabus.Data;
 
 namespace Taabus.UserInterface
 {
-    sealed class TableView : DataGridView
+    sealed class TableView : DataGridView, IWorkspaceItem
     {
+        readonly IControlledItem _item;
+
         public TableView(WorkspaceView workspace, IControlledItem item)
         {
+            _item = item;
             AllowUserToAddRows = false;
             AllowUserToDeleteRows = false;
             RowHeadersVisible = false;
@@ -19,6 +22,8 @@ namespace Taabus.UserInterface
             Columns.AddRange(item.Columns.Select(CreateColumn).ToArray());
             Rows.AddRange(item.Data.Select(CreateRow).ToArray());
         }
+
+        IControlledItem IWorkspaceItem.Item { get { return _item; } }
 
         static DataGridViewTextBoxColumn CreateColumn(string name)
         {

@@ -24,6 +24,7 @@ namespace Taabus
         long Count { get; }
         IEnumerable<IDataColumn> Columns { get; }
         IEnumerable<DataRecord> Data { get; }
+        External.DataItem ToDataItem { get; }
     }
 
     interface IDataColumn

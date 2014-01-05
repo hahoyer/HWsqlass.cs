@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using hw.Forms;
+using hw.Helper;
 using Taabus.External;
 using Taabus.Properties;
 
@@ -88,13 +90,18 @@ namespace Taabus.UserInterface
 
         Control CreateWorkSpaceItem(Item item)
         {
-            var result = ((Control) Activator.CreateInstance(item.Type, new object[]
+            var constructor = item
+                .Type
+                .ResolveUniqueType()
+                .GetConstructor(BindingFlags.NonPublic|BindingFlags.Public|BindingFlags.Instance,null, new []{GetType(), typeof(IControlledItem)},null);
+
+            var result = ((Control) constructor.Invoke(new object[]
             {
                 this,
                 item.Data.ToControlledItem(_controller)
             }));
-            result.Location = item.Rectangle.Location;
-            result.Size = item.Rectangle.Size;
+            result.Location = new Point(item.X, item.Y);
+            result.Size = new Size(item.Width, item.Height);
             return result;
         }
 
@@ -102,8 +109,11 @@ namespace Taabus.UserInterface
         {
             return new Item
             {
-                Type = control.GetType(),
-                Rectangle = new Rectangle(control.Location, control.Size),
+                Type = control.GetType().CompleteName(),
+                X = control.Location.X,
+                Y = control.Location.Y,
+                Width = control.Size.Width,
+                Height = control.Size.Height,
                 Data = controlledItem.ToDataItem
             };
         }

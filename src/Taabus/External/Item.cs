@@ -8,8 +8,11 @@ namespace Taabus.External
     [Serializer.Enable]
     sealed public class Item
     {
-        public Type Type;
-        public Rectangle Rectangle;
         public DataItem Data;
+        public int X;
+        public int Y;
+        public int Width;
+        public int Height;
+        public string Type;
     }
 }

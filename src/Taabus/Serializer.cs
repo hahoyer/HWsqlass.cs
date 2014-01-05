@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
@@ -42,10 +41,10 @@ namespace Taabus
             if(xt != null)
                 return "typeof(" + xt.CompleteName() + ")";
 
-            if (type.IsPrimitive)
+            if(type.IsPrimitive)
                 return data.ToString();
 
-            if (_relevantMembers.ContainsKey(type))
+            if(_relevantMembers.ContainsKey(type))
                 return Serialize(type, data, RelevantMembers(type, _relevantMembers[type]));
 
             NotImplementedFunction(type, data);
@@ -140,13 +139,13 @@ namespace Taabus
             where T : new()
         {
             var result = new T();
-            Type type = typeof(T);
+            var type = typeof(T);
             var a = RelevantMembers(type);
             foreach(var info in a)
                 SetValue(info, result, GetValue(info, x));
             return result;
         }
-       
+
         static IEnumerable<MemberInfo> RelevantMembers(Type type, string[] relevantMemberNames = null)
         {
             var result = type

@@ -4,11 +4,13 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using hw.Helper;
+using JetBrains.Annotations;
 using MetroFramework.Controls;
 
 namespace Taabus.UserInterface
 {
-    sealed class CardView : MetroButton, IWorkspaceItem
+    [UsedImplicitly]
+    public sealed class CardView : MetroButton, IWorkspaceItem
     {
         readonly UserInteraction[] _itemFunctions;
         readonly IControlledItem _item;

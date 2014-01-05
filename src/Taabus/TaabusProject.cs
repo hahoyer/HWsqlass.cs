@@ -50,14 +50,12 @@ public static class V13
                     {
                         new Taabus.External.Item 
                         {
-                            Type = typeof(Taabus.UserInterface.CardView),
-                            Rectangle = new System.Drawing.Rectangle 
-                                {
+                            Type = "Taabus.UserInterface.CardView",
                                     X = 130,
                                     Y = 105,
                                     Width = 96,
                                     Height = 24
-                                },
+                                ,
                             Data = new Taabus.External.DataItem 
                                 {
                                     ServerId = "ANNE\\OJB_NET",

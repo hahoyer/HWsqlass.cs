@@ -6,11 +6,11 @@ using Taabus.Data;
 
 namespace Taabus.UserInterface
 {
-    sealed class TableView : DataGridView, IWorkspaceItem
+    sealed class TableView : DataGridView, IDataItemContainer
     {
-        readonly IControlledItem _item;
+        readonly IChildItem _item;
 
-        public TableView(WorkspaceView workspace, IControlledItem item)
+        public TableView(IChildItem item)
         {
             _item = item;
             AllowUserToAddRows = false;
@@ -23,7 +23,7 @@ namespace Taabus.UserInterface
             Rows.AddRange(item.Data.Select(CreateRow).ToArray());
         }
 
-        IControlledItem IWorkspaceItem.Item { get { return _item; } }
+        IChildItem IDataItemContainer.Child{ get { return _item; } }
 
         static DataGridViewTextBoxColumn CreateColumn(string name)
         {
@@ -57,5 +57,11 @@ namespace Taabus.UserInterface
             result.Name = dataColumn.Name;
             return result;
         }
+
+        internal interface IItem : IColumnsAndDataProvider
+        {
+        }
+
     }
+
 }

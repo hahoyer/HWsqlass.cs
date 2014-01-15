@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 
 namespace Taabus.External
 {
     [Serializer.Enable]
-    sealed public class Item
+    public sealed class Item
     {
+        public int? Id;
         public DataItem Data;
         public int X;
         public int Y;

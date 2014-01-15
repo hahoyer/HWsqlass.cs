@@ -9,7 +9,7 @@ using MetroFramework.Forms;
 
 namespace Taabus.UserInterface
 {
-    public abstract class MainView : DumpableObject
+    abstract class MainView : DumpableObject
     {
         const int FrameSize = 10;
         const int AppBarSize = 25;

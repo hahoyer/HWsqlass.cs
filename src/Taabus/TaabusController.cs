@@ -7,7 +7,7 @@ using Taabus.UserInterface;
 
 namespace Taabus
 {
-    public interface ITaabusController
+    interface ITaabusController
     {
         ExpansionDescription[] ExpansionDescriptions { get; set; }
         string[] Selection { get; set; }
@@ -18,17 +18,28 @@ namespace Taabus
         void Exit();
     }
 
-    interface IControlledItem : DragDropController.IItem
+    interface IControlledItem : DragDropController.IItem, IChildItem
     {
-        string Title { get; }
-        long Count { get; }
-        IEnumerable<IDataColumn> Columns { get; }
-        IEnumerable<DataRecord> Data { get; }
-        External.DataItem ToDataItem { get; }
+    }
+
+    interface IDataItemContainer
+    {
+        IChildItem Child{ get; }
+    }
+
+    interface IChildItem: TableView.IItem, CardView.IItem
+    {
+        TableItem ToTableItemOrDefault { get; }
     }
 
     interface IDataColumn
     {
         string Name { get; }
+    }
+
+    internal interface IColumnsAndDataProvider
+    {
+        IEnumerable<IDataColumn> Columns { get; }
+        IEnumerable<DataRecord> Data { get; }
     }
 }

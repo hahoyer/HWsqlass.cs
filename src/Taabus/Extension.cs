@@ -62,6 +62,21 @@ namespace Taabus
 
         public static bool Equals<T>(this IEnumerable<T> x, IEnumerable<T> y)
             where T : IEquatable<T> { return Equals(x, y, (xx, yy) => xx.Equals(yy)); }
+
+        internal static ConstructorInfo GetConstructor<T1>
+            (this Type type, BindingFlags bindingFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
+        {
+            return GetConstructor(type, bindingFlags, typeof(T1));
+        }
+
+        internal static ConstructorInfo GetConstructor<T1, T2>
+            (this Type type, BindingFlags bindingFlags = BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
+        {
+            return GetConstructor(type, bindingFlags, typeof(T1), typeof(T2));
+        }
+
+        static ConstructorInfo GetConstructor(Type type, params Type[] types) { return type.GetConstructor(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, types, null); }
+        static ConstructorInfo GetConstructor(Type type, BindingFlags bindingFlags, params Type[] types) { return type.GetConstructor(bindingFlags, null, types, null); }
     }
 
     interface IFileOpenController

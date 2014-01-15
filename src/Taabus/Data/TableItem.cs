@@ -9,10 +9,11 @@ using hw.Forms;
 using hw.Helper;
 using JetBrains.Annotations;
 using Taabus.MetaData;
+using Taabus.UserInterface;
 
 namespace Taabus.Data
 {
-    sealed class TypeItem : Item, ITreeNodeSupport, ITreeNodeProbeSupport, IIconKeyProvider, IControlledItem
+    sealed class TypeItem : Item, ITreeNodeSupport, ITreeNodeProbeSupport, IIconKeyProvider, IControlledItem, IDataItem
     {
         readonly DataBase _parent;
         [DisableDump]
@@ -40,16 +41,16 @@ namespace Taabus.Data
             Data = new TypeQuery(parent.Parent, Parent.Name + "." + type.FullName);
         }
 
-        string IControlledItem.Title { get { return Name; } }
-        long IControlledItem.Count { get { return Data.Count(); } }
-        IEnumerable<IDataColumn> IControlledItem.Columns { get { return Members; } }
-        IEnumerable<DataRecord> IControlledItem.Data { get { return Data; } }
+        string CardView.IItem.Title { get { return Name; } }
+        long CardView.IItem.Count { get { return Data.Count(); } }
+        IEnumerable<IDataColumn> IColumnsAndDataProvider.Columns { get { return Members; } }
+        IEnumerable<DataRecord> IColumnsAndDataProvider.Data { get { return Data; } }
 
-        External.DataItem IControlledItem.ToDataItem
+        External.TableItem IChildItem.ToTableItemOrDefault
         {
             get
             {
-                return new External.DataItem
+                return new External.TableItem
                 {
                     TypeId = Name,
                     DataBaseId = _parent.Name,
@@ -158,7 +159,11 @@ namespace Taabus.Data
                 return Data.Where(r => r.Contains(fields, value));
             return new DataRecord[0];
         }
+
     }
+
+    interface IDataItem
+    {}
 
     sealed class TypeQuery : QueryBase
     {
@@ -223,3 +228,4 @@ namespace Taabus.Data
         }
     }
 }
+

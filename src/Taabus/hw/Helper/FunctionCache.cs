@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using hw.Debug;
+using Taabus;
 
 namespace hw.Helper
 {
@@ -90,7 +91,7 @@ namespace hw.Helper
         /// </summary>
         /// <value> </value>
         /// created 13.01.2007 15:43
-        public new TValue this[TKey key]
+        public new TValue this[IControlledItem key]
         {
             get
             {

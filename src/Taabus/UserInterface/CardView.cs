@@ -6,20 +6,21 @@ using System.Windows.Forms;
 using hw.Helper;
 using JetBrains.Annotations;
 using MetroFramework.Controls;
+using Taabus.Data;
+using Taabus.External;
 
 namespace Taabus.UserInterface
 {
     [UsedImplicitly]
-    public sealed class CardView : MetroButton, IWorkspaceItem
+    public sealed class CardView : MetroButton, IReferenceableItem
     {
         readonly UserInteraction[] _itemFunctions;
         readonly IControlledItem _item;
-        readonly WorkspaceView _parent;
+        internal WorkspaceView Parent;
 
-        internal CardView(WorkspaceView parent, IControlledItem item)
+        internal CardView(IControlledItem item)
         {
             _item = item;
-            _parent = parent;
             AutoSize = true;
             Text = item.Title;
             _itemFunctions = new[]
@@ -31,7 +32,14 @@ namespace Taabus.UserInterface
             ContextMenuStrip = CreateContextMenu();
         }
 
-        IControlledItem IWorkspaceItem.Item { get { return _item; } }
+        string IItem.Title { get { return _item.Title; } }
+        long IItem.Count { get { return _item.Count; } }
+        IEnumerable<IDataColumn> IColumnsAndDataProvider.Columns { get { return _item.Columns; } }
+        IEnumerable<DataRecord> IColumnsAndDataProvider.Data { get { return _item.Data; } }
+
+        TableItem IChildItem.ToTableItemOrDefault { get { return null; } }
+
+        IChildItem IDataItemContainer.Child { get { return _item; } }
 
         ContextMenuStrip CreateContextMenu()
         {
@@ -40,7 +48,13 @@ namespace Taabus.UserInterface
             return menu;
         }
 
-        void OnShowTable() { _parent.CallAddTable(_item, new Rectangle(Location, Size)); }
+        void OnShowTable() { Parent.CallAddTable(this, new Rectangle(Location, Size)); }
         void OnGetCount() { Text = _item.Title + " " + _item.Count.Format3Digits(); }
+
+        internal interface IItem : IColumnsAndDataProvider
+        {
+            string Title { get; }
+            long Count { get; }
+        }
     }
 }

@@ -12,9 +12,11 @@ namespace Taabus.External
         public string DataBaseId;
         public string TypeId;
 
-        internal IControlledItem ToControlledItem(ITaabusController parent)
+        internal override IControlledItem Internalize(Internalizer internalizer)
         {
-            return parent
+            return internalizer
+                .WorkSpaceView
+                .Controller
                 .Servers
                 .Single(s => s.Name == ServerId)
                 .DataBases
@@ -22,6 +24,5 @@ namespace Taabus.External
                 .Types
                 .Single(t => t.Name == TypeId);
         }
-        internal override IControlledItem Internalize(Internalizer internalizer) { throw new NotImplementedException(); }
     }
 }

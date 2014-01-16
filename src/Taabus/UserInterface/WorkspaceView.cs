@@ -11,11 +11,11 @@ namespace Taabus.UserInterface
 {
     sealed class WorkspaceView : MainView, DragDropController.ITarget
     {
-        readonly ITaabusController _controller;
+        internal readonly ITaabusController Controller;
         internal WorkspaceView(string tag, ITaabusController controller)
             : base("Workspace." + tag, controller)
         {
-            _controller = controller;
+            Controller = controller;
             AddFunction(new UserInteraction("Settings", OnConfiguration, Resources.appbar_settings));
             Client = new Panel();
         }
@@ -73,10 +73,10 @@ namespace Taabus.UserInterface
         void AddItem(Control control)
         {
             Client.Controls.Add(control);
-            _controller.Items = ExternalItems.ToArray();
+            Controller.Items = ExternalItems.ToArray();
         }
 
-        internal override void Reload() { ExternalItems = _controller.Items; }
+        internal override void Reload() { ExternalItems = Controller.Items; }
 
         static Rectangle FindPosition(Size size, Rectangle[] regions)
         {

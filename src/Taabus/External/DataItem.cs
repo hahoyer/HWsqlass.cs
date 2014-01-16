@@ -9,31 +9,31 @@ namespace Taabus.External
     [Serializer.Enable]
     public abstract class DataItem : DumpableObject
     {
-        internal abstract IControlledItem Internalize(Internalizer controller);
+        internal abstract IDataItemContainer Internalize(Internalizer controller);
     }
 
     [Serializer.Enable]
     public sealed class CardItem : DataItem
     {
         public Link Data;
-        internal override IControlledItem Internalize(Internalizer controller) { return new CardView(controller.Execute(Data),controller.WorkSpaceView); }
+        internal override IDataItemContainer Internalize(Internalizer controller) { return new CardView(controller.Execute(Data), controller.WorkSpaceView); }
     }
 
     [Serializer.Enable]
-    public sealed class TableVieItem : DataItem
+    public sealed class TableViewItem : DataItem
     {
         public Link Data;
-        internal override IControlledItem Internalize(Internalizer controller) { throw new NotImplementedException(); }
+        internal override IDataItemContainer Internalize(Internalizer controller) { return new TableView(controller.Execute(Data)); }
     }
 
     [Serializer.Enable]
-    public abstract class Link: DumpableObject
+    public abstract class Link : DumpableObject
     {
         internal abstract IControlledItem Internalize(Internalizer internalizer);
     }
 
     [Serializer.Enable]
-    public sealed class Id :Link 
+    public sealed class Id : Link
     {
         public int Value;
         internal override IControlledItem Internalize(Internalizer internalizer) { return internalizer.Id(Value); }

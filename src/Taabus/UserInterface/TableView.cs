@@ -24,7 +24,7 @@ namespace Taabus.UserInterface
             Rows.AddRange(item.Data.Select(CreateRow).ToArray());
         }
 
-        External.DataItem IDataItemContainer.Externalize(IExternalIdProvider idProvider) { return new TableVieItem { Data = _item.Externalize(idProvider)}; }
+        External.DataItem IDataItemContainer.Externalize(IExternalIdProvider idProvider) { return new TableViewItem { Data = _item.Externalize(idProvider)}; }
 
         static DataGridViewTextBoxColumn CreateColumn(string name)
         {

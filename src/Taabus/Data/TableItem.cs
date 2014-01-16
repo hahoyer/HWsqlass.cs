@@ -42,8 +42,8 @@ namespace Taabus.Data
             Data = new TypeQuery(parent.Parent, Parent.Name + "." + type.FullName);
         }
 
-        string CardView.IItem.Title { get { return Name; } }
-        long CardView.IItem.Count { get { return Data.Count(); } }
+        string ICardViewItem.Title { get { return Name; } }
+        long ICardViewItem.Count { get { return Data.Count(); } }
         IEnumerable<IDataColumn> IColumnsAndDataProvider.Columns { get { return Members; } }
         IEnumerable<DataRecord> IColumnsAndDataProvider.Data { get { return Data; } }
         

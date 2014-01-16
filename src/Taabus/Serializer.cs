@@ -25,7 +25,7 @@ namespace Taabus
 
             var enable = type.GetAttribute<Enable>(false);
             if(enable != null)
-                return Serialize(type, data, RelevantMembers(type));
+                return Serialize(type, data, RelevantMembers(type, data));
 
             var xl = data as IList;
             if(xl != null)
@@ -45,7 +45,7 @@ namespace Taabus
                 return data.ToString();
 
             if(_relevantMembers.ContainsKey(type))
-                return Serialize(type, data, RelevantMembers(type, _relevantMembers[type]));
+                return Serialize(type, data, RelevantMembers(type, data, relevantMemberNames: _relevantMembers[type]));
 
             NotImplementedFunction(type, data);
             return null;
@@ -93,10 +93,18 @@ namespace Taabus
 
         static string FormatValue(object data) { return Serialize(data).Indent(); }
 
-        static bool IsRelevant(MemberInfo info)
+        static bool IsRelevant(MemberInfo info, object data)
         {
-            return IsPossible(info)
-                && info.GetAttribute<Disable>(false) == null;
+            if(!IsPossible(info))
+                return false;
+            if(info.GetAttribute<Disable>(false) != null)
+                return false;
+            var exceptions = info.GetAttributes<ExceptionFunctionAttribute>(false).ToArray();
+            if(!exceptions.Any())
+                return true;
+
+            var value = GetValue(info,data);
+            return !exceptions.Any(e => e.Check(value));
         }
 
         static bool IsPossible(MemberInfo info)
@@ -125,6 +133,21 @@ namespace Taabus
         public sealed class Disable : Attribute
         {}
 
+        [MeansImplicitUse]
+        [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
+        public abstract class ExceptionFunctionAttribute : Attribute
+        {
+            public abstract bool Check(object value);
+        }
+
+        public sealed class Except : ExceptionFunctionAttribute
+        {
+            readonly object _exception;
+            public Except(object exception) { _exception = exception; }
+            public override bool Check(object value) { return Equals(value, _exception); }
+        }
+
+
         public new static bool Equals(object x, object y)
         {
             if(x == y)
@@ -140,17 +163,17 @@ namespace Taabus
         {
             var result = new T();
             var type = typeof(T);
-            var a = RelevantMembers(type);
+            var a = RelevantMembers(type, x);
             foreach(var info in a)
                 SetValue(info, result, GetValue(info, x));
             return result;
         }
 
-        static IEnumerable<MemberInfo> RelevantMembers(Type type, string[] relevantMemberNames = null)
+        static IEnumerable<MemberInfo> RelevantMembers(Type type, object data, string[] relevantMemberNames = null)
         {
             var result = type
                 .GetMembers(BindingFlags.Instance | BindingFlags.Public)
-                .Where(IsRelevant);
+                .Where(x => IsRelevant(x, data));
             if(relevantMemberNames == null)
                 return result;
             return result.Where(m => relevantMemberNames.Contains(m.Name));

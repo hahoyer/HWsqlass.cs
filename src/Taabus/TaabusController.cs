@@ -18,7 +18,7 @@ namespace Taabus
         void Exit();
     }
 
-    interface IControlledItem : DragDropController.IItem, TableView.ITableViewItem, CardView.IItem
+    interface IControlledItem : DragDropController.IItem, TableView.ITableViewItem, ICardViewItem
     {
         Link Externalize(IExternalIdProvider idProvider);
     }

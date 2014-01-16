@@ -12,16 +12,16 @@ using Taabus.External;
 namespace Taabus.UserInterface
 {
     [UsedImplicitly]
-    public sealed class CardView : MetroButton, IControlledItem, IDataItemContainer 
+    public sealed class CardView : MetroButton, IReferenceableItem
     {
         readonly UserInteraction[] _itemFunctions;
         readonly IControlledItem _item;
-        internal new WorkspaceView Parent;
+        readonly WorkspaceView _parent;
 
         internal CardView(IControlledItem item, WorkspaceView parent)
         {
             _item = item;
-            Parent = parent;
+            _parent = parent;
             AutoSize = true;
             Text = item.Title;
             _itemFunctions = new[]
@@ -33,8 +33,8 @@ namespace Taabus.UserInterface
             ContextMenuStrip = CreateContextMenu();
         }
 
-        string IItem.Title { get { return _item.Title; } }
-        long IItem.Count { get { return _item.Count; } }
+        string ICardViewItem.Title { get { return _item.Title; } }
+        long ICardViewItem.Count { get { return _item.Count; } }
         IEnumerable<IDataColumn> IColumnsAndDataProvider.Columns { get { return _item.Columns; } }
         IEnumerable<DataRecord> IColumnsAndDataProvider.Data { get { return _item.Data; } }
         External.DataItem IDataItemContainer.Externalize(IExternalIdProvider idProvider) { return new CardItem { Data = _item.Externalize(idProvider) }; }
@@ -47,15 +47,13 @@ namespace Taabus.UserInterface
             return menu;
         }
 
-        void OnShowTable() { Parent.CallAddTable(this, new Rectangle(Location, Size)); }
+        void OnShowTable() { _parent.CallAddTable(this, new Rectangle(Location, Size)); }
         void OnGetCount() { Text = _item.Title + " " + _item.Count.Format3Digits(); }
-
-        internal interface IItem : IColumnsAndDataProvider
-        {
-            string Title { get; }
-            long Count { get; }
-        }
-    
     }
 
+    internal interface ICardViewItem : IColumnsAndDataProvider
+    {
+        string Title { get; }
+        long Count { get; }
+    }
 }

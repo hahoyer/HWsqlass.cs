@@ -4,7 +4,4 @@ using System.Linq;
 
 namespace Taabus
 {
-    interface IReferenceableItem : IControlledItem, IDataItemContainer 
-    {
-    }
 }

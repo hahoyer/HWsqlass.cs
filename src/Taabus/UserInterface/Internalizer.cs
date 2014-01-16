@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -41,7 +42,6 @@ namespace Taabus.UserInterface
             var control = (Control) item;
             return new Item
             {
-                Type = item.GetType().CompleteName(),
                 X = control.Location.X,
                 Y = control.Location.Y,
                 Width = control.Size.Width,
@@ -53,6 +53,7 @@ namespace Taabus.UserInterface
 
     sealed class Internalizer
     {
+        public readonly WorkspaceView WorkSpaceView;
         readonly IEnumerable<Item> _value;
         readonly FunctionCache<int, IReferenceableItem> _parents;
         public Internalizer(IEnumerable<Item> value, WorkspaceView workSpaceView)
@@ -61,8 +62,6 @@ namespace Taabus.UserInterface
             WorkSpaceView = workSpaceView;
             _parents = new FunctionCache<int, IReferenceableItem>(CreateNamed);
         }
-
-        public readonly WorkspaceView WorkSpaceView;
 
         public IEnumerable<IDataItemContainer> Execute() { return _value.Select(Execute); }
         internal IControlledItem Execute(Link data) { return data.Internalize(this); }
@@ -78,25 +77,19 @@ namespace Taabus.UserInterface
 
         IDataItemContainer Create(Item item)
         {
-            var constructor = item
-                .Type
-                .ResolveUniqueType()
-                .GetConstructor<WorkspaceView, IControlledItem>();
-
-            var result = ((IDataItemContainer) constructor.Invoke(new object[]
-            {
-                this,
-                FindItem(item.Data)
-            }));
-
+            var result = FindItem(item.Data);
             var control = (Control) result;
             control.Location = new Point(item.X, item.Y);
             control.Size = new Size(item.Width, item.Height);
             return result;
         }
 
-        IControlledItem FindItem(DataItem data) { return data.Internalize(this); }
+        IDataItemContainer FindItem(DataItem data) { return data.Internalize(this); }
 
-        internal IControlledItem Id(int value) { return _parents[value]; }
+        internal IReferenceableItem Id(int value) { return _parents[value]; }
+    }
+
+    interface IReferenceableItem : IControlledItem, IDataItemContainer
+    {
     }
 }

@@ -55,11 +55,14 @@ namespace Taabus.UserInterface
     {
         readonly IEnumerable<Item> _value;
         readonly FunctionCache<int, IReferenceableItem> _parents;
-        public Internalizer(IEnumerable<Item> value)
+        public Internalizer(IEnumerable<Item> value, WorkspaceView workSpaceView)
         {
             _value = value;
+            WorkSpaceView = workSpaceView;
             _parents = new FunctionCache<int, IReferenceableItem>(CreateNamed);
         }
+
+        public readonly WorkspaceView WorkSpaceView;
 
         public IEnumerable<IDataItemContainer> Execute() { return _value.Select(Execute); }
         internal IControlledItem Execute(Link data) { return data.Internalize(this); }

@@ -59,10 +59,9 @@ namespace Taabus.UserInterface
             return result;
         }
 
-        internal interface IItem : IColumnsAndDataProvider
+        internal interface ITableViewItem : IColumnsAndDataProvider
         {
         }
-
     }
 
 }

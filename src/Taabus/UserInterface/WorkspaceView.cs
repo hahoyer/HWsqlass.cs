@@ -26,7 +26,7 @@ namespace Taabus.UserInterface
 
         void AddCard(IControlledItem item, Point? location = null)
         {
-            var control = new CardView(item);
+            var control = new CardView(item, this);
             control.Location = location ?? DefaultLocation(control);
             AddItem(control);
         }
@@ -68,7 +68,7 @@ namespace Taabus.UserInterface
         }
 
         IEnumerable<IDataItemContainer> Items { get { return ItemControls.Cast<IDataItemContainer>(); } set { ItemControls = value.Cast<Control>(); } }
-        IEnumerable<Item> ExternalItems { get { return new Externalizer(Items).Execute(); } set { Items = new Internalizer(value).Execute(); } }
+        IEnumerable<Item> ExternalItems { get { return new Externalizer(Items).Execute(); } set { Items = new Internalizer(value, this).Execute(); } }
 
         void AddItem(Control control)
         {

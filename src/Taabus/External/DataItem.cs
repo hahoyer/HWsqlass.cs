@@ -16,7 +16,7 @@ namespace Taabus.External
     public sealed class CardItem : DataItem
     {
         public Link Data;
-        internal override IControlledItem Internalize(Internalizer controller) { return new CardView(controller.Execute(Data)); }
+        internal override IControlledItem Internalize(Internalizer controller) { return new CardView(controller.Execute(Data),controller.WorkSpaceView); }
     }
 
     [Serializer.Enable]

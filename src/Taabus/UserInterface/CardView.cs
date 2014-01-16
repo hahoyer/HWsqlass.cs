@@ -16,11 +16,12 @@ namespace Taabus.UserInterface
     {
         readonly UserInteraction[] _itemFunctions;
         readonly IControlledItem _item;
-        internal WorkspaceView Parent;
+        internal new WorkspaceView Parent;
 
-        internal CardView(IControlledItem item)
+        internal CardView(IControlledItem item, WorkspaceView parent)
         {
             _item = item;
+            Parent = parent;
             AutoSize = true;
             Text = item.Title;
             _itemFunctions = new[]
@@ -54,5 +55,7 @@ namespace Taabus.UserInterface
             string Title { get; }
             long Count { get; }
         }
+    
     }
+
 }

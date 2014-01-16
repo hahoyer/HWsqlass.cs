@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using Taabus.Data;
+using Taabus.External;
 
 namespace Taabus.UserInterface
 {
     sealed class TableView : DataGridView, IDataItemContainer
     {
-        readonly IChildItem _item;
+        readonly IControlledItem _item;
 
-        public TableView(IChildItem item)
+        public TableView(IControlledItem item)
         {
             _item = item;
             AllowUserToAddRows = false;
@@ -23,7 +24,7 @@ namespace Taabus.UserInterface
             Rows.AddRange(item.Data.Select(CreateRow).ToArray());
         }
 
-        IChildItem IDataItemContainer.Child{ get { return _item; } }
+        External.DataItem IDataItemContainer.Externalize(IExternalIdProvider idProvider) { return new TableVieItem { Data = _item.Externalize(idProvider)}; }
 
         static DataGridViewTextBoxColumn CreateColumn(string name)
         {
@@ -41,7 +42,7 @@ namespace Taabus.UserInterface
             return result;
         }
 
-        static DataGridViewCell CreateCell(DataItem arg) { return CreateCell(arg.Value); }
+        static DataGridViewCell CreateCell(Data.DataItem arg) { return CreateCell(arg.Value); }
 
         static DataGridViewCell CreateCell(object value)
         {

@@ -22,7 +22,7 @@ namespace Taabus.UserInterface
 
         static void OnConfiguration() { }
         internal void CallAddCard(IControlledItem item, Point? location = null) { Client.ThreadCallGuard(() => AddCard(item, location)); }
-        internal void CallAddTable(IChildItem item, Rectangle itemRectangle) { Client.ThreadCallGuard(() => AddTable(item, itemRectangle)); }
+        internal void CallAddTable(IControlledItem item, Rectangle itemRectangle) { Client.ThreadCallGuard(() => AddTable(item, itemRectangle)); }
 
         void AddCard(IControlledItem item, Point? location = null)
         {
@@ -31,7 +31,7 @@ namespace Taabus.UserInterface
             AddItem(control);
         }
 
-        void AddTable(IChildItem item, Rectangle itemRectangle)
+        void AddTable(IControlledItem item, Rectangle itemRectangle)
         {
             var control = new TableView(item)
             {
@@ -68,7 +68,7 @@ namespace Taabus.UserInterface
         }
 
         IEnumerable<IDataItemContainer> Items { get { return ItemControls.Cast<IDataItemContainer>(); } set { ItemControls = value.Cast<Control>(); } }
-        IEnumerable<Item> ExternalItems { get { return new Externalizer(Items).Execute(); } set { Items = new Internalizer(value, _controller).Execute(); } }
+        IEnumerable<Item> ExternalItems { get { return new Externalizer(Items).Execute(); } set { Items = new Internalizer(value).Execute(); } }
 
         void AddItem(Control control)
         {

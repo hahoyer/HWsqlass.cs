@@ -18,18 +18,19 @@ namespace Taabus
         void Exit();
     }
 
-    interface IControlledItem : DragDropController.IItem, IChildItem
+    interface IControlledItem : DragDropController.IItem, TableView.IItem, CardView.IItem
     {
+        Link Externalize(IExternalIdProvider idProvider);
     }
 
     interface IDataItemContainer
     {
-        IChildItem Child{ get; }
+        External.DataItem Externalize(IExternalIdProvider idProvider);
     }
 
-    interface IChildItem: TableView.IItem, CardView.IItem
+    interface IExternalIdProvider
     {
-        TableItem ToTableItemOrDefault { get; }
+        int Id(IDataItemContainer parent);
     }
 
     interface IDataColumn

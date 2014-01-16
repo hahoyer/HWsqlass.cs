@@ -56,7 +56,7 @@
     <Compile Include="External\DataItem.cs" />
     <Compile Include="External\ExpansionDescription.cs" />
     <Compile Include="External\Item.cs" />
-    <Compile Include="External\TableItem.cs" />
+    <Compile Include="External\TypeItem.cs" />
     <Compile Include="hw\Debug\Configuration.cs" />
     <Compile Include="hw\Debug\DisableDumpAttribute.cs" />
     <Compile Include="hw\Debug\Dumpable.cs" />

@@ -8,6 +8,7 @@ using hw.Debug;
 using hw.Forms;
 using hw.Helper;
 using JetBrains.Annotations;
+using Taabus.External;
 using Taabus.MetaData;
 using Taabus.UserInterface;
 
@@ -45,18 +46,15 @@ namespace Taabus.Data
         long CardView.IItem.Count { get { return Data.Count(); } }
         IEnumerable<IDataColumn> IColumnsAndDataProvider.Columns { get { return Members; } }
         IEnumerable<DataRecord> IColumnsAndDataProvider.Data { get { return Data; } }
-
-        External.TableItem IChildItem.ToTableItemOrDefault
+        
+        Link IControlledItem.Externalize(IExternalIdProvider idProvider)
         {
-            get
+            return new External.TypeItem
             {
-                return new External.TableItem
-                {
-                    TypeId = Name,
-                    DataBaseId = _parent.Name,
-                    ServerId = _parent.Parent.Name
-                };
-            }
+                TypeId = Name,
+                DataBaseId = _parent.Name,
+                ServerId = _parent.Parent.Name
+            };
         }
 
         IEnumerable<TreeNode> ITreeNodeSupport.CreateNodes() { return CreateNodesYield(); }

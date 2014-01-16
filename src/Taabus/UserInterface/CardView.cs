@@ -12,7 +12,7 @@ using Taabus.External;
 namespace Taabus.UserInterface
 {
     [UsedImplicitly]
-    public sealed class CardView : MetroButton, IReferenceableItem
+    public sealed class CardView : MetroButton, IControlledItem, IDataItemContainer 
     {
         readonly UserInteraction[] _itemFunctions;
         readonly IControlledItem _item;
@@ -36,10 +36,8 @@ namespace Taabus.UserInterface
         long IItem.Count { get { return _item.Count; } }
         IEnumerable<IDataColumn> IColumnsAndDataProvider.Columns { get { return _item.Columns; } }
         IEnumerable<DataRecord> IColumnsAndDataProvider.Data { get { return _item.Data; } }
-
-        TableItem IChildItem.ToTableItemOrDefault { get { return null; } }
-
-        IChildItem IDataItemContainer.Child { get { return _item; } }
+        External.DataItem IDataItemContainer.Externalize(IExternalIdProvider idProvider) { return new CardItem { Data = _item.Externalize(idProvider) }; }
+        Link IControlledItem.Externalize(IExternalIdProvider idProvider) { return new Id {Value = idProvider.Id(this)}; }
 
         ContextMenuStrip CreateContextMenu()
         {

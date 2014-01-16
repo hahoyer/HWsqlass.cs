@@ -91,7 +91,7 @@ namespace hw.Helper
         /// </summary>
         /// <value> </value>
         /// created 13.01.2007 15:43
-        public new TValue this[IControlledItem key]
+        public new TValue this[TKey key]
         {
             get
             {

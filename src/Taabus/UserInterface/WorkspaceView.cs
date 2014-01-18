@@ -9,7 +9,7 @@ using Taabus.Properties;
 
 namespace Taabus.UserInterface
 {
-    sealed class WorkspaceView : MainView, DragDropController.ITarget
+    sealed class WorkspaceView : MainView, DragDropController.IDestination
     {
         internal readonly ITaabusController Controller;
         internal WorkspaceView(string tag, ITaabusController controller)
@@ -21,17 +21,24 @@ namespace Taabus.UserInterface
         }
 
         static void OnConfiguration() { }
-        internal void CallAddCard(IControlledItem item, Point? location = null) { Client.ThreadCallGuard(() => AddCard(item, location)); }
-        internal void CallAddTable(IControlledItem item, Rectangle itemRectangle) { Client.ThreadCallGuard(() => AddTable(item, itemRectangle)); }
 
-        void AddCard(IControlledItem item, Point? location = null)
+        Control DragDropController.IDestination.Control { get { return Client; } }
+        void DragDropController.IDestination.Copy(DragDropController.IItem item, Point location) { CallAddCard((TypeItemView.IItem) item, location); }
+        void DragDropController.IDestination.Move(DragDropController.IItem item, Point location) { ((Control) item).Location = location; }
+
+        void DragDropController.IDestination.Link(DragDropController.IItem item, Point location) { NotImplementedMethod(item, location); }
+
+        internal void CallAddCard(TypeItemView.IItem item, Point? location = null) { Client.ThreadCallGuard(() => AddCard(item, location)); }
+        internal void CallAddTable(TableView.IItem item, Rectangle itemRectangle) { Client.ThreadCallGuard(() => AddTable(item, itemRectangle)); }
+
+        void AddCard(TypeItemView.IItem item, Point? location = null)
         {
-            var control = new CardView(item, this);
+            var control = new TypeItemView(item, this);
             control.Location = location ?? DefaultLocation(control);
             AddItem(control);
         }
 
-        void AddTable(IControlledItem item, Rectangle itemRectangle)
+        void AddTable(TableView.IItem item, Rectangle itemRectangle)
         {
             var control = new TableView(item)
             {
@@ -57,7 +64,7 @@ namespace Taabus.UserInterface
                 return Client
                     .Controls
                     ._()
-                    .Where(c => c is IDataItemContainer);
+                    .Where(c => c is Internalizer.IItem);
             }
             set
             {
@@ -67,7 +74,7 @@ namespace Taabus.UserInterface
             }
         }
 
-        IEnumerable<IDataItemContainer> Items { get { return ItemControls.Cast<IDataItemContainer>(); } set { ItemControls = value.Cast<Control>(); } }
+        IEnumerable<Internalizer.IItem> Items { get { return ItemControls.Cast<Internalizer.IItem>(); } set { ItemControls = value.Cast<Control>(); } }
         IEnumerable<Item> ExternalItems { get { return new Externalizer(Items).Execute(); } set { Items = new Internalizer(value, this).Execute(); } }
 
         void AddItem(Control control)
@@ -86,9 +93,5 @@ namespace Taabus.UserInterface
                 result.Y += increment;
             return result;
         }
-
-        Control DragDropController.ITarget.Control { get { return Client; } }
-
-        void DragDropController.ITarget.Drop(DragDropController.IItem item, Point location) { CallAddCard(item as IControlledItem, location); }
     }
 }

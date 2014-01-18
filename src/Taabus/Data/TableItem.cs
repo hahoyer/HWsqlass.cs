@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Drawing;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Windows.Forms;
@@ -8,13 +9,18 @@ using hw.Debug;
 using hw.Forms;
 using hw.Helper;
 using JetBrains.Annotations;
-using Taabus.External;
 using Taabus.MetaData;
 using Taabus.UserInterface;
 
 namespace Taabus.Data
 {
-    sealed class TypeItem : Item, ITreeNodeSupport, ITreeNodeProbeSupport, IIconKeyProvider, IControlledItem, IDataItem
+    sealed class TypeItem : Item
+        , ITreeNodeSupport
+        , ITreeNodeProbeSupport
+        , IIconKeyProvider
+        , IDataItem
+        , DragDropController.IItem
+        , TypeItemView.IItem
     {
         readonly DataBase _parent;
         [DisableDump]
@@ -42,12 +48,12 @@ namespace Taabus.Data
             Data = new TypeQuery(parent.Parent, Parent.Name + "." + type.FullName);
         }
 
-        string ICardViewItem.Title { get { return Name; } }
-        long ICardViewItem.Count { get { return Data.Count(); } }
+        string TypeItemView.IItem.Title { get { return Name; } }
+        long TypeItemView.IItem.Count { get { return Data.Count(); } }
         IEnumerable<IDataColumn> IColumnsAndDataProvider.Columns { get { return Members; } }
         IEnumerable<DataRecord> IColumnsAndDataProvider.Data { get { return Data; } }
-        
-        Link IControlledItem.Externalize(IExternalIdProvider idProvider)
+
+        External.TypeItem IExternalizeable<External.TypeItem>.Convert(Externalizer provider)
         {
             return new External.TypeItem
             {
@@ -157,7 +163,6 @@ namespace Taabus.Data
                 return Data.Where(r => r.Contains(fields, value));
             return new DataRecord[0];
         }
-
     }
 
     interface IDataItem
@@ -226,4 +231,3 @@ namespace Taabus.Data
         }
     }
 }
-

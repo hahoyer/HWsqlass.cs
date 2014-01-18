@@ -7,11 +7,13 @@ using Taabus.External;
 
 namespace Taabus.UserInterface
 {
-    sealed class TableView : DataGridView, IDataItemContainer
+    sealed class TableView 
+        : DataGridView
+        , Internalizer.IItem
     {
-        readonly IControlledItem _item;
+        readonly IItem _item;
 
-        public TableView(IControlledItem item)
+        public TableView(IItem item)
         {
             _item = item;
             AllowUserToAddRows = false;
@@ -20,11 +22,17 @@ namespace Taabus.UserInterface
 
             Columns.Add(CreateColumn("#"));
             Columns[0].Frozen = true;
-            Columns.AddRange(item.Columns.Select(CreateColumn).ToArray());
-            Rows.AddRange(item.Data.Select(CreateRow).ToArray());
+            Columns.AddRange(_item.Columns.Select(CreateColumn).ToArray());
+            Rows.AddRange(_item.Data.Select(CreateRow).ToArray());
         }
 
-        External.DataItem IDataItemContainer.Externalize(IExternalIdProvider idProvider) { return new TableViewItem { Data = _item.Externalize(idProvider)}; }
+        ItemData Internalizer.IItem.Convert(Externalizer externalizer)
+        {
+            return new External.TableView
+            {
+                Data = _item.Convert(externalizer)
+            };
+        }
 
         static DataGridViewTextBoxColumn CreateColumn(string name)
         {
@@ -59,9 +67,9 @@ namespace Taabus.UserInterface
             return result;
         }
 
-        internal interface ITableViewItem : IColumnsAndDataProvider
+        internal interface IItem : IColumnsAndDataProvider, IExternalizeable<Id>
         {
         }
-    }
 
+    }
 }

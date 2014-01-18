@@ -12,18 +12,22 @@ using Taabus.External;
 namespace Taabus.UserInterface
 {
     [UsedImplicitly]
-    public sealed class CardView : MetroButton, IReferenceableItem
+    public sealed class TypeItemView
+        : MetroButton
+            , DragDropController.ISource
+            , DragDropController.IItem
+            , IReferenceableItem
     {
         readonly UserInteraction[] _itemFunctions;
-        readonly IControlledItem _item;
+        readonly IItem _item;
         readonly WorkspaceView _parent;
 
-        internal CardView(IControlledItem item, WorkspaceView parent)
+        internal TypeItemView(IItem item, WorkspaceView parent)
         {
             _item = item;
             _parent = parent;
             AutoSize = true;
-            Text = item.Title;
+            Text = _item.Title;
             _itemFunctions = new[]
             {
                 new UserInteraction("Count", OnGetCount, text: "count"),
@@ -31,14 +35,29 @@ namespace Taabus.UserInterface
             };
 
             ContextMenuStrip = CreateContextMenu();
+
+            var dragDropController = new DragDropController(this)
+            {
+                IsMove = true,
+                HasCopy = false,
+            };
+            dragDropController.AddDestination(parent);
         }
 
-        string ICardViewItem.Title { get { return _item.Title; } }
-        long ICardViewItem.Count { get { return _item.Count; } }
         IEnumerable<IDataColumn> IColumnsAndDataProvider.Columns { get { return _item.Columns; } }
         IEnumerable<DataRecord> IColumnsAndDataProvider.Data { get { return _item.Data; } }
-        External.DataItem IDataItemContainer.Externalize(IExternalIdProvider idProvider) { return new CardItem { Data = _item.Externalize(idProvider) }; }
-        Link IControlledItem.Externalize(IExternalIdProvider idProvider) { return new Id {Value = idProvider.Id(this)}; }
+        ItemData Internalizer.IItem.Convert(Externalizer externalizer)
+        {
+            var typeItem = _item.Convert(externalizer);
+            return new External.TypeItemView
+            {
+                Data = typeItem
+            };
+        }
+        Id IExternalizeable<Id>.Convert(Externalizer externalizer) { return new Id {Value = externalizer.Id(this)}; }
+        Control DragDropController.ISource.Control { get { return this; } }
+        DragDropController.IItem DragDropController.ISource.GetItemAt(Point point) { return this; }
+        Size DragDropController.ISource.GetDisplacementAt(Point point) { return new Size(point); }
 
         ContextMenuStrip CreateContextMenu()
         {
@@ -49,11 +68,11 @@ namespace Taabus.UserInterface
 
         void OnShowTable() { _parent.CallAddTable(this, new Rectangle(Location, Size)); }
         void OnGetCount() { Text = _item.Title + " " + _item.Count.Format3Digits(); }
-    }
 
-    internal interface ICardViewItem : IColumnsAndDataProvider
-    {
-        string Title { get; }
-        long Count { get; }
+        internal interface IItem : IColumnsAndDataProvider, IExternalizeable<External.TypeItem>
+        {
+            string Title { get; }
+            long Count { get; }
+        }
     }
 }

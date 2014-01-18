@@ -12,31 +12,43 @@ namespace Taabus.UserInterface
     sealed class DragDropController : DumpableObject
     {
         static int _nextObjectId;
+        [EnableDump]
         readonly int _objectId;
+        [EnableDump]
         readonly ISource _source;
-        ITarget[] _targets = new ITarget[0];
+        [EnableDump]
+        readonly List<IDestination> _destinations = new List<IDestination>();
 
+        [EnableDump]
         Point? _sourcePoint;
 
         public DragDropController(ISource source)
         {
             _objectId = _nextObjectId++;
             _source = source;
-            _source.Control.MouseDown += (s, e) => Point(e);
-            _source.Control.MouseUp += (s, e) => Point();
+            _source.Control.MouseDown += (s, e) => LastMouseDown = e;
+            _source.Control.MouseUp += (s, e) => LastMouseDown = null;
             _source.Control.QueryContinueDrag += (s, e) => OnSourceQueryContinueDrag(e);
             _source.Control.MouseMove += (s, e) => OnSourceMouseMove(e);
+            Tracer.FlaggedLine("\n" + Tracer.Dump(this));
         }
 
-        void Point(MouseEventArgs e) { _sourcePoint = new Point(e.X, e.Y); }
-        void Point() { _sourcePoint = null; }
+        MouseEventArgs LastMouseDown { set { _sourcePoint = value == null ? (Point?) null : new Point(value.X, value.Y); } }
 
-        internal void Add(ITarget target)
+        internal void AddDestination(IDestination destination) { _destinations.Insert(0, destination); }
+
+        void ActivateDrop(IDestination destination)
         {
-            target.Control.AllowDrop = true;
-            target.Control.DragOver += OnTargetDragOver;
-            target.Control.DragDrop += OnTargetDragDrop;
-            _targets = _targets.Concat(new[] {target}).ToArray();
+            destination.Control.AllowDrop = true;
+            destination.Control.DragOver += OnTargetDragOver;
+            destination.Control.DragDrop += OnTargetDragDrop;
+        }
+
+        void DeActivateDrop(IDestination destination)
+        {
+            destination.Control.AllowDrop = false;
+            destination.Control.DragOver -= OnTargetDragOver;
+            destination.Control.DragDrop -= OnTargetDragDrop;
         }
 
         [DisableDump]
@@ -102,22 +114,24 @@ namespace Taabus.UserInterface
             if(DragBox.Contains(e.X, e.Y))
                 return;
 
-            var dropEffect = _source.Control.DoDragDrop(_objectId, AllowedEffects);
+            foreach(var destination in _destinations)
+                ActivateDrop(destination);
 
-            // If the drag operation was a move then remove the item. 
-            if(dropEffect == DragDropEffects.Move)
-                NotImplementedMethod(e);
+            _source.Control.DoDragDrop(_objectId, AllowedEffects);
+
+            foreach(var destination in _destinations)
+                DeActivateDrop(destination);
         }
 
-        static void OnSourceQueryContinueDrag(QueryContinueDragEventArgs e)
+        void OnSourceQueryContinueDrag(QueryContinueDragEventArgs e)
         {
             if(e.EscapePressed)
                 e.Action = DragAction.Cancel;
-            //Tracer.FlaggedLine(e.Action.ToString()); 
+            Tracer.FlaggedLine(_objectId.ToString() + " " + e.Action.ToString());
         }
 
 
-        TargetPoint FindTargetPoint(object sender, DragEventArgs e)
+        DestinationPoint FindDestinationPoint(object sender, DragEventArgs e)
         {
             if(!e.SetEffect<int>(id => id == _objectId, DefaultEffects))
                 return null;
@@ -125,40 +139,58 @@ namespace Taabus.UserInterface
             if((AllowedEffects & e.Effect) == 0)
                 return null;
 
-            var target = _targets.Single(t => t.Control == sender);
-            return new TargetPoint
+            var target = _destinations.Single(t => t.Control == sender);
+            return new DestinationPoint
             {
                 Displacement = target.Control.PointToClient(new Point(e.X, e.Y)),
-                Target = target
+                Destination = target
             };
         }
 
         void OnTargetDragDrop(object sender, DragEventArgs e)
         {
-            var targetPoint = FindTargetPoint(sender, e);
+            var targetPoint = FindDestinationPoint(sender, e);
             if(targetPoint == null)
                 return;
             //Tracer.FlaggedLine(Tracer.Dump(targetPoint.Displacement));
-            targetPoint.Target.Drop(Item, targetPoint.Displacement - Displacement);
+            var location = targetPoint.Displacement - Displacement;
+            switch(e.Effect)
+            {
+                case DragDropEffects.Copy:
+                    targetPoint.Destination.Copy(Item, location);
+                    return;
+                case DragDropEffects.Move:
+                    targetPoint.Destination.Move(Item, location);
+                    return;
+                case DragDropEffects.Link:
+                    targetPoint.Destination.Link(Item, location);
+                    return;
+            }
         }
 
-        void OnTargetDragOver(object sender, DragEventArgs e) { FindTargetPoint(sender, e); }
+        void OnTargetDragOver(object sender, DragEventArgs e)
+        {
+            Tracer.FlaggedLine(_objectId + " " + e.X + " : " + e.Y);
+            FindDestinationPoint(sender, e);
+        }
         static void OnTargetDragEnter(DragEventArgs e) { Tracer.FlaggedLine(e.X + " : " + e.Y); }
         static void OnTargetDragLeave(EventArgs e) { Tracer.FlaggedLine(e.GetType().PrettyName()); }
 
-        sealed class TargetPoint
+        sealed class DestinationPoint
         {
             public Point Displacement;
-            public ITarget Target;
+            public IDestination Destination;
         }
 
         internal interface IItem
         {}
 
-        internal interface ITarget
+        internal interface IDestination
         {
             Control Control { get; }
-            void Drop(IItem item, Point location);
+            void Copy(IItem item, Point location);
+            void Move(IItem item, Point location);
+            void Link(IItem item, Point location);
         }
 
         internal interface ISource

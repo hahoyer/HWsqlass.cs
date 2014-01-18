@@ -6,13 +6,13 @@ using Taabus.UserInterface;
 namespace Taabus.External
 {
     [Serializer.Enable]
-    public sealed class TypeItem: Link
+    public sealed class TypeItem
     {
         public string ServerId;
         public string DataBaseId;
         public string TypeId;
 
-        internal override IControlledItem Internalize(Internalizer internalizer)
+        internal Data.TypeItem Internalize(Internalizer internalizer)
         {
             return internalizer
                 .WorkSpaceView

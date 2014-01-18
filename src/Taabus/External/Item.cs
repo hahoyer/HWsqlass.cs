@@ -9,7 +9,7 @@ namespace Taabus.External
     {
         [Serializer.Except(null)]
         public int? Id;
-        public DataItem Data;
+        public ItemData Data;
         public int X;
         public int Y;
         public int Width;

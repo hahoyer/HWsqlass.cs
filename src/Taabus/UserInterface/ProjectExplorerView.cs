@@ -174,7 +174,7 @@ namespace Taabus.UserInterface
             return PathWalk(value, node.Nodes, index + 1) ?? node;
         }
 
-        public void AddDropSite(DragDropController.ITarget target) { _dragDropController.Add(target); }
+        public void AddDropSite(DragDropController.IDestination destination) { _dragDropController.AddDestination(destination); }
 
         internal override void Reload() { _tree.ThreadCallGuard(InternalReload); }
 

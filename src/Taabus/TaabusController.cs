@@ -18,19 +18,9 @@ namespace Taabus
         void Exit();
     }
 
-    interface IControlledItem : DragDropController.IItem, TableView.ITableViewItem, ICardViewItem
-    {
-        Link Externalize(IExternalIdProvider idProvider);
-    }
-
-    interface IDataItemContainer
-    {
-        External.DataItem Externalize(IExternalIdProvider idProvider);
-    }
-
     interface IExternalIdProvider
     {
-        int Id(IDataItemContainer parent);
+        int Id(Internalizer.IItem parent);
     }
 
     interface IDataColumn
@@ -38,7 +28,7 @@ namespace Taabus
         string Name { get; }
     }
 
-    internal interface IColumnsAndDataProvider
+    interface IColumnsAndDataProvider
     {
         IEnumerable<IDataColumn> Columns { get; }
         IEnumerable<DataRecord> Data { get; }

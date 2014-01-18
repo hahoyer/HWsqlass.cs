@@ -37,14 +37,15 @@ public static class V13
                     {
                         "ConnectionString=Data Source=ANNE\\OJB_NET;Integrated Security=true",
                         "cwg_adsalesng_devtest",
-                        "as_AccountType"
+                        "as_AchievementLevel"
                     },
                 Servers = new Taabus.Data.Server[] {new Taabus.Data.Server {ConnectionString = "Data Source=ANNE\\OJB_NET;Integrated Security=true"}},
                 Items = new Taabus.External.Item[] 
                     {
                         new Taabus.External.Item 
                         {
-                            Data = new Taabus.External.CardItem 
+                            Id = 0,
+                            Data = new Taabus.External.TypeItemView 
                                 {
                                     Data = new Taabus.External.TypeItem 
                                         {
@@ -53,15 +54,15 @@ public static class V13
                                             TypeId = "as_AccessLevel"
                                         }
                                 },
-                            X = 130,
-                            Y = 105,
+                            X = 334,
+                            Y = 127,
                             Width = 96,
                             Height = 24
                         },
                         new Taabus.External.Item 
                         {
                             Id = 1,
-                            Data = new Taabus.External.CardItem 
+                            Data = new Taabus.External.TypeItemView 
                                 {
                                     Data = new Taabus.External.TypeItem 
                                         {
@@ -70,16 +71,24 @@ public static class V13
                                             TypeId = "as_AccountType"
                                         }
                                 },
-                            X = 292,
-                            Y = 222,
+                            X = 66,
+                            Y = 532,
                             Width = 99,
                             Height = 24
                         },
                         new Taabus.External.Item 
                         {
-                            Data = new Taabus.External.TableViewItem {Data = new Taabus.External.Id {Value = 1}},
+                            Data = new Taabus.External.TableView {Data = new Taabus.External.Id {Value = 0}},
                             X = 292,
                             Y = 258,
+                            Width = 297,
+                            Height = 240
+                        },
+                        new Taabus.External.Item 
+                        {
+                            Data = new Taabus.External.TableView {Data = new Taabus.External.Id {Value = 1}},
+                            X = 66,
+                            Y = 568,
                             Width = 297,
                             Height = 240
                         }

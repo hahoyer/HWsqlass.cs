@@ -12,27 +12,13 @@
     <Reference Include="MetroFramework, Version=1.2.0.3, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
       <HintPath>..\packages\MetroFramework.RunTime.1.2.0.3\lib\net40-Client\MetroFramework.dll</HintPath>
     </Reference>
-    <Reference Include="MetroFramework.Design">
-      <HintPath>..\packages\MetroFramework.Design.1.2.0.3\lib\net40\MetroFramework.Design.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="MetroFramework.Fonts, Version=1.2.0.3, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
-      <HintPath>..\packages\MetroFramework.Fonts.1.2.0.3\lib\net40\MetroFramework.Fonts.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Data.ConnectionUI">
-      <HintPath>..\packages\DataConnectionDialog.1.2\Lib\Microsoft.Data.ConnectionUI.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Data.ConnectionUI.Dialog">
       <HintPath>..\packages\DataConnectionDialog.1.2\Lib\Microsoft.Data.ConnectionUI.Dialog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs">
@@ -87,6 +73,7 @@
     </Compile>
     <Compile Include="hw\Forms\TreeForm.Designer.cs" />
     <Compile Include="hw\Helper\Box.cs" />
+    <Compile Include="hw\Helper\DateRange.cs" />
     <Compile Include="hw\Helper\DateTimeExtender.cs" />
     <Compile Include="hw\Helper\EnumEx.cs" />
     <Compile Include="hw\Helper\File.cs" />
@@ -102,11 +89,16 @@
     <Compile Include="hw\Helper\ValueCache.cs" />
     <Compile Include="hw\JetBrainsAnnotations.cs" />
     <Compile Include="hw\UnitTest\CategoryAttribute.cs" />
-    <Compile Include="IWorkspaceItem.cs" />
+    <Compile Include="hw\UnitTest\DependantAttribute.cs" />
+    <Compile Include="hw\UnitTest\TestExtender.cs" />
+    <Compile Include="hw\UnitTest\TestMethod.cs" />
+    <Compile Include="hw\UnitTest\TestRunner.cs" />
+    <Compile Include="hw\UnitTest\TestType.cs" />
     <Compile Include="PersistentConfiguration.cs" />
     <Compile Include="PersistenceController.cs" />
     <Compile Include="Serializer.cs" />
-    <Compile Include="UserInterface\CardView.cs">
+    <Compile Include="UserInterface\Externalizer.cs" />
+    <Compile Include="UserInterface\TypeItemView.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Extension.cs" />
@@ -131,11 +123,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="hw\UnitTest\DependantAttribute.cs" />
-    <Compile Include="hw\UnitTest\TestExtender.cs" />
-    <Compile Include="hw\UnitTest\TestMethod.cs" />
-    <Compile Include="hw\UnitTest\TestRunner.cs" />
-    <Compile Include="hw\UnitTest\TestType.cs" />
     <Compile Include="MainContainer.cs" />
     <Compile Include="MetaData\BasicType.cs" />
     <Compile Include="MetaData\IDataProvider.cs" />

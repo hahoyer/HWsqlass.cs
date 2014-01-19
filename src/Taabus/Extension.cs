@@ -85,6 +85,16 @@ namespace Taabus
                 && !xArray.Where((t, i) => !isEqual(t, yArray[i])).Any();
         }
 
+        internal static void SetEffect<T>(this DragEventArgs e, Func<T, bool> getIsValid, DragDropEffects defaultEffect)
+        {
+            e.Effect = hw.Forms.Extension.ObtainEffect(e, getIsValid, defaultEffect);
+        }
+
+        internal static bool IsNone(this DragEventArgs e)
+        {
+            return e.Effect == DragDropEffects.None;
+        }
+
     }
 
     interface IFileOpenController

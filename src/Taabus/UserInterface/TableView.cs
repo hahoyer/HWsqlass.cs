@@ -12,8 +12,11 @@ namespace Taabus.UserInterface
     sealed class TableView
         : MetroPanel
             , Internalizer.IItem
-            , WorkspaceView.ITaabusControl
+            , WorkspaceView.IControl
+            , DragDropController.IProxySource
     {
+        static int _nextId;
+
         readonly WorkspaceView _parent;
         readonly IItem _item;
 
@@ -24,8 +27,6 @@ namespace Taabus.UserInterface
         {
             _item = item;
             _parent = parent;
-            const int headerHeight = 10;
-            Size = new Size(Size.Width, Size.Height + headerHeight);
 
             _header = new MetroButton
             {
@@ -33,7 +34,6 @@ namespace Taabus.UserInterface
                 Text = _item.Title,
                 Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top
             };
-
             Controls.Add(_header);
 
             _grid = new DataGridView
@@ -45,24 +45,13 @@ namespace Taabus.UserInterface
                 Size = new Size(Size.Width, Size.Height - _header.Size.Height),
                 Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom | AnchorStyles.Top
             };
-
             _grid.ColumnWidthChanged += OnColumnWidthChanged;
             Controls.Add(_grid);
 
         }
 
-        void OnColumnWidthChanged(object sender, DataGridViewColumnEventArgs e) { _parent.Save(); }
-
-        void LoadColumns()
-        {
-            _grid.Columns.Add(CreateColumn("#"));
-            _grid.Columns[0].Frozen = true;
-            _grid.Columns.AddRange(_item.Columns.Select(CreateColumn).ToArray());
-        }
-
         ItemData Internalizer.IItem.Convert(Externalizer externalizer)
         {
-            var x = _grid.Columns;
             return new External.TableView
             {
                 Data = _item.Convert(externalizer),
@@ -72,11 +61,12 @@ namespace Taabus.UserInterface
 
         Control DragDropController.ISource.Control { get { return this; } }
         DragDropController.IItem DragDropController.ISource.GetItemAt(Point point) { return this; }
+        Control DragDropController.IProxySource.DragControl { get { return _header; } }
         Size DragDropController.ISource.GetDisplacementAt(Point point) { return new Size(point); }
 
         internal ColumnConfig[] ExternalColumnConfig
         {
-            get
+            private get
             {
                 var columns = _grid
                     .Columns
@@ -97,6 +87,15 @@ namespace Taabus.UserInterface
                 LoadRows();
                 _grid.ColumnWidthChanged += OnColumnWidthChanged;
             }
+        }
+
+        void OnColumnWidthChanged(object sender, DataGridViewColumnEventArgs e) { _parent.Save(); }
+
+        void LoadColumns()
+        {
+            _grid.Columns.Add(CreateColumn("#"));
+            _grid.Columns[0].Frozen = true;
+            _grid.Columns.AddRange(_item.Columns.Select(CreateColumn).ToArray());
         }
 
         void LoadRows() { _grid.Rows.AddRange(_item.Data.Select(CreateRow).ToArray()); }

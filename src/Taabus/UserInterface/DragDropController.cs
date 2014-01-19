@@ -4,8 +4,6 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using hw.Debug;
-using hw.Forms;
-using hw.Helper;
 
 namespace Taabus.UserInterface
 {
@@ -26,14 +24,39 @@ namespace Taabus.UserInterface
         {
             _objectId = _nextObjectId++;
             _source = source;
-            _source.Control.MouseDown += (s, e) => LastMouseDown = e;
-            _source.Control.MouseUp += (s, e) => LastMouseDown = null;
-            _source.Control.QueryContinueDrag += (s, e) => OnSourceQueryContinueDrag(e);
-            _source.Control.MouseMove += (s, e) => OnSourceMouseMove(e);
+            ActivaterDrag();
             //Tracer.FlaggedLine("\n" + Tracer.Dump(this));
         }
 
-        MouseEventArgs LastMouseDown { set { _sourcePoint = value == null ? (Point?) null : new Point(value.X, value.Y); } }
+        void ActivaterDrag()
+        {
+            var control = DragControl;
+            //Tracer.FlaggedLine(_objectId + " " + control.Tag);
+            control.MouseDown += (s, e) => LastMouseDown = e;
+            control.MouseUp += (s, e) => LastMouseDown = null;
+            control.QueryContinueDrag += (s, e) => OnSourceQueryContinueDrag(e);
+            control.MouseMove += (s, e) => OnSourceMouseMove(e);
+        }
+
+        Control DragControl
+        {
+            get
+            {
+                var proxySource = _source as IProxySource;
+                if(proxySource != null)
+                    return proxySource.DragControl;
+                return _source.Control;
+            }
+        }
+
+        MouseEventArgs LastMouseDown
+        {
+            set
+            {
+                _sourcePoint = value == null ? (Point?) null : new Point(value.X, value.Y);
+                //Tracer.FlaggedLine(_objectId + " " + _sourcePoint);
+            }
+        }
 
         internal void AddDestination(IDestination destination) { _destinations.Insert(0, destination); }
 
@@ -107,13 +130,15 @@ namespace Taabus.UserInterface
 
         void OnSourceMouseMove(MouseEventArgs e)
         {
-            if((e.Button & MouseButtons.Left) != MouseButtons.Left)
+            //Tracer.FlaggedLine(_objectId + " " + e.Location);
+            if ((e.Button & MouseButtons.Left) != MouseButtons.Left)
                 return;
             if(_sourcePoint == null)
                 return;
             if(DragBox.Contains(e.X, e.Y))
                 return;
 
+            //Tracer.FlaggedLine(_objectId + " " + e.Location);
             foreach(var destination in _destinations)
                 ActivateDrop(destination);
 
@@ -133,7 +158,8 @@ namespace Taabus.UserInterface
 
         DestinationPoint FindDestinationPoint(object sender, DragEventArgs e)
         {
-            if(!e.SetEffect<int>(id => id == _objectId, DefaultEffects))
+            SetEffect(e);
+            if(e.IsNone())
                 return null;
 
             if((AllowedEffects & e.Effect) == 0)
@@ -171,10 +197,9 @@ namespace Taabus.UserInterface
         void OnTargetDragOver(object sender, DragEventArgs e)
         {
             //Tracer.FlaggedLine(_objectId + " " + e.X + " : " + e.Y);
-            FindDestinationPoint(sender, e);
+            SetEffect(e);
         }
-        static void OnTargetDragEnter(DragEventArgs e) { Tracer.FlaggedLine(e.X + " : " + e.Y); }
-        static void OnTargetDragLeave(EventArgs e) { Tracer.FlaggedLine(e.GetType().PrettyName()); }
+        void SetEffect(DragEventArgs e) { e.SetEffect<int>(id => id == _objectId, DefaultEffects); }
 
         sealed class DestinationPoint
         {
@@ -198,6 +223,11 @@ namespace Taabus.UserInterface
             Control Control { get; }
             IItem GetItemAt(Point point);
             Size GetDisplacementAt(Point point);
+        }
+
+        internal interface IProxySource
+        {
+            Control DragControl { get; }
         }
     }
 }

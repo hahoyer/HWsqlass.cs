@@ -44,40 +44,6 @@ public static class V13
                     {
                         new Taabus.External.Item 
                         {
-                            Id = 0,
-                            Data = new Taabus.External.TypeItemView 
-                                {
-                                    Data = new Taabus.External.TypeItem 
-                                        {
-                                            ServerId = "ANNE\\OJB_NET",
-                                            DataBaseId = "cwg_adsalesng_devtest",
-                                            TypeId = "as_AccessLevel"
-                                        }
-                                },
-                            X = 205,
-                            Y = 119,
-                            Width = 96,
-                            Height = 24
-                        },
-                        new Taabus.External.Item 
-                        {
-                            Id = 1,
-                            Data = new Taabus.External.TypeItemView 
-                                {
-                                    Data = new Taabus.External.TypeItem 
-                                        {
-                                            ServerId = "ANNE\\OJB_NET",
-                                            DataBaseId = "cwg_adsalesng_devtest",
-                                            TypeId = "as_AccountType"
-                                        }
-                                },
-                            X = 35,
-                            Y = 354,
-                            Width = 99,
-                            Height = 24
-                        },
-                        new Taabus.External.Item 
-                        {
                             Data = new Taabus.External.TableView 
                                 {
                                     Data = new Taabus.External.Id {Value = 0},
@@ -120,10 +86,93 @@ public static class V13
                                             }
                                         }
                                 },
-                            X = 334,
-                            Y = 163,
+                            X = 577,
+                            Y = 197,
                             Width = 288,
                             Height = 240
+                        },
+                        new Taabus.External.Item 
+                        {
+                            Data = new Taabus.External.TableView 
+                                {
+                                    Data = new Taabus.External.Id {Value = 0},
+                                    ColumnConfig = new Taabus.External.ColumnConfig[] 
+                                        {
+                                            new Taabus.External.ColumnConfig 
+                                            {
+                                                Name = "#",
+                                                Width = 31
+                                            },
+                                            new Taabus.External.ColumnConfig 
+                                            {
+                                                Name = "AccessLevelId",
+                                                Width = 100
+                                            },
+                                            new Taabus.External.ColumnConfig 
+                                            {
+                                                Name = "MessageId",
+                                                Width = 100
+                                            },
+                                            new Taabus.External.ColumnConfig 
+                                            {
+                                                Name = "Inserted",
+                                                Width = 100
+                                            },
+                                            new Taabus.External.ColumnConfig 
+                                            {
+                                                Name = "Updated",
+                                                Width = 100
+                                            },
+                                            new Taabus.External.ColumnConfig 
+                                            {
+                                                Name = "UserId",
+                                                Width = 100
+                                            },
+                                            new Taabus.External.ColumnConfig 
+                                            {
+                                                Name = "Timestamp",
+                                                Width = 100
+                                            }
+                                        }
+                                },
+                            X = 386,
+                            Y = -1,
+                            Width = 288,
+                            Height = 240
+                        },
+                        new Taabus.External.Item 
+                        {
+                            Id = 0,
+                            Data = new Taabus.External.TypeItemView 
+                                {
+                                    Data = new Taabus.External.TypeItem 
+                                        {
+                                            ServerId = "ANNE\\OJB_NET",
+                                            DataBaseId = "cwg_adsalesng_devtest",
+                                            TypeId = "as_AccessLevel"
+                                        }
+                                },
+                            X = 205,
+                            Y = 119,
+                            Width = 96,
+                            Height = 24
+                        },
+                        new Taabus.External.Item 
+                        {
+                            Id = 1,
+                            Data = new Taabus.External.TypeItemView 
+                                {
+                                    Data = new Taabus.External.TypeItem 
+                                        {
+                                            ServerId = "ANNE\\OJB_NET",
+                                            DataBaseId = "cwg_adsalesng_devtest",
+                                            TypeId = "as_AccountType"
+                                        }
+                                },
+                            X = 35,
+                            Y = 354,
+                            Width = 99,
+                            Height = 24
                         },
                         new Taabus.External.Item 
                         {
@@ -172,55 +221,6 @@ public static class V13
                             X = 66,
                             Y = 568,
                             Width = 297,
-                            Height = 240
-                        },
-                        new Taabus.External.Item 
-                        {
-                            Data = new Taabus.External.TableView 
-                                {
-                                    Data = new Taabus.External.Id {Value = 0},
-                                    ColumnConfig = new Taabus.External.ColumnConfig[] 
-                                        {
-                                            new Taabus.External.ColumnConfig 
-                                            {
-                                                Name = "#",
-                                                Width = 31
-                                            },
-                                            new Taabus.External.ColumnConfig 
-                                            {
-                                                Name = "AccessLevelId",
-                                                Width = 100
-                                            },
-                                            new Taabus.External.ColumnConfig 
-                                            {
-                                                Name = "MessageId",
-                                                Width = 100
-                                            },
-                                            new Taabus.External.ColumnConfig 
-                                            {
-                                                Name = "Inserted",
-                                                Width = 100
-                                            },
-                                            new Taabus.External.ColumnConfig 
-                                            {
-                                                Name = "Updated",
-                                                Width = 100
-                                            },
-                                            new Taabus.External.ColumnConfig 
-                                            {
-                                                Name = "UserId",
-                                                Width = 100
-                                            },
-                                            new Taabus.External.ColumnConfig 
-                                            {
-                                                Name = "Timestamp",
-                                                Width = 100
-                                            }
-                                        }
-                                },
-                            X = 205,
-                            Y = 155,
-                            Width = 288,
                             Height = 240
                         }
                     }

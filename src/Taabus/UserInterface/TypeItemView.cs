@@ -15,7 +15,7 @@ namespace Taabus.UserInterface
     public sealed class TypeItemView
         : MetroButton
             , IReferenceableItem
-            , WorkspaceView.ITaabusControl
+            , WorkspaceView.IControl
     {
         readonly UserInteraction[] _itemFunctions;
         readonly IItem _item;
@@ -32,9 +32,7 @@ namespace Taabus.UserInterface
                 new UserInteraction("Count", OnGetCount, text: "count"),
                 new UserInteraction("Table", OnShowTable, text: "table"),
             };
-
             ContextMenuStrip = CreateContextMenu();
-
         }
 
         IEnumerable<IDataColumn> IColumnsAndDataProvider.Columns { get { return _item.Columns; } }
@@ -68,5 +66,6 @@ namespace Taabus.UserInterface
             string Title { get; }
             long Count { get; }
         }
+
     }
 }

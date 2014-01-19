@@ -24,11 +24,17 @@ namespace Taabus.UserInterface
 
         Control DragDropController.IDestination.Control { get { return Client; } }
         void DragDropController.IDestination.Copy(DragDropController.IItem item, Point location) { CallAddCard((TypeItemView.IItem) item, location); }
-        void DragDropController.IDestination.Move(DragDropController.IItem item, Point location) { ((Control) item).Location = location; }
+        void DragDropController.IDestination.Move(DragDropController.IItem item, Point location)
+        {
+            var control = ((Control) item);
+            control.Location = location;
+            control.BringToFront();
+            Save();
+        }
 
         void DragDropController.IDestination.Link(DragDropController.IItem item, Point location) { NotImplementedMethod(item, location); }
 
-        internal void CallAddCard(TypeItemView.IItem item, Point? location = null) { Client.ThreadCallGuard(() => AddCard(item, location)); }
+        void CallAddCard(TypeItemView.IItem item, Point? location = null) { Client.ThreadCallGuard(() => AddCard(item, location)); }
         internal void CallAddTable(TableView.IItem item, Rectangle itemRectangle) { Client.ThreadCallGuard(() => AddTable(item, itemRectangle)); }
 
         void AddCard(TypeItemView.IItem item, Point? location = null)
@@ -58,17 +64,18 @@ namespace Taabus.UserInterface
             return FindPosition(control.Size, regions).Location;
         }
 
-        IEnumerable<ITaabusControl> ItemControls
+        IEnumerable<IControl> ItemControls
         {
             get
             {
                 return Client
                     .Controls
                     ._()
-                    .Cast<ITaabusControl>();
+                    .Cast<IControl>();
             }
             set
             {
+
                 var panel = new Panel();
                 var controls = value.Select(c => c.Control).ToArray();
                 panel.Controls.AddRange(controls);
@@ -91,11 +98,12 @@ namespace Taabus.UserInterface
             {
                 ItemControls = new Internalizer(value, this)
                     .Execute()
-                    .Cast<ITaabusControl>();
+                    .Cast<IControl>()
+                    .ToArray();
             }
         }
 
-        void AddItem(ITaabusControl control)
+        void AddItem(DragDropController.ISource control)
         {
             Client.Controls.Add(control.Control);
             InstallDragDropController(control);
@@ -115,9 +123,8 @@ namespace Taabus.UserInterface
             return result;
         }
 
-        internal interface ITaabusControl : DragDropController.ISource , DragDropController.IItem
-        {
-        }
+        internal interface IControl : DragDropController.ISource, DragDropController.IItem
+        {}
 
         internal void InstallDragDropController(DragDropController.ISource source)
         {

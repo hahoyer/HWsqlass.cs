@@ -40,48 +40,69 @@ namespace Taabus.UserInterface
 
         void AddTable(TableView.IItem item, Rectangle itemRectangle)
         {
-            var control = new TableView(item)
+            var control = new TableView(item, this)
             {
                 Location = new Point(itemRectangle.X, (int) (itemRectangle.Bottom + itemRectangle.Height * 0.5)),
                 Size = new Size(itemRectangle.Width * 3, itemRectangle.Height * 10)
             };
+            control.LoadData();
             AddItem(control);
-            control.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCellsExceptHeader);
+            control.OnAdded();
         }
 
         Point DefaultLocation(Control control)
         {
             var regions = ItemControls
-                .Select(c => new Rectangle(c.Location, c.Size))
+                .Select(c => new Rectangle(c.Control.Location, c.Control.Size))
                 .ToArray();
             return FindPosition(control.Size, regions).Location;
         }
 
-        IEnumerable<Control> ItemControls
+        IEnumerable<ITaabusControl> ItemControls
         {
             get
             {
                 return Client
                     .Controls
                     ._()
-                    .Where(c => c is Internalizer.IItem);
+                    .Cast<ITaabusControl>();
             }
             set
             {
                 var panel = new Panel();
-                panel.Controls.AddRange(value.ToArray());
+                var controls = value.Select(c => c.Control).ToArray();
+                panel.Controls.AddRange(controls);
                 Client = panel;
+                foreach (var control in value)
+                    InstallDragDropController(control);
             }
         }
 
-        IEnumerable<Internalizer.IItem> Items { get { return ItemControls.Cast<Internalizer.IItem>(); } set { ItemControls = value.Cast<Control>(); } }
-        IEnumerable<Item> ExternalItems { get { return new Externalizer(Items).Execute(); } set { Items = new Internalizer(value, this).Execute(); } }
-
-        void AddItem(Control control)
+        IEnumerable<Item> ExternalItems
         {
-            Client.Controls.Add(control);
-            Controller.Items = ExternalItems.ToArray();
+            get
+            {
+                var items = ItemControls
+                    .Cast<Internalizer.IItem>();
+                return new Externalizer()
+                    .Execute(items);
+            }
+            set
+            {
+                ItemControls = new Internalizer(value, this)
+                    .Execute()
+                    .Cast<ITaabusControl>();
+            }
         }
+
+        void AddItem(ITaabusControl control)
+        {
+            Client.Controls.Add(control.Control);
+            InstallDragDropController(control);
+            Save();
+        }
+
+        internal void Save() { Controller.Items = ExternalItems.ToArray(); }
 
         internal override void Reload() { ExternalItems = Controller.Items; }
 
@@ -92,6 +113,20 @@ namespace Taabus.UserInterface
             while(regions.Any(r => r.IntersectsWith(result)))
                 result.Y += increment;
             return result;
+        }
+
+        internal interface ITaabusControl : DragDropController.ISource , DragDropController.IItem
+        {
+        }
+
+        internal void InstallDragDropController(DragDropController.ISource source)
+        {
+            var dragDropController = new DragDropController(source)
+            {
+                IsMove = true,
+                HasCopy = false,
+            };
+            dragDropController.AddDestination(this);
         }
     }
 }

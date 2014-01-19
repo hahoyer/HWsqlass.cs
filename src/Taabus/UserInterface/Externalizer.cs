@@ -10,23 +10,21 @@ namespace Taabus.UserInterface
 {
     sealed class Externalizer : DumpableObject
     {
-        readonly IEnumerable<Internalizer.IItem> _value;
         readonly FunctionCache<Internalizer.IItem, Item> _map;
         readonly FunctionCache<Item, int> _ids;
         int _nextId;
 
-        public Externalizer(IEnumerable<Internalizer.IItem> value)
+        internal Externalizer()
         {
             _map = new FunctionCache<Internalizer.IItem, Item>(Create);
             _ids = new FunctionCache<Item, int>(Id);
-            _value = value;
         }
 
         internal int Id(Internalizer.IItem parent) { return _ids[_map[parent]]; }
 
-        internal IEnumerable<Item> Execute()
+        internal IEnumerable<Item> Execute(IEnumerable<Internalizer.IItem> value)
         {
-            return _value
+            return value
                 .Select(item => _map[item])
                 .ToArray()
                 .Select(SetId);
@@ -55,5 +53,13 @@ namespace Taabus.UserInterface
             };
         }
 
+        public static ColumnConfig Convert(DataGridViewColumn column)
+        {
+            return new ColumnConfig
+            {
+                Name = column.Name,
+                Width = column.Width
+            };
+        }
     }
 }

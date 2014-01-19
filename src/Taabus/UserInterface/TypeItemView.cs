@@ -14,9 +14,8 @@ namespace Taabus.UserInterface
     [UsedImplicitly]
     public sealed class TypeItemView
         : MetroButton
-            , DragDropController.ISource
-            , DragDropController.IItem
             , IReferenceableItem
+            , WorkspaceView.ITaabusControl
     {
         readonly UserInteraction[] _itemFunctions;
         readonly IItem _item;
@@ -36,12 +35,6 @@ namespace Taabus.UserInterface
 
             ContextMenuStrip = CreateContextMenu();
 
-            var dragDropController = new DragDropController(this)
-            {
-                IsMove = true,
-                HasCopy = false,
-            };
-            dragDropController.AddDestination(parent);
         }
 
         IEnumerable<IDataColumn> IColumnsAndDataProvider.Columns { get { return _item.Columns; } }
@@ -58,6 +51,7 @@ namespace Taabus.UserInterface
         Control DragDropController.ISource.Control { get { return this; } }
         DragDropController.IItem DragDropController.ISource.GetItemAt(Point point) { return this; }
         Size DragDropController.ISource.GetDisplacementAt(Point point) { return new Size(point); }
+        string TableView.IItem.Title { get { return _item.Title; } }
 
         ContextMenuStrip CreateContextMenu()
         {

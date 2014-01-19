@@ -14,14 +14,32 @@ namespace Taabus.External
     public sealed class TypeItemView : ItemData
     {
         public TypeItem Data;
-        internal override Internalizer.IItem Internalize(Internalizer controller) { return new UserInterface.TypeItemView(controller.Execute(Data), controller.WorkSpaceView); }
+        internal override Internalizer.IItem Internalize(Internalizer controller)
+        {
+            return new UserInterface.TypeItemView(controller.Execute(Data), controller.WorkSpaceView)
+            {};
+        }
     }
 
     [Serializer.Enable]
     public sealed class TableView : ItemData
     {
         public Id Data;
-        internal override Internalizer.IItem Internalize(Internalizer controller) { return new UserInterface.TableView(controller.Execute(Data)); }
+        public ColumnConfig[] ColumnConfig;
+        internal override Internalizer.IItem Internalize(Internalizer controller)
+        {
+            return new UserInterface.TableView(controller.Execute(Data), controller.WorkSpaceView)
+            {
+                ExternalColumnConfig = ColumnConfig
+            };
+        }
+    }
+
+    [Serializer.Enable]
+    public sealed class ColumnConfig
+    {
+        public string Name;
+        public int Width;
     }
 
     [Serializer.Enable]

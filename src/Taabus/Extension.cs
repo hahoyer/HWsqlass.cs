@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -52,15 +53,7 @@ namespace Taabus
             controller.FileName = d.FileName;
         }
 
-        public static bool Equals<T>(this IEnumerable<T> x, IEnumerable<T> y, Func<T, T, bool> isEqual)
-        {
-            var xArray = x.ToArray();
-            var yArray = y.ToArray();
-            return xArray.Length == yArray.Length
-                && !xArray.Where((t, i) => !isEqual(t, yArray[i])).Any();
-        }
-
-        public static bool Equals<T>(this IEnumerable<T> x, IEnumerable<T> y)
+        internal static bool Equals<T>(this IEnumerable<T> x, IEnumerable<T> y)
             where T : IEquatable<T> { return Equals(x, y, (xx, yy) => xx.Equals(yy)); }
 
         internal static ConstructorInfo GetConstructor<T1>
@@ -75,8 +68,23 @@ namespace Taabus
             return GetConstructor(type, bindingFlags, typeof(T1), typeof(T2));
         }
 
+        internal static IEnumerable<DataGridViewColumn> _(this DataGridViewColumnCollection value)
+        {
+            for(var index = 0; index < value.Count; index++)
+                yield return value[index];
+        }
+
         static ConstructorInfo GetConstructor(Type type, params Type[] types) { return type.GetConstructor(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, types, null); }
         static ConstructorInfo GetConstructor(Type type, BindingFlags bindingFlags, params Type[] types) { return type.GetConstructor(bindingFlags, null, types, null); }
+
+        static bool Equals<T>(this IEnumerable<T> x, IEnumerable<T> y, Func<T, T, bool> isEqual)
+        {
+            var xArray = x.ToArray();
+            var yArray = y.ToArray();
+            return xArray.Length == yArray.Length
+                && !xArray.Where((t, i) => !isEqual(t, yArray[i])).Any();
+        }
+
     }
 
     interface IFileOpenController

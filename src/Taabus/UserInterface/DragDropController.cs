@@ -30,7 +30,7 @@ namespace Taabus.UserInterface
             _source.Control.MouseUp += (s, e) => LastMouseDown = null;
             _source.Control.QueryContinueDrag += (s, e) => OnSourceQueryContinueDrag(e);
             _source.Control.MouseMove += (s, e) => OnSourceMouseMove(e);
-            Tracer.FlaggedLine("\n" + Tracer.Dump(this));
+            //Tracer.FlaggedLine("\n" + Tracer.Dump(this));
         }
 
         MouseEventArgs LastMouseDown { set { _sourcePoint = value == null ? (Point?) null : new Point(value.X, value.Y); } }
@@ -123,11 +123,11 @@ namespace Taabus.UserInterface
                 DeActivateDrop(destination);
         }
 
-        void OnSourceQueryContinueDrag(QueryContinueDragEventArgs e)
+        static void OnSourceQueryContinueDrag(QueryContinueDragEventArgs e)
         {
             if(e.EscapePressed)
                 e.Action = DragAction.Cancel;
-            Tracer.FlaggedLine(_objectId.ToString() + " " + e.Action.ToString());
+            //Tracer.FlaggedLine(_objectId.ToString() + " " + e.Action.ToString());
         }
 
 
@@ -170,7 +170,7 @@ namespace Taabus.UserInterface
 
         void OnTargetDragOver(object sender, DragEventArgs e)
         {
-            Tracer.FlaggedLine(_objectId + " " + e.X + " : " + e.Y);
+            //Tracer.FlaggedLine(_objectId + " " + e.X + " : " + e.Y);
             FindDestinationPoint(sender, e);
         }
         static void OnTargetDragEnter(DragEventArgs e) { Tracer.FlaggedLine(e.X + " : " + e.Y); }

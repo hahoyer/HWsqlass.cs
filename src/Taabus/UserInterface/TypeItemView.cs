@@ -16,6 +16,7 @@ namespace Taabus.UserInterface
         : MetroButton
             , IReferenceableItem
             , WorkspaceView.IControl
+            , FilterView.IItem
     {
         readonly UserInteraction[] _itemFunctions;
         readonly IItem _item;
@@ -30,6 +31,7 @@ namespace Taabus.UserInterface
             _itemFunctions = new[]
             {
                 new UserInteraction("Count", OnGetCount, text: "count"),
+                new UserInteraction("Filter", OnFilter, text: "filter"),
                 new UserInteraction("Table", OnShowTable, text: "table"),
             };
             ContextMenuStrip = CreateContextMenu();
@@ -50,6 +52,7 @@ namespace Taabus.UserInterface
         DragDropController.IItem DragDropController.ISource.GetItemAt(Point point) { return this; }
         Size DragDropController.ISource.GetDisplacementAt(Point point) { return new Size(point); }
         string TableView.IItem.Title { get { return _item.Title; } }
+        string FilterView.IItem.Title { get { return _item.Title; } }
 
         ContextMenuStrip CreateContextMenu()
         {
@@ -58,6 +61,7 @@ namespace Taabus.UserInterface
             return menu;
         }
 
+        void OnFilter() { _parent.CallAddFilter(this, new Rectangle(Location, Size)); }
         void OnShowTable() { _parent.CallAddTable(this, new Rectangle(Location, Size)); }
         void OnGetCount() { Text = _item.Title + " " + _item.Count.Format3Digits(); }
 

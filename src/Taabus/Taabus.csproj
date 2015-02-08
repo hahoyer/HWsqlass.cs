@@ -98,6 +98,9 @@
     <Compile Include="PersistenceController.cs" />
     <Compile Include="Serializer.cs" />
     <Compile Include="UserInterface\Externalizer.cs" />
+    <Compile Include="UserInterface\FieldFilterView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UserInterface\TypeItemView.cs">
       <SubType>Component</SubType>
     </Compile>

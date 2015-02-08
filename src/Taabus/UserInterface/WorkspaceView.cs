@@ -36,12 +36,25 @@ namespace Taabus.UserInterface
 
         void CallAddCard(TypeItemView.IItem item, Point? location = null) { Client.ThreadCallGuard(() => AddCard(item, location)); }
         internal void CallAddTable(TableView.IItem item, Rectangle itemRectangle) { Client.ThreadCallGuard(() => AddTable(item, itemRectangle)); }
+        internal void CallAddFilter(FilterView.IItem item, Rectangle itemRectangle) { Client.ThreadCallGuard(() => AddFilter(item, itemRectangle)); }
 
         void AddCard(TypeItemView.IItem item, Point? location = null)
         {
             var control = new TypeItemView(item, this);
             control.Location = location ?? DefaultLocation(control);
             AddItem(control);
+        }
+
+        void AddFilter(FilterView.IItem item, Rectangle itemRectangle)
+        {
+            var control = new FilterView(item, this)
+            {
+                Location = new Point(itemRectangle.X, (int) (itemRectangle.Bottom + itemRectangle.Height * 0.5)),
+                Size = new Size(itemRectangle.Width * 3, itemRectangle.Height * 10)
+            };
+            control.LoadData();
+            AddItem(control);
+            control.OnAdded();
         }
 
         void AddTable(TableView.IItem item, Rectangle itemRectangle)

@@ -74,28 +74,8 @@ namespace Taabus.UserInterface
             destination.Control.DragDrop -= OnTargetDragDrop;
         }
 
-        [DisableDump]
-        IItem Item
-        {
-            get
-            {
-                if(_sourcePoint == null)
-                    return null;
-                return _source.GetItemAt(_sourcePoint.Value);
-            }
-        }
-
-        [DisableDump]
-        Size Displacement
-        {
-            get
-            {
-                if(_sourcePoint == null)
-                    return default(Size);
-                return _source.GetDisplacementAt(_sourcePoint.Value);
-            }
-        }
-
+        IItem Item { get { return _sourcePoint == null ? null : _source.GetItemAt(_sourcePoint.Value); } }
+        Size Displacement { get { return _sourcePoint == null ? default(Size) : _source.GetDisplacementAt(_sourcePoint.Value); } }
 
         [DisableDump]
         Rectangle DragBox
@@ -131,7 +111,7 @@ namespace Taabus.UserInterface
         void OnSourceMouseMove(MouseEventArgs e)
         {
             //Tracer.FlaggedLine(_objectId + " " + e.Location);
-            if ((e.Button & MouseButtons.Left) != MouseButtons.Left)
+            if((e.Button & MouseButtons.Left) != MouseButtons.Left)
                 return;
             if(_sourcePoint == null)
                 return;

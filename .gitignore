@@ -10,3 +10,4 @@ obj/
 /src/Clock2/bin/Debug/*
 
 *.taabus
+/src/.vs

@@ -17,8 +17,6 @@ namespace Taabus.UserInterface
         readonly IItem _item;
 
         readonly MetroButton _header;
-        readonly  _condition;
-
 
         internal FilterView(IItem item, WorkspaceView parent)
         {

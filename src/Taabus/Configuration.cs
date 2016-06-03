@@ -10,9 +10,9 @@ namespace Taabus
     [Serializer.Enable]
     public sealed class Configuration
     {
-        public ExpansionDescription[] ExpansionDescriptions;
-        public string[] Selection;
-        public Server[] Servers;
-        public External.Item[] Items;
+        public ExpansionDescription[] ExpansionDescriptions = new ExpansionDescription[0];
+        public string[] Selection= new string[0];
+        public Server[] Servers=new Server[0];
+        public External.Item[] Items=new External.Item[0];
     }
 }

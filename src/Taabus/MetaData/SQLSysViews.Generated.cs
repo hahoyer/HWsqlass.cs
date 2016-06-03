@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
-using hw.Debug;
+using hw.DebugFormatter;
 using hw.Helper;
 
 namespace Taabus.MetaData

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
-using hw.Debug;
+using hw.DebugFormatter;
 using hw.Helper;
 
 namespace Taabus.Data

@@ -119,7 +119,6 @@
     <Compile Include="hw\Helper\IReaderInitialize.cs" />
     <Compile Include="MetaDataGenerator.cs" />
     <Compile Include="Project.cs" />
-    <Compile Include="UserInterface\CursorUtil.cs" />
     <Compile Include="UserInterface\DragDropController.cs" />
     <Compile Include="UserInterface\Internalizer.cs" />
     <Compile Include="UserInterface\MainView.cs" />

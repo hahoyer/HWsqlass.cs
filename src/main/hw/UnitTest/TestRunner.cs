@@ -1,31 +1,9 @@
-﻿#region Copyright (C) 2013
-
-//     Project hw.nuget
-//     Copyright (C) 2013 - 2013 Harald Hoyer
-// 
-//     This program is free software: you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation, either version 3 of the License, or
-//     (at your option) any later version.
-// 
-//     This program is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
-// 
-//     You should have received a copy of the GNU General Public License
-//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//     
-//     Comments, bugs and suggestions to hahoyer at yahoo.de
-
-#endregion
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using hw.Helper;
 using System.Linq;
 using System.Reflection;
-using hw.Debug;
-using hw.Helper;
+using hw.DebugFormatter;
 
 namespace hw.UnitTest
 {
@@ -51,18 +29,28 @@ namespace hw.UnitTest
         {
             _testLevels = new Func<Type, bool>[] {IsNormalPriority, IsLowPriority};
             _testTypes = testTypes.ToArray();
-            Tracer.Assert(_testTypes.IsCircuidFree(Dependants), () => Tracer.Dump(_testTypes.Circuids(Dependants).ToArray()));
+            Tracer.Assert
+                (
+                    _testTypes.IsCircuidFree(Dependants),
+                    () => Tracer.Dump(_testTypes.Circuids(Dependants).ToArray()));
             if(IsModeErrorFocus)
                 LoadConfiguration();
         }
 
-        internal static void RunTests(Assembly rootAssembly) { new TestRunner(GetUnitTestTypes(rootAssembly)).Run(); }
+        public static bool RunTests(Assembly rootAssembly)
+        {
+            var testRunner = new TestRunner(GetUnitTestTypes(rootAssembly));
+            testRunner.Run();
+            return testRunner.AllIsFine;
+        }
 
         TestType[] Dependants(TestType type)
         {
             if(IsModeErrorFocus)
                 return new TestType[0];
-            return type.Dependants.Select(attribute => attribute.AsTestType(_testTypes)).ToArray();
+            return
+                type.Dependants.SelectMany
+                    (attribute => attribute.AsTestType(_testTypes).NullableToArray()).ToArray();
         }
 
         void Run()
@@ -113,18 +101,42 @@ namespace hw.UnitTest
 
         string ConfigurationString
         {
-            get { return HeaderText + "\n" + _testTypes.OrderBy(t => t.ConfigurationModePriority).Aggregate("", (current, testType) => current + testType.ConfigurationString); }
+            get
+            {
+                return HeaderText + "\n"
+                    + _testTypes.OrderBy(t => t.ConfigurationModePriority)
+                        .Aggregate
+                        ("", (current, testType) => current + testType.ConfigurationString);
+            }
             set
             {
                 if(value == null)
                     return;
-                var pairs = value.Split('\n').Where((line, i) => i > 0 && line != "").Join(_testTypes, line => line.Split(' ')[1], type => type.Type.FullName, (line, type) => new {line, type});
+                var pairs = value.Split('\n')
+                    .Where((line, i) => i > 0 && line != "")
+                    .Join
+                    (
+                        _testTypes,
+                        line => line.Split(' ')[1],
+                        type => type.Type.FullName,
+                        (line, type) => new
+                        {
+                            line,
+                            type
+                        });
                 foreach(var pair in pairs)
                     pair.type.ConfigurationString = pair.line;
             }
         }
 
-        string HeaderText { get { return DateTime.Now.Format() + " " + _status + " " + _complete + " of " + _testTypes.Length + " " + _currentMethodName; } }
+        string HeaderText
+        {
+            get
+            {
+                return DateTime.Now.Format() + " " + _status + " " + _complete + " of "
+                    + _testTypes.Length + " " + _currentMethodName;
+            }
+        }
 
         void SaveConfiguration()
         {
@@ -132,7 +144,10 @@ namespace hw.UnitTest
             ConfigFileMessage("Configuration saved");
         }
 
-        void ConfigFileMessage(string flagText) { Tracer.Line(Tracer.FilePosn(_configFile.FullName, 1, 1, FilePositionTag.Test) + flagText); }
+        void ConfigFileMessage(string flagText)
+        {
+            Tracer.Line(Tracer.FilePosn(_configFile.FullName, 1, 1, FilePositionTag.Test) + flagText);
+        }
 
 
         void LoadConfiguration()
@@ -141,9 +156,43 @@ namespace hw.UnitTest
             ConfigFileMessage("Configuration loaded");
         }
 
-        static IEnumerable<TestType> GetUnitTestTypes(Assembly rootAssembly) { return rootAssembly.GetReferencedTypes().Where(type => !(type.IsAbstract || type.GetAttribute<TestFixtureAttribute>(true) == null)).Select(methodInfo => new TestType(methodInfo)); }
+        static IEnumerable<TestType> GetUnitTestTypes(Assembly rootAssembly)
+        {
+            return rootAssembly
+                .GetReferencedTypes()
+                .Where
+                (type => IsUnitTestType(type))
+                .Select(type => new TestType(type));
+        }
+
+        static bool IsUnitTestType(Type type)
+        {
+            if(!type.IsSealed)
+                return false;
+            if(type.GetAttribute<UnitTestAttribute>(true) != null)
+                return true;
+            return RegisteredFrameworks.Any(any => any.IsUnitTestType(type));
+        }
+
+        public static readonly List<IFramework> RegisteredFrameworks = new List<IFramework>();
     }
 
-    sealed class TestFailedException : Exception
-    {}
+    public interface IFramework
+    {
+        bool IsUnitTestType(Type type);
+        bool IsUnitTestMethod(MethodInfo methodInfo);
+    }
+
+    public class AttributedFramework<TType, TMethod> : IFramework
+        where TType : Attribute
+        where TMethod : Attribute
+    {
+        bool IFramework.IsUnitTestType(Type type) { return type.GetAttributes<TType>(true).Any(); }
+        bool IFramework.IsUnitTestMethod(MethodInfo methodInfo)
+        {
+            return methodInfo.GetAttributes<TMethod>(true).Any();
+        }
+    }
+
+    sealed class TestFailedException : Exception {}
 }

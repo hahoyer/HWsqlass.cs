@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using hw.Debug;
+using hw.DebugFormatter;
 
 namespace Taabus.External
 {

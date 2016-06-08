@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Windows.Forms;
-using hw.Debug;
+using hw.DebugFormatter;
 using hw.Forms;
 using hw.Helper;
 using JetBrains.Annotations;
@@ -45,7 +45,7 @@ namespace Taabus.Data
             _referencesCache = new ValueCache<ReferenceItem[]>(() => parent.GetReferences(type));
             _keyIndexCache = new ValueCache<int?>(() => parent.GetPrimaryKeyIndex(type));
             _uniquesCache = new ValueCache<int[][]>(() => parent.GetUniques(type));
-            Data = new TypeQuery(parent.Parent, Parent.Name + "." + type.FullName);
+            Data = new TypeQuery(parent.Parent, "["+Parent.Name + "]." + type.FullName);
         }
 
         string TypeItemView.IItem.Title { get { return Name; } }

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using hw.Helper;
 using System.Linq;
 using System.Reflection;
-using hw.Debug;
-using hw.Helper;
+using hw.DebugFormatter;
 
 namespace hw.UnitTest
 {
@@ -29,18 +29,28 @@ namespace hw.UnitTest
         {
             _testLevels = new Func<Type, bool>[] {IsNormalPriority, IsLowPriority};
             _testTypes = testTypes.ToArray();
-            Tracer.Assert(_testTypes.IsCircuidFree(Dependants), () => Tracer.Dump(_testTypes.Circuids(Dependants).ToArray()));
+            Tracer.Assert
+                (
+                    _testTypes.IsCircuidFree(Dependants),
+                    () => Tracer.Dump(_testTypes.Circuids(Dependants).ToArray()));
             if(IsModeErrorFocus)
                 LoadConfiguration();
         }
 
-        public static void RunTests(Assembly rootAssembly) { new TestRunner(GetUnitTestTypes(rootAssembly)).Run(); }
+        public static bool RunTests(Assembly rootAssembly)
+        {
+            var testRunner = new TestRunner(GetUnitTestTypes(rootAssembly));
+            testRunner.Run();
+            return testRunner.AllIsFine;
+        }
 
         TestType[] Dependants(TestType type)
         {
             if(IsModeErrorFocus)
                 return new TestType[0];
-            return type.Dependants.Select(attribute => attribute.AsTestType(_testTypes)).ToArray();
+            return
+                type.Dependants.SelectMany
+                    (attribute => attribute.AsTestType(_testTypes).NullableToArray()).ToArray();
         }
 
         void Run()
@@ -91,18 +101,42 @@ namespace hw.UnitTest
 
         string ConfigurationString
         {
-            get { return HeaderText + "\n" + _testTypes.OrderBy(t => t.ConfigurationModePriority).Aggregate("", (current, testType) => current + testType.ConfigurationString); }
+            get
+            {
+                return HeaderText + "\n"
+                    + _testTypes.OrderBy(t => t.ConfigurationModePriority)
+                        .Aggregate
+                        ("", (current, testType) => current + testType.ConfigurationString);
+            }
             set
             {
                 if(value == null)
                     return;
-                var pairs = value.Split('\n').Where((line, i) => i > 0 && line != "").Join(_testTypes, line => line.Split(' ')[1], type => type.Type.FullName, (line, type) => new {line, type});
+                var pairs = value.Split('\n')
+                    .Where((line, i) => i > 0 && line != "")
+                    .Join
+                    (
+                        _testTypes,
+                        line => line.Split(' ')[1],
+                        type => type.Type.FullName,
+                        (line, type) => new
+                        {
+                            line,
+                            type
+                        });
                 foreach(var pair in pairs)
                     pair.type.ConfigurationString = pair.line;
             }
         }
 
-        string HeaderText { get { return DateTime.Now.Format() + " " + _status + " " + _complete + " of " + _testTypes.Length + " " + _currentMethodName; } }
+        string HeaderText
+        {
+            get
+            {
+                return DateTime.Now.Format() + " " + _status + " " + _complete + " of "
+                    + _testTypes.Length + " " + _currentMethodName;
+            }
+        }
 
         void SaveConfiguration()
         {
@@ -110,7 +144,10 @@ namespace hw.UnitTest
             ConfigFileMessage("Configuration saved");
         }
 
-        void ConfigFileMessage(string flagText) { Tracer.Line(Tracer.FilePosn(_configFile.FullName, 1, 1, FilePositionTag.Test) + flagText); }
+        void ConfigFileMessage(string flagText)
+        {
+            Tracer.Line(Tracer.FilePosn(_configFile.FullName, 1, 1, FilePositionTag.Test) + flagText);
+        }
 
 
         void LoadConfiguration()
@@ -123,11 +160,39 @@ namespace hw.UnitTest
         {
             return rootAssembly
                 .GetReferencedTypes()
-                .Where(type => type.IsSealed && type.GetAttribute<TestFixtureAttribute>(true) != null)
-                .Select(methodInfo => new TestType(methodInfo));
+                .Where
+                (type => IsUnitTestType(type))
+                .Select(type => new TestType(type));
+        }
+
+        static bool IsUnitTestType(Type type)
+        {
+            if(!type.IsSealed)
+                return false;
+            if(type.GetAttribute<UnitTestAttribute>(true) != null)
+                return true;
+            return RegisteredFrameworks.Any(any => any.IsUnitTestType(type));
+        }
+
+        public static readonly List<IFramework> RegisteredFrameworks = new List<IFramework>();
+    }
+
+    public interface IFramework
+    {
+        bool IsUnitTestType(Type type);
+        bool IsUnitTestMethod(MethodInfo methodInfo);
+    }
+
+    public class AttributedFramework<TType, TMethod> : IFramework
+        where TType : Attribute
+        where TMethod : Attribute
+    {
+        bool IFramework.IsUnitTestType(Type type) { return type.GetAttributes<TType>(true).Any(); }
+        bool IFramework.IsUnitTestMethod(MethodInfo methodInfo)
+        {
+            return methodInfo.GetAttributes<TMethod>(true).Any();
         }
     }
 
-    sealed class TestFailedException : Exception
-    {}
+    sealed class TestFailedException : Exception {}
 }

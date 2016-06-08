@@ -1,4 +1,4 @@
-﻿using hw.Debug;
+﻿using hw.DebugFormatter;
 using hw.Forms;
 
 namespace Taabus.Data

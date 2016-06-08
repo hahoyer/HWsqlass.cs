@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using hw.Debug;
+using hw.DebugFormatter;
 using hw.Forms;
 using Taabus.Data;
 

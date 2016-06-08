@@ -21,7 +21,7 @@
 #endregion
 
 using System.Linq.Expressions;
-using hw.Debug;
+using hw.DebugFormatter;
 
 namespace Taabus.Data
 {

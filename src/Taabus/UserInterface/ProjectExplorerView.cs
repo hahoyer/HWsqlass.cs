@@ -182,7 +182,7 @@ namespace Taabus.UserInterface
         {
             _project = new Project {Servers = _controller.Servers, ProjectName = _controller.ProjectName};
             _tree.Connect(_project);
-            ExpandedNodes = _controller.ExpansionDescriptions;
+            ExpandedNodes = _controller.ExpansionDescriptions ?? new ExpansionDescription[0];
             _tree.TopNode = _tree.Nodes._().FirstOrDefault();
             SelectedPath = _controller.Selection ?? new string[0];
             var selectedNode = _tree.SelectedNode;

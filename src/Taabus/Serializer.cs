@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
-using hw.Debug;
+using hw.DebugFormatter;
 using hw.Helper;
 using JetBrains.Annotations;
 
@@ -17,7 +17,7 @@ namespace Taabus
             {typeof(Rectangle), new[] {"X", "Y", "Height", "Width"}}
         };
 
-        public static string Serialize(object data) { return Serialize(data.GetType(), data); }
+        public static string Serialize(object data) { return Serialize(data?.GetType(), data); }
         static string Serialize(Type type, object data)
         {
             if(data == null)

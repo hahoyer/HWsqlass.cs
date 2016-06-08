@@ -1,68 +1,135 @@
-#region Copyright (C) 2013
-
-//     Project hw.nuget
-//     Copyright (C) 2013 - 2013 Harald Hoyer
-// 
-//     This program is free software: you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation, either version 3 of the License, or
-//     (at your option) any later version.
-// 
-//     This program is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
-// 
-//     You should have received a copy of the GNU General Public License
-//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//     
-//     Comments, bugs and suggestions to hahoyer at yahoo.de
-
-#endregion
-
 using System;
 using System.Collections.Generic;
+using hw.Helper;
 using System.Linq;
 using System.Reflection;
-using hw.Debug;
+using hw.DebugFormatter;
 
 namespace hw.UnitTest
 {
+    public sealed class SourceFilePosition
+    {
+        public string FileName;
+        public int LineNumber;
+        public string ToString(FilePositionTag tag)
+        {
+            return Tracer.FilePosn(FileName, LineNumber, 0, tag);
+        }
+    }
+
     sealed class TestMethod : Dumpable
     {
-        readonly MethodInfo _methodInfo;
+        interface IActor
+        {
+            string Name { get; }
+            string LongName { get; }
+            object Instance { get; }
+            IEnumerable<SourceFilePosition> FilePositions { get; }
+            void Run(object test);
+        }
+
+        sealed class MethodActor : IActor
+        {
+            readonly Type _type;
+            readonly MethodInfo _target;
+            public MethodActor(MethodInfo target, Type type)
+            {
+                _target = target;
+                _type = type;
+            }
+            string IActor.Name { get { return _target.Name; } }
+            string IActor.LongName
+            {
+                get
+                {
+                    Tracer.Assert(_target.DeclaringType != null);
+                    return _target.DeclaringType.PrettyName() + "." + _target.Name;
+                }
+            }
+            object IActor.Instance
+            {
+                get
+                {
+                    if(_target.IsStatic || _target.ReflectedType == null)
+                        return null;
+                    return Activator.CreateInstance(_target.ReflectedType);
+                }
+            }
+            IEnumerable<SourceFilePosition> IActor.FilePositions
+            {
+                get
+                {
+                    var b = _type.GetAttribute<UnitTestAttribute>(true);
+                    if(b != null)
+                        yield return b.Where;
+                    var a = _target.GetAttribute<UnitTestAttribute>(true);
+                    if(a != null)
+                        yield return a.Where;
+                }
+            }
+            void IActor.Run(object test) { _target.Invoke(test, new object[0]); }
+        }
+
+        sealed class InterfaceActor : IActor
+        {
+            readonly Type _target;
+            public InterfaceActor(Type target) { _target = target; }
+            string IActor.Name { get { return _target.Name; } }
+            string IActor.LongName { get { return _target.PrettyName(); } }
+            object IActor.Instance { get { return Activator.CreateInstance(_target); } }
+            IEnumerable<SourceFilePosition> IActor.FilePositions
+            {
+                get
+                {
+                    var b = _target.GetAttribute<UnitTestAttribute>(true);
+                    if(b != null)
+                        yield return b.Where;
+                }
+            }
+            void IActor.Run(object test) { ((ITestFixture) test).Run(); }
+        }
+
+        readonly IActor _actor;
         public bool IsSuspended;
-        public TestMethod(MethodInfo methodInfo) { _methodInfo = methodInfo; }
+        public TestMethod(MethodInfo methodInfo, Type type)
+        {
+            _actor = new MethodActor(methodInfo, type);
+        }
+
+        public TestMethod(Type type) { _actor = new InterfaceActor(type); }
 
         public string ConfigurationString { get { return Name + ","; } }
 
-        public string Name { get { return _methodInfo.Name; } }
+        public string Name { get { return _actor.Name; } }
 
         void ShowException(Exception e)
         {
-            Tracer.Assert(_methodInfo.DeclaringType != null);
-            Tracer.Line("*********************Exception: " + _methodInfo.DeclaringType.FullName + "." + _methodInfo.Name);
+            Tracer.Line("*********************Exception: " + _actor.LongName);
             Tracer.Line(e.GetType().FullName);
             Tracer.Line(e.Message);
-            Tracer.Line("*********************End Exception: " + _methodInfo.DeclaringType.FullName + "." + _methodInfo.Name);
+            Tracer.Line("*********************End Exception: " + _actor.LongName);
             throw new TestFailedException();
         }
 
         public void Run()
         {
-            Tracer.Assert(_methodInfo.DeclaringType != null);
-            Tracer.Line("Start " + _methodInfo.ReturnType.Name + " " + _methodInfo.DeclaringType.FullName + "." + _methodInfo.Name);
+            Tracer.Line("Start " + _actor.LongName);
             Tracer.IndentStart();
+            Tracer.Line
+                (
+                    _actor.FilePositions.Select
+                        (p => p.ToString(FilePositionTag.Test) + " position of test")
+                        .Stringify("\n"));
             try
             {
                 if(!IsSuspended)
                 {
-                    var test = Activator.CreateInstance(_methodInfo.ReflectedType);
+                    var test = _actor.Instance;
                     var isBreakDisabled = Tracer.IsBreakDisabled;
                     Tracer.IsBreakDisabled = !TestRunner.IsModeErrorFocus;
                     try
                     {
-                        _methodInfo.Invoke(test, new object[0]);
+                        _actor.Run(test);
                     }
                     catch(Exception e)
                     {
@@ -74,8 +141,7 @@ namespace hw.UnitTest
             finally
             {
                 Tracer.IndentEnd();
-                Tracer.Assert(_methodInfo.DeclaringType != null);
-                Tracer.Line("End " + _methodInfo.ReturnType.Name + " " + _methodInfo.DeclaringType.FullName + "." + _methodInfo.Name);
+                Tracer.Line("End " + _actor.LongName);
             }
         }
     }

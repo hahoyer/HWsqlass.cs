@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using hw.Debug;
+using hw.DebugFormatter;
 using hw.Helper;
 
 namespace Taabus.Data

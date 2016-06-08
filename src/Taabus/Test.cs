@@ -1,32 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using hw.Helper;
 using System.Linq;
 using System.Windows.Forms;
-using hw.Debug;
+using hw.DebugFormatter;
 using hw.Forms;
-using hw.Helper;
 using hw.UnitTest;
 using Taabus.Data;
 
 namespace Taabus
 {
-    [TestFixture]
+    [UnitTest]
     public sealed class Test : DumpableObject
     {
-        [Test]
+        [UnitTest]
         public void FullTextSearch()
         {
             try
             {
-                var server = new Server { DataSource = "ANNE\\OJB_NET" };
+                var server = new Server {DataSource = "ANNE\\OJB_NET"};
                 var dataBase = server
                     .DataBases
                     .Single(db => db.Name == "cwg_adsalesng_devtest");
 
                 var query = dataBase
                     .Types
-                    .SelectMany(item => item.FindAllText("Contract").Select(record => new TableRecord {Name = item.Name, Record = record}));
+                    .SelectMany
+                    (
+                        item =>
+                            item.FindAllText("Contract")
+                                .Select(record => new TableRecord {Name = item.Name, Record = record}));
                 var result = query.ToArray();
                 Tracer.FlaggedLine(result.Length + " records found.");
                 Tracer.Assert(result.Any());
@@ -39,12 +43,12 @@ namespace Taabus
             }
         }
 
-        [Test]
+        [UnitTest]
         public void UserInterface()
         {
             try
             {
-                var server = new Server { DataSource = "ANNE\\OJB_NET" };
+                var server = new Server {DataSource = "ANNE\\OJB_NET"};
                 var dataBases = server.DataBases;
                 var form = new TreeForm {Target = dataBases};
                 Application.Run(form);
@@ -56,7 +60,7 @@ namespace Taabus
             }
         }
 
-        [Test]
+        [UnitTest]
         public void ForceFeedbackUserInterface()
         {
             try
@@ -71,12 +75,12 @@ namespace Taabus
             }
         }
 
-        [Test]
+        [UnitTest]
         public void Base()
         {
             try
             {
-                var server = new Server { DataSource = "ANNE\\OJB_NET" };
+                var server = new Server {DataSource = "ANNE\\OJB_NET"};
                 var dataBases = server.DataBases;
                 var dataBase = dataBases.Single(db => db.Name == "cwg_adsalesng_devtest");
                 var types = dataBase.Types;
@@ -94,7 +98,7 @@ namespace Taabus
             }
         }
 
-        [Test]
+        [UnitTest]
         public void MetaData()
         {
             var relations = new[]
@@ -154,7 +158,7 @@ namespace Taabus
                 new[] {"types"}
             };
 
-            var server = new Server { DataSource = "ANNE\\OJB_NET" };
+            var server = new Server {DataSource = "ANNE\\OJB_NET"};
             var metaDatas = server
                 .DataBases
                 .Select
@@ -195,12 +199,12 @@ JOIN sys.objects AS o ON o.object_id = c.object_id
 JOIN sys.schemas AS s ON o.schema_id = s.schema_id 
 JOIN sys.types AS t ON c.user_type_id = t.user_type_id
 ";
-        [Test]
+        [UnitTest]
         public void ReadColumnInfo()
         {
             try
             {
-                var server = new Server { DataSource = "ANNE\\OJB_NET" };
+                var server = new Server {DataSource = "ANNE\\OJB_NET"};
                 var x = server.Select(ColumnInfoStatement, ColumnInfo.Create);
             }
             catch(Exception)
@@ -210,24 +214,25 @@ JOIN sys.types AS t ON c.user_type_id = t.user_type_id
             }
         }
 
-        [Test]
+        [UnitTest]
         public void KeySearch()
         {
             try
             {
-                var server = new Server { DataSource = "ANNE\\OJB_NET" };
+                var server = new Server {DataSource = "ANNE\\OJB_NET"};
                 var dataBase = server
                     .DataBases
                     .Single(db => db.Name == "cwg_adsalesng_devtest");
 
                 Tracer.AssertionFailed("");
             }
-            catch (Exception)
+            catch(Exception)
             {
                 Tracer.AssertionFailed("");
                 throw;
             }
         }
+
         sealed class ColumnInfo
         {
             public string Name;

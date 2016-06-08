@@ -1,29 +1,8 @@
-#region Copyright (C) 2013
-
-//     Project hw.nuget
-//     Copyright (C) 2013 - 2013 Harald Hoyer
-// 
-//     This program is free software: you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation, either version 3 of the License, or
-//     (at your option) any later version.
-// 
-//     This program is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
-// 
-//     You should have received a copy of the GNU General Public License
-//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//     
-//     Comments, bugs and suggestions to hahoyer at yahoo.de
-
-#endregion
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using hw.Debug;
+using System.Reflection;
+using hw.DebugFormatter;
 using hw.Helper;
 
 namespace hw.UnitTest
@@ -32,19 +11,54 @@ namespace hw.UnitTest
     {
         internal readonly Type Type;
         internal TestType(Type type) { Type = type; }
-        bool _isComplete;
         readonly List<TestMethod> _failedMethods = new List<TestMethod>();
         bool _isSuspended;
 
         public IEnumerable<DependantAttribute> Dependants { get { return Type.GetAttributes<DependantAttribute>(true); } }
 
-        IEnumerable<TestMethod> UnitTestMethods { get { return Type.GetMethods().Where(methodInfo => methodInfo.GetAttribute<TestAttribute>(true) != null).Select(methodInfo => new TestMethod(methodInfo)); } }
+        IEnumerable<TestMethod> UnitTestMethods
+        {
+            get
+            {
+                return Type
+                    .GetMethods()
+                    .Where(IsUnitTestMethod)
+                    .Select(methodInfo => new TestMethod(methodInfo, Type))
+                    .Concat(DefaultTestMethods)
+                    .Concat(InterfaceMethods);
+            }
+        }
+
+        static bool IsUnitTestMethod(MethodInfo methodInfo)
+        {
+            return methodInfo.GetAttribute<UnitTestAttribute>(true) != null
+                || TestRunner.RegisteredFrameworks.Any(item=> item.IsUnitTestMethod(methodInfo));
+        }
+
+        IEnumerable<TestMethod> InterfaceMethods
+        {
+            get
+            {
+                if(Type.Is<ITestFixture>())
+                    yield return new TestMethod(Type);
+            }
+        }
+
+        IEnumerable<TestMethod> DefaultTestMethods
+        {
+            get
+            {
+                var testAttribute = Type.GetAttribute<UnitTestAttribute>(true);
+                if(testAttribute != null && testAttribute.DefaultMethod != null)
+                    yield return new TestMethod(Type.GetMethod(testAttribute.DefaultMethod), Type);
+            }
+        }
 
         public bool IsStarted { get; set; }
 
         public bool IsStartable(Func<Type, bool> isLevel) { return !IsStarted && !_isSuspended && isLevel(Type); }
 
-        public bool IsComplete { get { return _isComplete; } }
+        public bool IsComplete { get; set; }
 
         public bool IsSuccessfull { get { return IsComplete && _failedMethods.Count == 0; } }
 
@@ -65,7 +79,10 @@ namespace hw.UnitTest
             get { return _failedMethods.Aggregate("", (current, testMethod) => current + testMethod.ConfigurationString); }
             set
             {
-                var forcedMethods = value.Split(',').Join(UnitTestMethods, name => name, method => method.Name, (name, method) => method).ToArray();
+                var forcedMethods =
+                    value.Split(',')
+                        .Join(UnitTestMethods, name => name, method => method.Name, (name, method) => method)
+                        .ToArray();
                 foreach(var notForcedMethod in UnitTestMethods.Except(forcedMethods))
                     notForcedMethod.IsSuspended = true;
             }
@@ -119,7 +136,7 @@ namespace hw.UnitTest
                 {
                     _failedMethods.Add(unitTestMethod);
                 }
-            _isComplete = true;
+            IsComplete = true;
         }
     }
 }

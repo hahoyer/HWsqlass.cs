@@ -11,3 +11,4 @@ obj/
 
 *.taabus
 /src/.vs
+/src/Clock2/bin

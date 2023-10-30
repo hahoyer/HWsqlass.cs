@@ -1,70 +1,72 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using hw.Helper;
 
-namespace hw.DebugFormatter
+// ReSharper disable CheckNamespace
+
+namespace hw.DebugFormatter;
+
+sealed class Writer
 {
-    sealed class Writer
+    sealed class WriteInitiator
     {
-        sealed class WriteInitiator
+        string LastName = "";
+        string Name = "";
+
+        public bool ThreadChanged => Name != LastName;
+
+        public string ThreadFlagString => "[" + LastName + "->" + Name + "]\n";
+
+        public void NewThread()
         {
-            string _name = "";
-            string _lastName = "";
-
-            public bool ThreadChanged { get { return _name != _lastName; } }
-
-            public string ThreadFlagString { get { return "[" + _lastName + "->" + _name + "]\n"; } }
-
-            public void NewThread()
-            {
-                _lastName = _name;
-                _name = Thread.CurrentThread.ManagedThreadId.ToString();
-            }
+            LastName = Name;
+            Name = Thread.CurrentThread.ManagedThreadId.ToString();
         }
+    }
 
-        int _indentCount;
-        bool _isLineStart = true;
-        readonly WriteInitiator _writeInitiator = new WriteInitiator();
+    readonly WriteInitiator Instance = new();
 
-        public Writer() { DebugTextWriter.Register(); }
+    int IndentCount;
+    bool IsLineStart = true;
 
-        internal void IndentStart() { _indentCount++; }
-        internal void IndentEnd() { _indentCount--; }
+    public Writer() => DebugTextWriter.Register();
 
-        internal void ThreadSafeWrite(string s, bool isLine)
+    internal void IndentStart() => IndentCount++;
+    internal void IndentEnd() => IndentCount--;
+
+    internal void ThreadSafeWrite(string text, bool isLine)
+    {
+        lock(Instance)
         {
-            lock(_writeInitiator)
+            Instance.NewThread();
+
+            text = text.Indent(isLineStart: IsLineStart, count: IndentCount);
+
+            if(Instance.ThreadChanged && Debugger.IsAttached)
             {
-                _writeInitiator.NewThread();
-
-                s = s.Indent(isLineStart: _isLineStart, count: _indentCount);
-
-                if(_writeInitiator.ThreadChanged && Debugger.IsAttached)
+                var threadFlagString = Instance.ThreadFlagString;
+                if(!IsLineStart)
                 {
-                    var threadFlagString = _writeInitiator.ThreadFlagString;
-                    if(!_isLineStart)
-                        if(s.Length > 0 && s[0] == '\n')
-                            threadFlagString = "\n" + threadFlagString;
-                        else
-                            throw new NotImplementedException();
-                    System.Diagnostics.Debug.Write(threadFlagString);
+                    threadFlagString = "\n" + threadFlagString;
+                    if(text == "" || text[0] != '\n')
+                        threadFlagString = "..." + threadFlagString;
                 }
 
-                Write(s, isLine);
-
-                _isLineStart = isLine;
+                Debug.Write(threadFlagString);
             }
-        }
 
-        static void Write(string s, bool isLine)
-        {
-            if(isLine)
-                Console.WriteLine(s);
-            else
-                Console.Write(s);
+            Write(text, isLine);
+
+            IsLineStart = isLine;
         }
+    }
+
+    static void Write(string text, bool isLine)
+    {
+        if(isLine)
+            Console.WriteLine(text);
+        else
+            Console.Write(text);
     }
 }

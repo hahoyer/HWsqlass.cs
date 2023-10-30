@@ -21,9 +21,8 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
+// ReSharper disable CheckNamespace
 
 namespace hw.Forms
 {

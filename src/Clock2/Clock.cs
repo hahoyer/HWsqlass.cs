@@ -5,18 +5,24 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using hw.Helper;
+#if USE_LOG4NET
 using log4net;
 using log4net.Config;
+#endif
 
 namespace Clock2
 {
     sealed partial class Clock : Form
     {
+#if USE_LOG4NET
         static readonly ILog Logger = LogManager.GetLogger(typeof(Clock));
+#endif
 
         public Clock()
         {
+#if USE_LOG4NET
             XmlConfigurator.Configure(new FileInfo("log4net.xml"));
+#endif
             InitializeComponent();
             InitializeChildren(_date, _time);
         }
@@ -45,7 +51,9 @@ namespace Clock2
                 return;
 
             LastScreenLayoutText = text;
+#if USE_LOG4NET
             Logger.Info(text);
+#endif
         }
 
         void LogBounds()
@@ -55,7 +63,9 @@ namespace Clock2
                 return;
 
             LastBoundsText = text;
+#if USE_LOG4NET
             Logger.Info(text);
+#endif
         }
 
         static string GetScreenLayout()
